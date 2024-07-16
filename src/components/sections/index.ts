@@ -1,3 +1,4 @@
 import Hero from "./hero";
+import Projects from './projects';
 
-export { Hero };
+export { Hero, Projects };

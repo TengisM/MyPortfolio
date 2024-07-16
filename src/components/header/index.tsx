@@ -1,31 +1,59 @@
-export default function Header() {
-	return (
-        <header className="z-10 absolute max-w-screen-xl w-full mx-auto p-6 font-mono flex items-center gap-5">
-            <a
-                href="/"
-                className="rounded-xl content-center mr-5 px-2.5 py-1.5 bg-neutral-700/50 backdrop-blur-sm border border-cyan-700"
-            >
-                <h3 className="text-lg font-semibold">
-                    TM
-                </h3>
-            </a>
-            <a
-                href="/"
-                className="relative"
-            >
-                <h3 className="text-xl font-semibold before:bg-cyan-400/60 before:block before:absolute before:inset-0 before:transition-transform before:duration-300 before:ease-in before:scale-x-0 before:origin-bottom-right before:hover:scale-x-100 before:hover:origin-bottom-left">
-                    projects
-                </h3>
-            </a>
+'use client';
+import Image from "next/image";
+import { WhiteLogo } from "../../../public/headerLogo";
+import { handleSmoothScroll } from "../util";
 
-            <a
-                href="/"
-                className="relative"
-            >
-                <h3 className="text-xl font-semibold before:bg-cyan-400/60 before:block before:absolute before:inset-0 before:transition-transform before:duration-300 before:ease-in before:scale-x-0 before:origin-bottom-right before:hover:scale-x-100 before:hover:origin-bottom-left">
-                    contact
-                </h3>
-            </a>
+interface IHeaderItem {
+    label: string;
+    scrollId: string;
+    callback?: () => void;
+};
+
+const headerItems: Omit<IHeaderItem, 'onClick'>[] = [
+    { scrollId: 'projects', label: 'projects', },
+    { scrollId: 'contact', label: 'contact', },
+];
+
+const HeaderItem = ({
+    label,
+    scrollId,
+    callback
+}: IHeaderItem) => (
+    <a className='relative' onClick={() => handleSmoothScroll({ scrollId, callback })}>
+        <h3 className="md:text-xl cursor-pointer font-semibold before:bg-cyan-400/60 before:block before:absolute before:inset-0 before:transition-transform before:duration-300 before:ease-in before:scale-x-0 before:origin-bottom-right before:hover:scale-x-100 before:hover:origin-bottom-left">
+            {label}
+        </h3>
+    </a>
+);
+
+export default function Header() {
+    const handleLogoClick = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
+    };
+
+    const renderHeaderItems = (cb?: () => void): React.ReactNode => {
+        return headerItems.map((item, index) => (
+            <HeaderItem label={item.label} key={index} scrollId={item.scrollId} callback={cb} />
+        ))
+    };
+
+	return (
+        <header className="w-full top-0 fixed backdrop-blur-lg shadow-lg z-[100] bg-neutral-700/30">
+            <nav className="max-w-screen-xl w-full mx-auto flex justify-between items-center p-4">
+                <Image
+                    className="rounded-lg content-center mr-5 w-8 md:w-12 cursor-pointer bg-white backdrop-blur-sm"
+                    onClick={handleLogoClick}
+                    src={WhiteLogo}
+                    alt="logo"
+                    priority
+                />
+                <div className="flex gap-6">
+                    {renderHeaderItems()}
+                </div>
+            </nav>
         </header>
 	);
-}
+};

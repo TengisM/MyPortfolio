@@ -1,31 +1,22 @@
-export default function Footer() {
-	return (
-        <footer className="z-10 w-full font-mono flex items-center gap-4">
-            <a
-                href="/"
-                className="rounded-xl content-center mr-5 px-2.5 py-1.5 border border-neutral-700 bg-neutral-800/30"
-            >
-                <h3 className="text-lg font-semibold">
-                    TM
-                </h3>
-            </a>
-            <a
-                href="/"
-                className="relative"
-            >
-                <h3 className="text-xl font-semibold before:bg-cyan-400/60 before:block before:absolute before:inset-0 before:transition-transform before:duration-300 before:ease-in before:scale-x-0 before:origin-bottom-right before:hover:scale-x-100 before:hover:origin-bottom-left">
-                    projects
-                </h3>
-            </a>
+'use client'
+import * as React from 'react';
 
-            <a
-                href="/"
-                className="relative"
-            >
-                <h3 className="text-xl font-semibold before:bg-cyan-400/60 before:block before:absolute before:inset-0 before:transition-transform before:duration-300 before:ease-in before:scale-x-0 before:origin-bottom-right before:hover:scale-x-100 before:hover:origin-bottom-left">
-                    contact
-                </h3>
-            </a>
+export default function Footer() {
+    const [ date, setDate ] = React.useState('');
+
+    React.useEffect(() => {
+        const currentDate = new Date();
+        const month = currentDate.toLocaleString('default', { month: 'long' });
+        const year = currentDate.getFullYear();
+        setDate(`${month} ${year}`);
+    }, []);
+
+	return (
+        <footer className="z-10 w-full h-40 grid items-center justify-center">
+            <div className="font-mono text-sm flex flex-col text-center">
+                <span className='cursor-default'>{'© Tenggis Munkhbaatar'}</span>
+                <span>{'<> '}{date}{' </>'}</span>
+            </div>
         </footer>
 	);
-}
+};
