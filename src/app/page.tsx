@@ -1,6 +1,6 @@
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { Hero, Projects } from "@/components/sections";
+import { Hero, Projects, Contact } from "@/components/sections";
 import { ScrollPop } from "@/components/common";
 
 export default function Home() {
@@ -9,6 +9,7 @@ export default function Home() {
 			<Header />
 			<Hero />
 			<Projects />
+			<Contact />
 			<ScrollPop />
 			<Footer />
 		</main>

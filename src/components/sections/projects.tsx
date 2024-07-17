@@ -63,10 +63,12 @@ const ProjectItem = memo(({ project }: { project: IProject }) => (
     </div>
 ));
 
+ProjectItem.displayName = 'ProjectItem';
+
 export default function Projects() {
     return (
-        <section id='projects' className="w-full max-w-screen-xl p-5">
-            <div className="md:text-2xl text-cyan-400 mb-8 md:mb-14">Projects that I worked</div>
+        <section id='projects' className="w-full max-w-screen-xl px-5 my-16 md:my-32">
+            <div className="md:text-xl text-cyan-400 mb-8 md:mb-12">Projects that I worked</div>
             <div className="grid md:grid-cols-2 gap-5">
                 { projectItems.map((project, index) => (
                     <ProjectItem key={index} project={project} />

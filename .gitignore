@@ -16,7 +16,6 @@ package-lock.json
 
 # production
 /build
-/public
 
 # misc
 .vscode
@@ -31,6 +30,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
 
 # vercel
 .vercel

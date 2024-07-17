@@ -11,13 +11,14 @@ export default function Hero() {
                     <Image
                         src={Tenggis}
                         alt='profile'
+                        priority
                         className="w-48 md:w-80 cursor-help object-cover transition-all duration-300 filter md:blur md:hover:blur-none"
                     />
                 </div>
                 <div className="flex-1 flex flex-col md:justify-center items-center text-center md:text-left md:order-1">
                     <h1 className="hero-span text-3xl md:text-6xl font-light cursor-default">
                         <span>Hi, </span>
-                        <span>I'm </span>
+                        <span>I am </span>
                         <span className='text-cyan-400'>Tenggis</span>
                         <span>, a </span>
                         <span>front</span>
