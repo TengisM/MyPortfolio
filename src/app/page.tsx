@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { Hero, Projects, Contact } from "@/components/sections";
@@ -12,6 +13,7 @@ export default function Home() {
 			<Contact />
 			<ScrollPop />
 			<Footer />
+			<SpeedInsights />
 		</main>
 	);
 };

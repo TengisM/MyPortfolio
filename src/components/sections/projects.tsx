@@ -6,8 +6,8 @@ import { Bidend, Lann, Tetgeleg, Ubcab, Ubeats } from "../../../public/projects"
 interface IProject {
     text: string;
     url: string,
-    more?: string;
     title: string;
+    more?: string;
     logo: StaticImageData;
 };
 
@@ -50,7 +50,7 @@ const projectItems: IProject[] = [
 
 const ProjectItem = memo(({ project }: { project: IProject }) => (
     <div className="grid gap-2.5 p-4 bg-neutral-900 rounded-2xl">
-        <a className="hover:animate-pulse" href={project.url} aria-label={project.title} target="_blank" rel="noopener noreferrer">
+        <a className="animate-pulse" href={project.url} aria-label={project.title} target="_blank" rel="noopener noreferrer">
             <Image
                 src={project.logo}
                 alt={project.title}
