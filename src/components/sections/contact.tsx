@@ -9,12 +9,12 @@ interface IEmail {
 };
 
 export default function Contact() {
-    // const [ fileName, setFileName ] = React.useState('');
     const [ formData, setFormData ] = React.useState<IEmail>({
         name: '',
         email: '',
         message: '',
     });
+    // const [ fileName, setFileName ] = React.useState('');
     // const [ file, setFile ] = React.useState<File | undefined>(undefined);
 
     const handleChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

@@ -1,4 +1,5 @@
-import { memo } from "react";
+'use client'
+import * as React from "react";
 import Image, { StaticImageData } from "next/image";
 import { ShowMore } from "../common";
 import { Bidend, Lann, Tetgeleg, Ubcab, Ubeats } from "../../../public/projects";
@@ -48,12 +49,13 @@ const projectItems: IProject[] = [
     }
 ];
 
-const ProjectItem = memo(({ project }: { project: IProject }) => (
-    <div className="grid gap-2.5 p-4 bg-neutral-900 rounded-2xl">
+const ProjectItem = React.memo(({ project, index }: { project: IProject, index: number }) => (
+    <div className={`grid gap-2.5 p-4 bg-neutral-900 rounded-2xl ${index % 2 === 0 ? 'animate-slideInLeft' : 'animate-slideInRight'}`}>
         <a className="animate-pulse" href={project.url} aria-label={project.title} target="_blank" rel="noopener noreferrer">
             <Image
                 src={project.logo}
                 alt={project.title}
+                loading="lazy"
             />
         </a>
         <div className="text-neutral-400 font-medium cursor-default">
@@ -65,15 +67,37 @@ const ProjectItem = memo(({ project }: { project: IProject }) => (
 
 ProjectItem.displayName = 'ProjectItem';
 
-export default function Projects() {
+const Projects: React.FC = () => {
+    const [ isVisible, setIsVisible ] = React.useState(false);
+    const ref = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        const handleScroll = () => {
+            if (ref.current && !isVisible) {
+                const top = ref.current.getBoundingClientRect().top;
+                const isVisibleNow = top <= window.innerHeight - 100;
+                if (isVisibleNow) {
+                    setIsVisible(true);
+                }
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [isVisible]);
+
     return (
         <section id='projects' className="w-full max-w-screen-xl px-5 my-16 md:my-32">
             <div className="md:text-xl text-cyan-400 mb-8 md:mb-12">Projects that I worked</div>
-            <div className="grid md:grid-cols-2 gap-5">
-                { projectItems.map((project, index) => (
-                    <ProjectItem key={index} project={project} />
+            <div ref={ref} className="grid md:grid-cols-2 gap-5">
+                {isVisible && projectItems.map((project, index) => (
+                    <ProjectItem key={index} project={project} index={index} />
                 ))}
             </div>
         </section>
     );
 };
+
+export default Projects;

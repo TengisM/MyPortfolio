@@ -6,7 +6,7 @@ import { ScrollPop } from "@/components/common";
 
 export default function Home() {
 	return (
-		<main className="flex flex-col items-center mx-auto">
+		<main className="overflow-hidden flex flex-col items-center mx-auto">
 			<Header />
 			<Hero />
 			<Projects />
