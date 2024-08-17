@@ -2,6 +2,7 @@
 import * as React from "react";
 import Image, { StaticImageData } from "next/image";
 import { ShowMore } from "../common";
+import { Urlink } from "../../../public/common";
 import { Bidend, Lann, Tetgeleg, Ubcab, Ubeats } from "../../../public/projects";
 
 interface IProject {
@@ -50,12 +51,19 @@ const projectItems: IProject[] = [
 ];
 
 const ProjectItem = React.memo(({ project, index }: { project: IProject, index: number }) => (
-    <div className={`grid gap-2.5 p-4 bg-neutral-900 rounded-2xl ${index % 2 === 0 ? 'animate-slideInLeft' : 'animate-slideInRight'}`}>
-        <a className="animate-pulse" href={project.url} aria-label={project.title} target="_blank" rel="noopener noreferrer">
+    <div className={`grid gap-2.5 p-4 bg-neutral-900 overflow-hidden relative border rounded-xl hover:bg-zinc-800/10 group hover:border-zinc-400/50 border-zinc-600 transition duration-500 ${index % 2 === 0 ? 'animate-slideInLeft' : 'animate-slideInRight'}`}>
+        <a className="flex gap-1.5 w-fit hover:animate-pulse" href={project.url} aria-label={project.title} target="_blank" rel="noopener noreferrer">
+            <Image
+                src={Urlink}
+                alt='link-logo'
+                loading="lazy"
+                className="w-3.5"
+            />
             <Image
                 src={project.logo}
                 alt={project.title}
                 loading="lazy"
+                className="w-auto"
             />
         </a>
         <div className="text-neutral-400 font-medium cursor-default">
@@ -83,6 +91,7 @@ const Projects: React.FC = () => {
         };
 
         window.addEventListener('scroll', handleScroll);
+
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
@@ -90,7 +99,8 @@ const Projects: React.FC = () => {
 
     return (
         <section id='projects' className="w-full max-w-screen-xl px-5 my-16 md:my-32">
-            <div className="md:text-xl text-cyan-400 mb-8 md:mb-12">Projects that I worked</div>
+            <div className="md:text-xl text-cyan-400">Projects that I worked</div>
+            <div className="w-full h-px bg-zinc-600 my-8 md:my-12" />
             <div ref={ref} className="grid md:grid-cols-2 gap-5">
                 {isVisible && projectItems.map((project, index) => (
                     <ProjectItem key={index} project={project} index={index} />

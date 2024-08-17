@@ -25,6 +25,6 @@ export const handleSmoothScroll = ({
     }
 };
 
-export const initializeGA = () => {
-    ReactGA.initialize('');
-};
+// export const initializeGA = () => {
+//     ReactGA.initialize(process.env.REACTGA_KEY);
+// };

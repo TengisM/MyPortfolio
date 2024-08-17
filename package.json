@@ -1,5 +1,5 @@
 {
-  "name": "testing",
+  "name": "portfolio",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@react-email/components": "^0.0.21",
-    "@vercel/speed-insights": "^1.0.12",
     "axios": "^1.7.2",
     "formidable": "^3.5.1",
     "next": "14.2.5",
