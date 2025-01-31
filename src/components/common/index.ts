@@ -1,4 +1,6 @@
-import ScrollPop from "./scrollPop";
-import ShowMore from "./showMore";
+import SocialLinks from "./socialLinks";
+import TechLists from "./techLists";
+import CursorEffect from "./cursorEffect";
+import DownloadButton from "./downloadButton";
 
-export { ScrollPop, ShowMore };
+export { SocialLinks, TechLists, CursorEffect, DownloadButton };

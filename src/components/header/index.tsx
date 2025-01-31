@@ -1,59 +1,47 @@
-'use client';
+"use client"
 import Image from "next/image";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { WhiteLogo } from "../../../public/headerLogo";
-import { handleSmoothScroll } from "../util";
 
-interface IHeaderItem {
-    label: string;
-    scrollId: string;
-    callback?: () => void;
-};
-
-const headerItems: Omit<IHeaderItem, 'onClick'>[] = [
-    { scrollId: 'projects', label: 'projects', },
-    { scrollId: 'contact', label: 'contact', },
+const headerItems: IHeaderItem[] = [
+    { scrollId: 'home', label: 'Home' },
+    { scrollId: 'about', label: 'About' },
+    { scrollId: 'projects', label: 'Projects' },
+    // { scrollId: 'contact', label: 'Contact' },
 ];
 
-const HeaderItem = ({
-    label,
-    scrollId,
-    callback
-}: IHeaderItem) => (
-    <a className='relative' onClick={() => handleSmoothScroll({ scrollId, callback })}>
-        <h3 className="md:text-xl cursor-pointer font-semibold before:bg-cyan-400/60 before:block before:absolute before:inset-0 before:transition-transform before:duration-300 before:ease-in before:scale-x-0 before:origin-bottom-right before:hover:scale-x-100 before:hover:origin-bottom-left">
-            {label}
-        </h3>
-    </a>
-);
-
 export default function Header() {
-    const handleLogoClick = () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        })
-    };
+    const pathname = usePathname();
 
-    const renderHeaderItems = (cb?: () => void): React.ReactNode => {
-        return headerItems.map((item, index) => (
-            <HeaderItem label={item.label} key={index} scrollId={item.scrollId} callback={cb} />
-        ))
-    };
-
-	return (
-        <header className="w-full top-0 fixed backdrop-blur-lg shadow-lg z-[100] bg-neutral-700/30">
+    return (
+        <header className="w-full top-0 fixed bg-[#222227]/80 backdrop-blur-md shadow-md z-[100]">
             <nav className="max-w-screen-xl w-full mx-auto flex justify-between items-center p-4">
-                <Image
-                    className="rounded-lg content-center mr-5 w-8 md:w-12 cursor-pointer bg-white backdrop-blur-sm"
-                    onClick={handleLogoClick}
-                    src={WhiteLogo}
-                    alt="logo"
-                    priority
-                />
+                <Link href={"/"}>
+                    <Image
+                        className="rounded-lg content-center mr-5 w-8 md:w-12 cursor-pointer bg-white backdrop-blur-sm"
+                        src={WhiteLogo}
+                        alt="logo"
+                    />
+                </Link>
                 <div className="flex gap-6">
-                    {renderHeaderItems()}
+                    {headerItems.map((item, index) => {
+                        const isCurrentPage = (item.scrollId === "home" && pathname === "/") || pathname === `/${item.scrollId}`;
+                        return (
+                            <Link
+                                className='relative'
+                                href={item.scrollId === "home" ? "/" : `/${item.scrollId}`}
+                                key={index + item.label}
+                            >
+                                <h3 className={`md:text-xl cursor-pointer font-semibold hover:text-cyan-400 
+                                    ${isCurrentPage ? 'border-b-2 border-cyan-400 text-cyan-400' : ''}`}>
+                                    {item.label}
+                                </h3>
+                            </Link>
+                        );
+                    })}
                 </div>
             </nav>
         </header>
-	);
+    );
 };

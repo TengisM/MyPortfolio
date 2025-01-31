@@ -1,4 +1,6 @@
-import DownArrow from "./down-arrow.svg";
 import Urlink from "./url-link.svg";
+import Download from "./download.svg";
+import Peak from "./peak.jpg";
+import Smile from "./smile.jpg";
 
-export { DownArrow, Urlink };
+export { Urlink, Peak, Smile, Download };
