@@ -2,7 +2,6 @@
 import * as React from "react";
 import Image, { StaticImageData } from "next/image";
 import * as motion from "motion/react-client";
-import { Urlink } from "../../../public/common";
 import { Bidend, Lann, Tetgeleg, Ubcab, Ubeats } from "../../../public/projects";
 
 interface IProject {
@@ -48,30 +47,34 @@ const projectItems: IProject[] = [
 const Projects = () => {
     return (
         <div className="py-12">
-            <div className="text-3xl lg:text-5xl font-semibold text-center lg:text-start select-none text-cyan-400 mb-12">
+            <h2 className="text-3xl lg:text-5xl font-semibold text-center lg:text-start select-none text-cyan-400 mb-12">
                 Previous Projects
-            </div>
-
-            <div className="space-y-4 lg:space-y-8">
+            </h2>
+    
+            <div className="space-y-6 lg:space-y-10">
                 {projectItems.map((project, index) => (
-                    <motion.div
-                        key={`${project.title}_${index}`}
-                        // href={project.url}
-                        // aria-label={project.title}
-                        // target="_blank"
-                        // rel="noopener noreferrer"
-                        initial={{ opacity: 0, y: 50 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                    <motion.a
+                        key={project.title}
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50, y: 50 }}
+                        whileInView={{ opacity: 1, x: 0, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: index * 0.2 }}
-                        className="bg-[#222227] hover:bg-[#2c2c31] p-4 sm:p-6 rounded-xl shadow-xl relative transition-all duration-300 select-none"
+                        transition={{ duration: 0.6, delay: index * 0.2 }}
+                        className="block bg-[#222227] hover:bg-[#2c2c31] p-5 sm:p-7 rounded-xl shadow-xl transition-all duration-300 select-none"
                     >
                         <div className="flex gap-2 items-center">
-                            <Image src={project.logo} alt={project.title} className="w-22 object-contain rounded-full" />
-                            {/* <div className="text-xl font-semibold text-white">{project.title}</div> */}
+                            <Image
+                                src={project.logo}
+                                alt={project.title}
+                                className="w-16 sm:w-20 object-contain rounded-full"
+                            />
                         </div>
-                        <p className="mt-2 text-gray-300 text-[0.95rem] lg:text-lg">{project.text}</p>
-                    </motion.div>
+                        <p className="mt-2 text-gray-300 text-[0.95rem] lg:text-lg">
+                            {project.text}
+                        </p>
+                    </motion.a>
                 ))}
             </div>
         </div>

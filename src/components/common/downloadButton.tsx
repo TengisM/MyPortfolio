@@ -46,7 +46,7 @@ const DownloadButton = () => {
 
     return (
         <motion.button
-            className='flex items-center gap-2 py-2 px-4 border rounded-full hover:bg-cyan-700'
+            className='flex items-center gap-2 py-2 px-4 border rounded-full hover:bg-cyan-700 cursor-pointer'
             whileHover={{ scale: 1.15 }}
             whileTap={{ scale: 0.8 }}
             onClick={handleDownload}
