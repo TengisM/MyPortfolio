@@ -46,8 +46,8 @@ const projectItems: IProject[] = [
 
 const Projects = () => {
     return (
-        <div className="py-12">
-            <h2 className="text-3xl lg:text-5xl font-semibold text-center lg:text-start select-none text-cyan-400 mb-12">
+        <div className="py-12 px-4 lg:px-8">
+            <h2 className="text-3xl lg:text-5xl font-semibold text-center lg:text-start text-cyan-400 mb-12">
                 Previous Projects
             </h2>
     
@@ -58,20 +58,20 @@ const Projects = () => {
                         href={project.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50, y: 50 }}
-                        whileInView={{ opacity: 1, x: 0, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: index * 0.2 }}
-                        className="block bg-[#222227] hover:bg-[#2c2c31] p-5 sm:p-7 rounded-xl shadow shadow-pink-400 transition-all duration-300 select-none"
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "0px 0px -100px 0px" }}
+                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                        className="block bg-[#0a0a0a] p-5 sm:p-7 rounded-xl border border-cyan-400/20 hover:border-cyan-400/60 transition-colors duration-300"
+                        whileHover={{ scale: 1.05 }}
                     >
-                        <div className="flex gap-2 items-center">
-                            <Image
-                                src={project.logo}
-                                alt={project.title}
-                                className="w-16 sm:w-20 object-contain rounded-full"
-                            />
-                        </div>
-                        <p className="mt-2 text-gray-300 text-[0.95rem] lg:text-lg">
+                        <Image
+                            src={project.logo}
+                            alt={project.title}
+                            className="w-16 sm:w-20"
+                            priority={index < 2}
+                        />
+                        <p className="mt-2 text-gray-300 text-sm lg:text-base">
                             {project.text}
                         </p>
                     </motion.a>

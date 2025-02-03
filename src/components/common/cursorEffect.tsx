@@ -43,7 +43,7 @@ export function useFollowPointer(ref: React.RefObject<HTMLDivElement | null>) {
 
         return () =>
             window.removeEventListener("pointermove", handlePointerMove)
-    }, []);
+    }, [ref, xPoint, yPoint]);
 
-    return { x, y }
+    return { x, y };
 };

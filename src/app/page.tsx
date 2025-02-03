@@ -15,7 +15,7 @@ export default function Home() {
 				</div>
 				<div className="flex-1 flex flex-col gap-4 lg:justify-center items-center lg:items-start text-center lg:text-left lg:order-1">
 					<h1 className="text-3xl lg:text-6xl font-light select-none">
-						Hello, I'm <span className='text-cyan-400 font-medium'>Tenggis Munkhbaatar</span>
+						Hello, {"I'm"} <span className='text-cyan-400 font-medium'>Tenggis Munkhbaatar</span>
 					</h1>
 					<p className='text-xl lg:text-3xl font-light select-none'>
 						{"Front-end developer who's all about making user experiences awesome. I love creating websites that feel just right!".split("").map((char, index) => (
