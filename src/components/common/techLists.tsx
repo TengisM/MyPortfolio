@@ -16,7 +16,7 @@ const techItems: ISocialItem[] = [
 const TechItem = ({
 	label
 }: ISocialItem) => (
-    <span className='bg-cyan-400 text-black px-3 py-1 rounded-full text-xs lg:text-sm font-semibold'>
+    <span className='bg-cyan-400 shadow-lg shadow-pink-400 text-black px-3 py-1 rounded-full text-xs lg:text-sm font-semibold'>
 		{label}
     </span>
 );

@@ -62,7 +62,7 @@ const Projects = () => {
                         whileInView={{ opacity: 1, x: 0, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6, delay: index * 0.2 }}
-                        className="block bg-[#222227] hover:bg-[#2c2c31] p-5 sm:p-7 rounded-xl shadow-xl transition-all duration-300 select-none"
+                        className="block bg-[#222227] hover:bg-[#2c2c31] p-5 sm:p-7 rounded-xl shadow shadow-pink-400 transition-all duration-300 select-none"
                     >
                         <div className="flex gap-2 items-center">
                             <Image

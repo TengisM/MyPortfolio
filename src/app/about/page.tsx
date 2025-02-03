@@ -39,7 +39,7 @@ export default function About() {
                     <Image
                         src={Smile}
                         alt='fun-image_02'
-                        className="w-48 lg:w-80 object-cover rounded-3xl"
+                        className="w-48 lg:w-80 object-cover rounded-3xl shadow-2xl shadow-cyan-900"
                     />
 				</div>
 				<div className="flex-1 flex flex-col gap-4 lg:justify-center items-center lg:items-start text-center lg:text-left lg:order-1">
@@ -63,7 +63,7 @@ export default function About() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: index * 0.2 }}
-                            className="bg-[#222227] hover:bg-[#2c2c31] p-4 sm:p-6 rounded-xl shadow-xl relative transition-all duration-300 select-none"
+                            className="bg-[#222227] hover:bg-[#2c2c31] p-4 sm:p-6 rounded-xl shadow shadow-pink-400 relative transition-all duration-300 select-none"
                         >
                             <span className="absolute -left-2 sm:-left-3 w-4 sm:w-6 h-4 sm:h-6 bg-cyan-400 rounded-full border border-gray-900"></span>
                             <h3 className="text-lg sm:text-xl font-semibold">{exp.position}</h3>
