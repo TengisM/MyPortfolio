@@ -1,65 +1,70 @@
 'use client';
 import Image from 'next/image';
 import * as React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import * as motion from 'motion/react-client';
+import { AnimatePresence } from 'motion/react';
 import { Download } from '../../../public/common';
 
+type State = {
+    isSuccess: boolean;
+    error: string | null;
+};
+
 const DownloadButton = () => {
-    const [ isLoading, setIsLoading ] = React.useState<boolean>(false);
-    const [ isSuccess, setIsSuccess ] = React.useState<boolean>(false);
-    const [ isMounted, setIsMounted ] = React.useState<boolean>(false);
+    const [isMounted, setIsMounted] = React.useState(false);
+    const [state, action, isPending] = React.useActionState<State>(
+        async () => {
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const response = await fetch('/api/download-cv');
+                if (!response.ok) throw new Error('Download failed');
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Tenggis_CV.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                return { isSuccess: true, error: null };
+            } catch (error) {
+                console.error('Error downloading CV:', error);
+                return { isSuccess: false, error: error instanceof Error ? error.message : 'Download failed' };
+            }
+        },
+        { isSuccess: false, error: null }
+    );
 
     React.useEffect(() => {
         setIsMounted(true);
     }, []);
-
-    const handleDownload = async () => {
-        try {
-            setIsLoading(true);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            const response = await fetch('/api/download-cv');
-            if (!response.ok) throw new Error('Download failed');
-            
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Tenggis_CV.pdf';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-
-            setIsSuccess(true);
-        } catch (error) {
-            console.error('Error downloading CV:', error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     return (
         <motion.div
             className="relative group"
             initial={false}
         >
-            <motion.button
-                className={`flex items-center gap-3 py-3 px-6 rounded-full backdrop-blur-lg transition-all
-                    ${
-                        isLoading || isSuccess 
+            <form action={action}>
+                <motion.button
+                    className={`flex cursor-pointer items-center gap-3 py-3 px-6 rounded-full backdrop-blur-lg transition-all
+                        ${
+                            isPending || state.isSuccess 
                             ? 'bg-gradient-to-br from-cyan-400/30 to-purple-500/30' 
                             : 'bg-gradient-to-br from-cyan-400/20 to-purple-500/20 hover:from-cyan-400/30 hover:to-purple-500/30'
-                    }`}
-                onClick={handleDownload}
-                disabled={isLoading || isSuccess}
-                initial={{ scale: 1 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-            >
+                        }`}
+                    type="submit"
+                    disabled={isPending || state.isSuccess}
+                    initial={{ scale: 1 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                >
                 <div className="relative w-6 h-6 flex items-center justify-center">
                     <AnimatePresence mode='wait'>
-                        {isLoading ? (
+                        {isPending ? (
                             <motion.svg
                                 key="loading"
                                 width="24"
@@ -80,7 +85,7 @@ const DownloadButton = () => {
                                     d="M12 2V6M12 18V22M6 12H2M22 12H18M19.0784 19.0784L16.25 16.25M19.0784 4.99994L16.25 7.82837M4.92157 19.0784L7.75 16.25M4.92157 4.99994L7.75 7.82837"
                                 />
                             </motion.svg>
-                        ) : isSuccess ? (
+                        ) : state.isSuccess ? (
                             <motion.svg
                                 key="success"
                                 width="24"
@@ -114,7 +119,7 @@ const DownloadButton = () => {
                 </div>
 
                 <span className="text-sm font-medium">
-                    {isSuccess ? 'Downloaded!' : 'Get My CV'}
+                    {state.isSuccess ? 'Downloaded!' : 'Get My CV'}
                 </span>
 
                 {isMounted && (
@@ -144,31 +149,32 @@ const DownloadButton = () => {
                     </>
                 )}
             </motion.button>
+        </form>
 
-            {isMounted && (
-                <div className="absolute inset-0 overflow-hidden rounded-full pointer-events-none">
-                    {[...Array(8)].map((_, i) => (
-                        <motion.div
-                            key={i}
-                            className="absolute w-1 h-1 bg-cyan-400 rounded-full"
-                            initial={{
-                                scale: 0,
-                                opacity: 0,
-                                x: Math.random() * 40 - 20,
-                                y: Math.random() * 40 - 20
-                            }}
-                            animate={{
-                                scale: 1,
-                                opacity: 0.4,
-                                transition: {
-                                    delay: i * 0.1,
-                                    duration: 0.5
-                                }
-                            }}
-                        />
-                    ))}
-                </div>
-            )}
+        {isMounted && (
+            <div className="absolute inset-0 overflow-hidden rounded-full pointer-events-none">
+                {[...Array(8)].map((_, i) => (
+                    <motion.div
+                        key={i}
+                        className="absolute w-1 h-1 bg-cyan-400 rounded-full"
+                        initial={{
+                            scale: 0,
+                            opacity: 0,
+                            x: Math.random() * 40 - 20,
+                            y: Math.random() * 40 - 20
+                        }}
+                        animate={{
+                            scale: 1,
+                            opacity: 0.4,
+                            transition: {
+                            delay: i * 0.1,
+                            duration: 0.5
+                            }
+                        }}
+                    />
+                ))}
+            </div>
+        )}
         </motion.div>
     );
 };

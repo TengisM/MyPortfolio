@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { CursorEffect, DotBg } from "@/components/common";
+import { DotBg } from "@/components/common";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -49,7 +49,6 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={inter.className + 'overflow-hidden flex flex-col items-center mx-auto'}>
-				<CursorEffect />
 				<DotBg />
 				<Header />
 				<main className="z-10">
