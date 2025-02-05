@@ -11,4 +11,24 @@ declare global {
         id: string;
         timestamp: number;
     };
+
+    interface IProject {
+        text: string;
+        url: string,
+        title: string;
+        logo: StaticImageData;
+    };
+
+    interface IExperience {
+        duration: string;
+        title: string;
+        position: string;
+        description?: string;
+    };
+
+    interface NavItemProps {
+        item: typeof headerItems[number];
+        index: number;
+        isActive: boolean;
+    };
 };
