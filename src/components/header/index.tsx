@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,7 +15,7 @@ const headerItems = [
 const NAV_DELAY = 0.2;
 const NAV_ITEM_DELAY = 0.1;
 
-const Path = (props: any) => (
+const Path = (props: React.ComponentProps<typeof motion.path>) => (
     <motion.path
         fill="transparent"
         strokeWidth="3"
@@ -73,7 +73,7 @@ const MenuToggle = ({ toggle, isOpen }: { toggle: () => void; isOpen: boolean })
 
 export default function Header() {
     const pathname = usePathname();
-    const [ isMobileOpen, setIsMobileOpen ] = useState<boolean>(false);
+    const [ isMobileOpen, setIsMobileOpen ] = React.useState<boolean>(false);
 
     const isActive = (scrollId: string) => (scrollId === "home" && pathname === "/") || pathname === `/${scrollId}`;
 
