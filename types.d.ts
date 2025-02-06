@@ -31,4 +31,9 @@ declare global {
         index: number;
         isActive: boolean;
     };
+
+    type State = {
+        isSuccess: boolean;
+        error: string | null;
+    };
 };

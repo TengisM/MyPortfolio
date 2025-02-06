@@ -27,6 +27,7 @@ const Path = (props: React.ComponentProps<typeof motion.path>) => (
 
 const MenuToggle = ({ toggle, isOpen }: { toggle: () => void; isOpen: boolean }) => (
     <motion.button
+        id="menu-toggle"
         onClick={toggle}
         className="text-white md:hidden"
         aria-label={isOpen ? "Close menu" : "Open menu"}
@@ -73,9 +74,27 @@ const MenuToggle = ({ toggle, isOpen }: { toggle: () => void; isOpen: boolean })
 
 export default function Header() {
     const pathname = usePathname();
+    const menuRef = React.useRef<HTMLDivElement>(null);
     const [ isMobileOpen, setIsMobileOpen ] = React.useState<boolean>(false);
 
     const isActive = (scrollId: string) => (scrollId === "home" && pathname === "/") || pathname === `/${scrollId}`;
+
+    React.useEffect(() => {
+        if (!isMobileOpen) return;
+
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                menuRef.current &&
+                !menuRef.current.contains(event.target as Node) &&
+                !(event.target as HTMLElement).closest("#menu-toggle")
+            ) {
+                setIsMobileOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isMobileOpen]);
 
     return (
         <header className="fixed top-0 z-50 w-full backdrop-blur-md bg-neutral-900/80 shadow-2xl border-b border-neutral-700">
@@ -109,7 +128,7 @@ export default function Header() {
                     </div>
 
                     <MenuToggle 
-                        toggle={() => setIsMobileOpen(!isMobileOpen)}
+                        toggle={() => setIsMobileOpen((prev) => !prev)}
                         isOpen={isMobileOpen}
                     />
                 </div>
@@ -117,22 +136,25 @@ export default function Header() {
                 <AnimatePresence>
                     {isMobileOpen && (
                         <motion.div
+                            ref={menuRef}
                             className="md:hidden"
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
                         >
-                            <div className="pb-4 pt-2 space-y-4">
+                            <div className="pb-4 pt-2 text-center space-y-4">
                                 {headerItems.map((item) => (
-                                    <Link
-                                        key={item.scrollId}
-                                        href={item.scrollId === "home" ? "/" : `/${item.scrollId}`}
-                                        className="block px-3 py-2 rounded-lg text-xl font-medium text-white hover:bg-neutral-700/50 transition-colors"
-                                        onClick={() => setIsMobileOpen(false)}
-                                    >
-                                        {item.label}
-                                    </Link>
+                                    <div key={item.scrollId}>
+                                        <div className="h-px w-full max-w-2xl bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50"/>
+                                        <Link
+                                            href={item.scrollId === "home" ? "/" : `/${item.scrollId}`}
+                                            className="block mt-3 px-3 py-2 rounded-lg text-xl font-medium text-white hover:bg-neutral-700/50 transition-colors"
+                                            onClick={() => setIsMobileOpen(false)}
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    </div>
                                 ))}
                             </div>
                         </motion.div>

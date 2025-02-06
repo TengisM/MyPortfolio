@@ -14,7 +14,7 @@ const DotBackground = () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        const dots = Array.from({ length: 500 }, () => ({
+        const dots = Array.from({ length: 450 }, () => ({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
             radius: Math.random() * 1.5,
