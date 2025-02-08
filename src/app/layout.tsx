@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { DotBg } from "@/components/common";
@@ -49,6 +50,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={inter.className + 'overflow-hidden flex flex-col items-center mx-auto'}>
+				<Analytics />
 				<DotBg />
 				<Header />
 				<main className="z-10">
