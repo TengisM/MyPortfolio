@@ -1,16 +1,24 @@
 "use client"
 import Image from "next/image";
 import * as React from "react";
+import axios from "axios";
 import * as motion from "motion/react-client";
 import { Smile } from "../../../public/common";
 
 export default function About() {
     const [ experience, setExperience ] = React.useState<IExperience[]>([]);
 
+    const fetchProjects = async () => {
+        try {
+            const response = await axios.get<IExperience[]>("/experience.json");
+            setExperience(response.data);
+        } catch (error) {
+            console.error("Error fetching projects:", error);
+        }
+    };
+
     React.useEffect(() => {
-        fetch("/experience.json")
-            .then(res => res.json())
-            .then(data => setExperience(data));
+        fetchProjects();
     }, []);
 
 	return (

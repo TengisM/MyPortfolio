@@ -1,14 +1,22 @@
 'use client'
 import * as React from "react";
 import * as motion from "motion/react-client";
+import axios from "axios";
 
 const Projects = () => {
     const [ projects, setProjects ] = React.useState<IProject[]>([]);
 
+    const fetchProjects = async () => {
+        try {
+            const response = await axios.get<IProject[]>("/projects.json");
+            setProjects(response.data);
+        } catch (error) {
+            console.error("Error fetching projects:", error);
+        }
+    };
+
     React.useEffect(() => {
-        fetch("/projects.json")
-            .then(res => res.json())
-            .then(data => setProjects(data));
+        fetchProjects();
     }, []);
 
     return (

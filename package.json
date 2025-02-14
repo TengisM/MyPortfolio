@@ -9,11 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tailwindcss/postcss": "^4.0.3",
-    "@vercel/analytics": "^1.4.1",
+    "@tailwindcss/postcss": "^4.0.6",
+    "@vercel/analytics": "^1.5.0",
     "axios": "^1.7.9",
-    "motion": "^12.3.0",
-    "next": "^15.1.6",
+    "motion": "^12.4.2",
+    "next": "^15.1.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sharp": "^0.33.5"
@@ -22,11 +22,11 @@
     "@types/node": "^22.13.1",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
-    "babel-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
-    "eslint": "^9.19.0",
+    "babel-plugin-react-compiler": "19.0.0-beta-e552027-20250112",
+    "eslint": "^9.20.0",
     "eslint-config-next": "15.1.6",
-    "postcss": "^8.5.1",
-    "tailwindcss": "^4.0.3",
+    "postcss": "^8.5.2",
+    "tailwindcss": "^4.0.6",
     "typescript": "^5.7.3"
   }
 }

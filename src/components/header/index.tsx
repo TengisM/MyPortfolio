@@ -98,7 +98,7 @@ export default function Header() {
 
     return (
         <header className="fixed top-0 z-50 w-full backdrop-blur-md bg-neutral-900/80 shadow-2xl border-b border-neutral-700">
-            <nav className="max-w-7xl mx-auto my-1 px-4 sm:px-6 lg:px-8">
+            <nav className="max-w-7xl mx-auto my-1 px-5">
                 <div className="flex items-center justify-between h-16">
                     <motion.div
                         whileHover={{ scale: 1.05 }}
