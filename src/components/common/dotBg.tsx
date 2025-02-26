@@ -41,6 +41,24 @@ const DotBackground = () => {
                 ctx.fill();
             });
 
+            for (let i = 0; i < dots.length; i++) {
+                for (let j = i + 1; j < dots.length; j++) {
+                    const dx = dots[i].x - dots[j].x;
+                    const dy = dots[i].y - dots[j].y;
+                    const distSq = dx * dx + dy * dy;
+                    if (distSq < 10000) {
+                        const dist = Math.sqrt(distSq);
+                        const lineAlpha = (1 - dist / 100) * 0.4;
+                        ctx.beginPath();
+                        ctx.moveTo(dots[i].x, dots[i].y);
+                        ctx.lineTo(dots[j].x, dots[j].y);
+                        ctx.strokeStyle = `rgba(156, 163, 175, ${lineAlpha})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+
             animationFrameId = requestAnimationFrame(animate);
         };
 

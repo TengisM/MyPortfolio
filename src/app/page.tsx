@@ -32,13 +32,12 @@ export default function Home() {
 						animate="visible"
 						className="flex-1 flex relative justify-end items-center lg:order-2 select-none"
 					>
-						<motion.div
-							className="relative"
-							whileHover={{ scale: 1.05 }}
-							transition={{ type: "spring", stiffness: 300, damping: 20 }}
-						>
-							<div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500" 
+						<div className="relative">
+							<motion.div
+								className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500"
 								style={{ padding: '3px', filter: 'blur(1px)' }}
+								animate={{ transform: ['rotate(0deg)', 'rotate(360deg)'] }}
+								transition={{ repeat: Infinity, repeatType: "loop", duration: 3, ease: "linear" }}
 							/>
 							<div className="relative rounded-full p-1 bg-black/50 backdrop-blur-sm">
 								<Image
@@ -47,7 +46,7 @@ export default function Home() {
 									className="w-48 lg:w-80 object-cover rounded-full"
 								/>
 							</div>
-						</motion.div>
+						</div>
 					</motion.div>
 					<motion.div 
 						initial={{ opacity: 0, x: -100 }}
