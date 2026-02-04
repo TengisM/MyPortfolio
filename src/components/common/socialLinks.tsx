@@ -1,8 +1,8 @@
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import { Fb, Github, Linkedin } from '../../../public/socialLogo';
 
 interface ISocialItem {
-	logo: StaticImageData;
+	logo: string;
     label: string;
     value: string;
 };

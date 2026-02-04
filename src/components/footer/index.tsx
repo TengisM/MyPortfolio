@@ -3,9 +3,9 @@ export default function Footer() {
         <footer className="z-10 py-8 w-full border-t border-transparent">
             <div className="container mx-auto px-4">
                 <div className="flex flex-col items-center justify-center gap-4">
-                    <div className="h-px w-full max-w-2xl bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50" />
+                    <div className="h-px w-full max-w-2xl bg-linear-to-r from-transparent via-cyan-500 to-transparent opacity-50" />
                     <p 
-                        className="font-mono text-sm bg-gradient-to-r from-cyan-400 to-purple-300 bg-clip-text text-transparent 
+                        className="font-mono text-sm bg-linear-to-r from-cyan-400 to-purple-300 bg-clip-text text-transparent 
                                 hover:animate-pulse cursor-default transition-all duration-300"
                         style={{ textShadow: '0 0 8px rgba(165, 180, 252, 0.4)' }}
                     >

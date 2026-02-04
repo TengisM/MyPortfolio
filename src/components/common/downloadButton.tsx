@@ -1,8 +1,7 @@
-'use client';
+"use client";
 import Image from 'next/image';
 import * as React from 'react';
 import * as motion from 'motion/react-client';
-import { AnimatePresence } from 'motion/react';
 import { Download } from '../../../public/common';
 
 const DownloadButton = () => {
@@ -37,8 +36,8 @@ const DownloadButton = () => {
                 <motion.button
                     className={`flex cursor-pointer items-center gap-3 py-3 px-6 rounded-full backdrop-blur-lg transition-all ${
                         isPending || state.isSuccess
-                            ? 'bg-gradient-to-br from-cyan-400/30 to-purple-500/30'
-                            : 'bg-gradient-to-br from-cyan-400/20 to-purple-500/20 hover:from-cyan-400/30 hover:to-purple-500/30'
+                            ? 'bg-linear-to-br from-cyan-400/30 to-purple-500/30'
+                            : 'bg-linear-to-br from-cyan-400/20 to-purple-500/20 hover:from-cyan-400/30 hover:to-purple-500/30'
                     }`}
                     type="submit"
                     disabled={isPending || state.isSuccess}
@@ -59,49 +58,46 @@ const DownloadButton = () => {
 
 const DownloadIcon = ({ state, isPending }: { state: State; isPending: boolean }) => (
     <div className="relative w-6 h-6 flex items-center justify-center">
-        <AnimatePresence mode="wait">
-            {isPending ? (
-                <motion.svg
-                    key="loading"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    initial={{ rotate: 0 }}
-                    animate={{ rotate: 360 }}
-                    transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: 'linear'
-                    }}
-                >
-                    <path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.0784 19.0784L16.25 16.25M19.0784 4.99994L16.25 7.82837M4.92157 19.0784L7.75 16.25M4.92157 4.99994L7.75 7.82837" />
-                </motion.svg>
-            ) : state.isSuccess ? (
-                <motion.svg
-                    key="success"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                >
-                    <motion.path
-                        d="M20 6L9 17L4 12"
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 1 }}
-                        transition={{ duration: 0.5 }}
-                    />
-                </motion.svg>
-            ) : (
-                <motion.div key="download" initial={{ opacity: 1 }}>
-                    <Image src={Download} alt="download_icon" className="w-6 h-6" />
-                </motion.div>
-            )}
-        </AnimatePresence>
+        {isPending ? (
+            <motion.svg
+                key="loading"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                initial={{ rotate: 0 }}
+                animate={{ rotate: 360 }}
+                transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                }}
+            >
+                <path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.0784 19.0784L16.25 16.25M19.0784 4.99994L16.25 7.82837M4.92157 19.0784L7.75 16.25M4.92157 4.99994L7.75 7.82837" />
+            </motion.svg>
+        ) : state.isSuccess ? (
+            <motion.svg
+                key="success"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+            >
+                <motion.path
+                    d="M20 6L9 17L4 12"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.5 }}
+                />
+            </motion.svg>
+        ) : (
+            <motion.div key="download" initial={{ opacity: 1 }}>
+                <Image src={Download} alt="download_icon" className="w-6 h-6" />
+            </motion.div>
+        )}
     </div>
 );
 
@@ -118,7 +114,7 @@ const GlowingEffect = () => (
         />
         <div className="absolute inset-0 overflow-hidden rounded-full">
             <motion.div
-                className="absolute top-0 w-1/3 h-full bg-gradient-to-r from-transparent via-cyan-200/20 to-transparent"
+                className="absolute top-0 w-1/3 h-full bg-linear-to-r from-transparent via-cyan-200/20 to-transparent"
                 initial={{ left: '-50%' }}
                 animate={{ left: '150%' }}
                 transition={{
