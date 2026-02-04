@@ -3,30 +3,36 @@
         "title": "Tetgeleg",
         "logo": "/projects/tetgeleg.png",
         "url": "https://tetgeleg.mn/",
-        "text": "Helps students and organizations connect with each other. Gives everyone equal chance for better education and especially those who are in rural area. My part was in the back-office and also the web app, where students can read articles with tips for getting into their dream schools. We even set up events for students to meet up and build a community."
+        "text": "Scholarship and education support platform used by 500K+ students and organizations. I led the development of the back-office system and contributed to the public web app, building tools for managing applications, content, and events so students can discover opportunities and resources for their dream schools."
     },
     {
         "title": "Lann",
         "logo": "/projects/lann.png",
         "url": "https://lann.market/",
-        "text": "Buy, sell, and trade skins easier and faster. All deals are secured with the highest level protection methods. Our main goal is to make sure all trades are safe and scam-free. We act as a third-party to oversee the trades, ensuring everything is fair and secure."
+        "text": "Gaming item and skin marketplace where users can buy, sell, and trade securely. I worked on the frontend trading flows and back-office management tools, focusing on clear UX around balances, offers, and trade status to keep transactions safe and transparent."
     },
     {
         "title": "Ubcab",
         "logo": "/projects/ubcab.png",
         "url": "https://ubcab.mn/",
-        "text": "A company plans to provide services in the public transport sector, expand its services to enterprises, and launch an IPO. The platform will cater to all types of transportation needs throughout Mongolia 24/7. Additional services, such as hand-to-hand delivery, car rental, and designated drivers, are also available."
+        "text": "Ride-hailing platform with 1M+ users and 45K+ drivers across Mongolia. I contributed to internal tools and admin dashboards that support daily operations, promotions, and driver/user management, helping the product scale while keeping the experience reliable."
     },
     {
         "title": "Ubeats",
         "logo": "/projects/ubeats.png",
         "url": "https://ubeats.mn/",
-        "text": "I worked on an office food delivery service, designed to make life easier for busy office workers. Plus, we've got a DarkStore and Darkkitchen, all unnecessary expenses are reduced, and quality food at competitive, affordable prices can be provided and be promptly delivered to your location. It's all about bringing tasty, convenient lunches right to your desk! The cool part is, it's integrated with our cab system, so delivery is super smooth and reliable."
+        "text": "Office food delivery service integrated with UbCab's logistics network. I helped build the ordering and management interfaces that connect DarkStore/DarkKitchen operations with end users, focusing on reliable delivery flows and a clean, easy-to-use UI for busy office workers."
     },
     {
         "title": "Bidend",
         "logo": "/projects/bidend.png",
         "url": "https://bidend.mn/",
-        "text": "Intermediary and unnecessary costs will be reduced by offering an open auction platform for trade and asset management, and it will bring increased capital flows and accelerated economic circulation."
+        "text": "Real-time auction platform for trade and asset management. I worked on the frontend experience for browsing, bidding, and managing auctions, collaborating with backend engineers to handle high-traffic bidding periods and keep the interface responsive and trustworthy."
+    },
+    {
+        "title": "Forse.io",
+        "logo": "/projects/insights.svg",
+        "url": "https://insights.forse.io/",
+        "text": "DAO analytics web app using Next.js, Express.js, tRPC, Prisma, and PostgreSQL. I implemented dashboards with Headless UI, TailwindCSS, and ECharts, and integrated Web3 features (wallet connect and on-chain DAO metrics) via Thirdweb, including migrating from wagmi to simplify and stabilize wallet flows."
     }
 ]

@@ -1,19 +1,31 @@
 [
-	{
+    {
         "duration": "2017-2021",
         "title": "Mongolian University of Science and Technology",
         "position": "Bachelor Degree of Software Engineering"
     },
     {
-        "duration": "2020-2021",
+        "duration": "Jun 2020 - Aug 2021",
         "title": "Starsoft LLC",
-        "position": "Jr. Front-end Engineer",
-        "description": "I worked on an EduTech platform, building interactive features like presentation creation and conversion, as well as live classes, using Vue.js and Node.js. I also developed a back-office system for managing classes, students, and teacher accounts, ensuring smooth administration and user experience."
+        "position": "Junior Software Engineer",
+        "description": "Worked on an EduTech platform with interactive presentations (create and convert slides) and live classes, using Vue.js on the frontend and integrating with a Node.js backend. Helped build back-office tools for managing classes, students, and teachers, ensuring a smooth experience for both admins and learners."
     },
     {
-        "duration": "2021-2024",
+        "duration": "Sep 2021 - May 2024",
         "title": "Mezorn Technology LLC",
-        "position": "Front-end Engineer",
-        "description": "I developed and maintained four scalable back-office systems serving over 2 million users, using React.js, Next.js, and TypeScript. I built reusable components that improved development efficiency, integrated Jest and React Testing Library for testing, and optimized UI performance and SEO. Working in an agile (Scrum) environment, I collaborated closely with backend engineers to implement seamless API integrations and transformed Figma designs into responsive, production-ready solutions."
+        "position": "Frontend Engineer",
+        "description": "Built and maintained several back-office systems with React and Next.js serving over 2M active users across products. Led development of Tetgeleg (scholarship platform back office) for 500K+ users, and contributed to UbEats, UbCab, an auction platform, and a gaming marketplace. Improved delivery speed with reusable UI components and helped introduce automated testing with Jest and React Testing Library."
+    },
+    {
+        "duration": "Jan 2025 - Apr 2025",
+        "title": "Freelance / Fullstack Engineer",
+        "position": "Fullstack Engineer",
+        "description": "Developed a B2B restaurant–supplier logistics platform for a German client using Next.js, TypeScript, Elixir, Phoenix/Ecto, and PostgreSQL. Built a back-office app with role-based access control and order/inventory flows, collaborating directly with the client on specifications and UX."
+    },
+    {
+        "duration": "May 2025 - Oct 2025",
+        "title": "StableLab",
+        "position": "Fullstack Engineer",
+        "description": "Contributed to insights.forse.io, a DAO analytics web app, using Next.js, Express.js, tRPC, Prisma, and PostgreSQL. Implemented dashboards with Headless UI, TailwindCSS, and ECharts, and integrated Web3 features (wallet connect and on-chain DAO metrics) via Thirdweb, including migrating from wagmi to simplify and stabilize wallet flows."
     }
 ]

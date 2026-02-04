@@ -49,7 +49,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={inter.className + 'overflow-hidden flex flex-col items-center mx-auto'}>
+			<body className={inter.className + ' overflow-x-hidden flex flex-col items-center mx-auto'}>
 				<Analytics />
 				<DotBg />
 				<Header />

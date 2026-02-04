@@ -2,7 +2,6 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { WhiteLogo } from "../../../public/headerLogo";
 
@@ -72,12 +71,59 @@ const MenuToggle = ({ toggle, isOpen }: { toggle: () => void; isOpen: boolean })
     </motion.button>
 );
 
+const scrollToSection = (scrollId: string) => {
+    if (typeof document === "undefined" || typeof window === "undefined") return;
+    const element = document.getElementById(scrollId);
+    if (!element) return;
+
+    const headerOffset = 60;
+    const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
+    const offsetPosition = elementTop - headerOffset;
+
+    window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+    });
+};
+
 export default function Header() {
-    const pathname = usePathname();
     const menuRef = React.useRef<HTMLDivElement>(null);
     const [ isMobileOpen, setIsMobileOpen ] = React.useState<boolean>(false);
+    const [ activeId, setActiveId ] = React.useState<string>("home");
 
-    const isActive = (scrollId: string) => (scrollId === "home" && pathname === "/") || pathname === `/${scrollId}`;
+    React.useEffect(() => {
+        if (typeof window === "undefined" || typeof document === "undefined") return;
+
+        const sectionElements = headerItems
+            .map((item) => document.getElementById(item.scrollId))
+            .filter((el): el is HTMLElement => el !== null);
+
+        if (!sectionElements.length) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        if (headerItems.some((item) => item.scrollId === id)) {
+                            setActiveId(id);
+                        }
+                    }
+                });
+            },
+            {
+                root: null,
+                threshold: 0.5,
+            }
+        );
+
+        sectionElements.forEach((section) => observer.observe(section));
+
+        return () => {
+            sectionElements.forEach((section) => observer.unobserve(section));
+            observer.disconnect();
+        };
+    }, []);
 
     React.useEffect(() => {
         if (!isMobileOpen) return;
@@ -96,6 +142,11 @@ export default function Header() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isMobileOpen]);
 
+    const handleNavClick = (scrollId: string) => {
+        setActiveId(scrollId);
+        scrollToSection(scrollId);
+    };
+
     return (
         <header className="fixed top-0 z-50 w-full backdrop-blur-md bg-neutral-900/80 shadow-2xl border-b border-neutral-700">
             <nav className="max-w-7xl mx-auto my-1 px-5">
@@ -105,7 +156,7 @@ export default function Header() {
                         whileTap={{ scale: 0.95 }}
                         transition={{ type: "spring", stiffness: 400, damping: 10 }}
                     >
-                        <Link href="/" className="flex items-center">
+                        <Link href="/" className="flex items-center" onClick={() => handleNavClick("home")}>
                             <Image
                                 className="rounded-lg bg-white p-1"
                                 src={WhiteLogo}
@@ -122,7 +173,8 @@ export default function Header() {
                                 key={item.scrollId}
                                 item={item}
                                 index={index}
-                                isActive={isActive(item.scrollId)}
+                                isActive={activeId === item.scrollId}
+                                onClick={handleNavClick}
                             />
                         ))}
                     </div>
@@ -147,13 +199,16 @@ export default function Header() {
                                 {headerItems.map((item) => (
                                     <div key={item.scrollId}>
                                         <div className="h-px w-full max-w-2xl bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50"/>
-                                        <Link
-                                            href={item.scrollId === "home" ? "/" : `/${item.scrollId}`}
-                                            className="block mt-3 px-3 py-2 rounded-lg text-xl font-medium text-white hover:bg-neutral-700/50 transition-colors"
-                                            onClick={() => setIsMobileOpen(false)}
+                                        <button
+                                            type="button"
+                                            className="block w-full mt-3 px-3 py-2 rounded-lg text-xl font-medium text-white hover:bg-neutral-700/50 transition-colors"
+                                            onClick={() => {
+                                                handleNavClick(item.scrollId);
+                                                setIsMobileOpen(false);
+                                            }}
                                         >
                                             {item.label}
-                                        </Link>
+                                        </button>
                                     </div>
                                 ))}
                             </div>
@@ -165,10 +220,11 @@ export default function Header() {
     );
 };
 
-const NavItem = ({ item, index, isActive }: NavItemProps) => (
-    <Link
-        href={item.scrollId === "home" ? "/" : `/${item.scrollId}`}
+const NavItem = ({ item, index, isActive, onClick }: NavItemProps & { onClick: (id: string) => void }) => (
+    <button
+        type="button"
         className="relative group px-3 py-2"
+        onClick={() => onClick(item.scrollId)}
     >
         <motion.span
             className={`text-lg font-medium transition-colors duration-300 ${
@@ -188,5 +244,5 @@ const NavItem = ({ item, index, isActive }: NavItemProps) => (
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
             />
         )}
-    </Link>
+    </button>
 );

@@ -3,7 +3,7 @@ import * as React from "react";
 import * as motion from "motion/react-client";
 import axios from "axios";
 
-const Projects = () => {
+const ProjectsSection = () => {
     const [ projects, setProjects ] = React.useState<IProject[]>([]);
 
     const fetchProjects = async () => {
@@ -22,7 +22,7 @@ const Projects = () => {
     return (
         <div className="py-12 px-4 lg:px-8">
             <h2 className="text-3xl lg:text-5xl font-semibold text-center lg:text-start text-cyan-400 mb-12">
-                Previous Projects
+                My Projects
             </h2>
     
             <div className="space-y-6 lg:space-y-10">
@@ -54,4 +54,4 @@ const Projects = () => {
     );
 };
 
-export default Projects;
+export default ProjectsSection;
