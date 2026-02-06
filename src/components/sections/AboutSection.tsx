@@ -25,11 +25,16 @@ const AboutSection = () => {
         <>
             <div className='flex flex-col lg:flex-row py-12 gap-5 justify-center items-center'>
                 <div className="flex-1 flex relative justify-end items-center lg:order-2 select-none">
-                    <Image
-                        src={Smile}
-                        alt='fun-image_02'
-                        className="w-48 lg:w-80 object-cover rounded-3xl shadow-2xl shadow-pink-900"
-                    />
+                    <motion.div
+                        whileHover={{ scale: 1.05, rotate: 1 }}
+                        transition={{ type: "spring", stiffness: 200 }}
+                    >
+                        <Image
+                            src={Smile}
+                            alt='fun-image_02'
+                            className="w-48 lg:w-80 object-cover rounded-3xl shadow-2xl shadow-pink-900/60"
+                        />
+                    </motion.div>
                 </div>
                 <div className="flex-1 flex flex-col gap-4 lg:justify-center items-center lg:items-start text-center lg:text-left lg:order-1">
                     <h2 className="text-2xl lg:text-4xl font-semibold select-none underline text-cyan-400">
@@ -48,17 +53,26 @@ const AboutSection = () => {
             </div>
             <div className="w-full my-12 text-center">
                 <h2 className="text-2xl lg:text-4xl font-semibold select-none underline text-cyan-400 mb-12">Experience &amp; Education</h2>
-                <div className="relative border-l border-gray-700 pl-4 sm:pl-6 space-y-10">
+                <div className="relative pl-6 space-y-12">
+                    <div className="absolute left-3 top-0 h-full w-px bg-linear-to-b from-cyan-400/40 via-purple-400/60 to-transparent" />
                     {experience.map((exp, index) => (
                         <motion.div
                             key={index}
-                            initial={{ opacity: 0, y: 50 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: index * 0.2 }}
-                            className="bg-[#222227] hover:bg-[#2c2c31] p-4 sm:p-6 rounded-xl shadow shadow-pink-400 relative transition-all duration-300 select-none"
+                            initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true, margin: "-80px" }}
+                            transition={{
+                                type: "spring",
+                                stiffness: 260,
+                                damping: 22,
+                                delay: index * 0.06,
+                            }}
+                            className="
+                                relative ml-6 p-5 sm:p-6 rounded-2xl cursor-default bg-neutral-900/50 backdrop-blur-md border border-cyan-400/20
+                                hover:border-cyan-400/50 hover:shadow-[0_0_40px_rgba(211,34,238,0.3)] transition-all duration-300
+                            "
                         >
-                            <span className="absolute -left-2 sm:-left-3 w-4 sm:w-6 h-4 sm:h-6 bg-cyan-400 rounded-full"></span>
+                            <span className="absolute -left-2 top-3 w-4 h-4 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.8)]"></span>
                             <h3 className="text-lg sm:text-xl font-semibold">{exp.position}</h3>
                             <p className="text-xs sm:text-sm text-gray-400">{exp.title} • {exp.duration}</p>
                             <p className="mt-2 text-gray-300 text-sm sm:text-base">{exp.description}</p>
