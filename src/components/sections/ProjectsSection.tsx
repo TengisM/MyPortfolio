@@ -20,8 +20,8 @@ const ProjectsSection = () => {
     }, []);
 
     return (
-        <div className="py-12 px-4 lg:px-8">
-            <h2 className="text-3xl lg:text-5xl font-semibold text-center lg:text-start text-cyan-400 mb-12">
+        <div className="py-12">
+            <h2 className="text-2xl lg:text-4xl font-semibold text-center lg:text-start text-cyan-400 underline mb-12">
                 My Projects
             </h2>
     

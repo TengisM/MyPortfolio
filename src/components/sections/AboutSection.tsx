@@ -23,7 +23,7 @@ const AboutSection = () => {
 
     return (
         <>
-            <div className='flex flex-col lg:flex-row py-12 gap-4 justify-center items-center'>
+            <div className='flex flex-col lg:flex-row py-12 gap-5 justify-center items-center'>
                 <div className="flex-1 flex relative justify-end items-center lg:order-2 select-none">
                     <Image
                         src={Smile}
@@ -32,7 +32,7 @@ const AboutSection = () => {
                     />
                 </div>
                 <div className="flex-1 flex flex-col gap-4 lg:justify-center items-center lg:items-start text-center lg:text-left lg:order-1">
-                    <h2 className="text-2xl lg:text-5xl font-semibold select-none text-cyan-400">
+                    <h2 className="text-2xl lg:text-4xl font-semibold select-none underline text-cyan-400">
                         About me
                     </h2>
                     <p className='text-lg lg:text-2xl font-light select-none'>
@@ -47,7 +47,7 @@ const AboutSection = () => {
                 </div>
             </div>
             <div className="w-full my-12 text-center">
-                <h2 className="text-2xl lg:text-4xl font-semibold select-none text-cyan-400 mb-12">Experience &amp; Education</h2>
+                <h2 className="text-2xl lg:text-4xl font-semibold select-none underline text-cyan-400 mb-12">Experience &amp; Education</h2>
                 <div className="relative border-l border-gray-700 pl-4 sm:pl-6 space-y-10">
                     {experience.map((exp, index) => (
                         <motion.div
@@ -58,7 +58,7 @@ const AboutSection = () => {
                             transition={{ duration: 0.5, delay: index * 0.2 }}
                             className="bg-[#222227] hover:bg-[#2c2c31] p-4 sm:p-6 rounded-xl shadow shadow-pink-400 relative transition-all duration-300 select-none"
                         >
-                            <span className="absolute -left-2 sm:-left-3 w-4 sm:w-6 h-4 sm:h-6 bg-cyan-400 rounded-full border border-gray-900"></span>
+                            <span className="absolute -left-2 sm:-left-3 w-4 sm:w-6 h-4 sm:h-6 bg-cyan-400 rounded-full"></span>
                             <h3 className="text-lg sm:text-xl font-semibold">{exp.position}</h3>
                             <p className="text-xs sm:text-sm text-gray-400">{exp.title} • {exp.duration}</p>
                             <p className="mt-2 text-gray-300 text-sm sm:text-base">{exp.description}</p>

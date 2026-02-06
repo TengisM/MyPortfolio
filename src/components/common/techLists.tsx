@@ -16,7 +16,9 @@ const techItems: ISocialItem[] = [
 ].map(label => ({ label }));
 
 const TechItem = ({ label }: ISocialItem) => (
-	<span className="bg-cyan-400 shadow-lg shadow-purple-600/60 text-black px-3 py-1 rounded-full text-xs lg:text-sm font-semibold cursor-default">
+	<span className="relative px-3 py-1 rounded-full text-xs lg:text-sm font-semibold cursor-default bg-neutral-900/40
+			backdrop-blur-md border border-cyan-400/40 text-cyan-300 transition-all duration-300 ease-out
+			hover:-translate-y-1 hover:scale-105 hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(211,34,238,0.35)]">
 	  	{label}
 	</span>
 );

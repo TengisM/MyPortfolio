@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import * as motion from "motion/react-client";
 import { SocialLinks, TechLists, DownloadButton } from "@/components/common";
-import Tenggis from '../../public/Tenggis.png';
 import AboutSection from "@/components/sections/AboutSection";
 import ProjectsSection from "@/components/sections/ProjectsSection";
+import Tenggis from '../../public/Tenggis.png';
 
 const fadeInUpVariant = {
 	hidden: { opacity: 0, y: 20 },
@@ -24,7 +24,7 @@ const imageContainerVariants = {
 export default function Home() {
 	return (
 		<main className="flex flex-col items-center">
-			<section id='home' className="w-full max-w-7xl p-5 h-screen">
+			<section id='home' className="w-full max-w-7xl p-5 pt-24 min-h-screen lg:h-screen">
 				<div className='flex flex-col lg:flex-row gap-4 justify-center items-center h-full'>
 					<motion.div 
 						variants={imageContainerVariants}
@@ -68,7 +68,7 @@ export default function Home() {
 							transition={{ delay: 1, duration: 0.8 }}
 							className='text-xl lg:text-3xl font-light select-none'
 						>
-							{"Front-end developer who's all about making user experiences awesome. I love creating websites that feel just right!"}
+							{"Front-end/Full-stack developer who's all about making user experiences awesome. I love creating websites that feel just right!"}
 						</motion.p>
 						<motion.div
 							variants={fadeInUpVariant}

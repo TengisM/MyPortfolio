@@ -2,7 +2,8 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
+import { scrollToSection } from "@/components/common/scrollToSection";
 import { WhiteLogo } from "../../../public/headerLogo";
 
 const headerItems = [
@@ -70,21 +71,6 @@ const MenuToggle = ({ toggle, isOpen }: { toggle: () => void; isOpen: boolean })
         </svg>
     </motion.button>
 );
-
-const scrollToSection = (scrollId: string) => {
-    if (typeof document === "undefined" || typeof window === "undefined") return;
-    const element = document.getElementById(scrollId);
-    if (!element) return;
-
-    const headerOffset = 60;
-    const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
-    const offsetPosition = elementTop - headerOffset;
-
-    window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-    });
-};
 
 export default function Header() {
     const menuRef = React.useRef<HTMLDivElement>(null);
@@ -185,33 +171,36 @@ export default function Header() {
                     />
                 </div>
 
-                {isMobileOpen && (
-                    <motion.div
-                        ref={menuRef}
-                        className="md:hidden"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <div className="pb-4 pt-2 text-center space-y-4">
-                            {headerItems.map((item) => (
-                                <div key={item.scrollId}>
-                                    <div className="h-px w-full max-w-2xl bg-linear-to-r from-transparent via-cyan-500 to-transparent opacity-50"/>
-                                    <button
-                                        type="button"
-                                        className="block w-full mt-3 px-3 py-2 rounded-lg text-xl font-medium text-white hover:bg-neutral-700/50 transition-colors"
-                                        onClick={() => {
-                                            handleNavClick(item.scrollId);
-                                            setIsMobileOpen(false);
-                                        }}
-                                    >
-                                        {item.label}
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
+                <AnimatePresence>
+                    {isMobileOpen && (
+                        <motion.div
+                            ref={menuRef}
+                            className="md:hidden overflow-hidden"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                        >
+                            <div className="pb-4 pt-2 text-center space-y-4">
+                                {headerItems.map((item) => (
+                                    <div key={item.scrollId}>
+                                        <div className="h-px w-full max-w-2xl bg-linear-to-r from-transparent via-cyan-500 to-transparent opacity-50"/>
+                                        <button
+                                            type="button"
+                                            className="block w-full mt-3 px-3 py-2 rounded-lg text-xl font-medium text-white hover:bg-neutral-700/50 transition-colors"
+                                            onClick={() => {
+                                                handleNavClick(item.scrollId);
+                                                setIsMobileOpen(false);
+                                            }}
+                                        >
+                                            {item.label}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </nav>
         </header>
     );

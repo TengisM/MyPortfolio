@@ -10,7 +10,7 @@ interface ISocialItem {
 const socialItems: ISocialItem[] = [
 	{ logo: Github, value: 'https://github.com/TengisM', label: 'github' },
     { logo: Linkedin, value: 'https://www.linkedin.com/in/tenggis-munkhbaatar-2a32b025a/', label: 'linkedIn' },
-	{ logo: Fb, value: 'https://www.facebook.com/didi.focus/', label: 'fb' }
+	// { logo: Fb, value: 'https://www.facebook.com/didi.focus/', label: 'fb' }
 ];
 
 const SocialItem = ({

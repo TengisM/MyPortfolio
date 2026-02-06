@@ -24,12 +24,6 @@ export default function Footer() {
                                 <path d="M19 0H5a5 5 0 00-5 5v14a5 5 0 005 5h14a5 5 0 005-5V5a5 5 0 00-5-5zM8 19H5V8h3v11zM6.5 6.732c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zM20 19h-3v-5.604c0-3.368-4-3.113-4 0V19h-3V8h3v1.765c1.396-2.586 7-2.777 7 2.476V19z"/>
                             </svg>
                         </a>
-                        <a href="" target="_blank" rel="noopener noreferrer" 
-                           className="text-indigo-300 duration-300 transform hover:scale-110 -mt-0.5">
-                            <svg className="w-7 h-7 fill-current" viewBox="0 0 50 50">
-                                <path d="M25,2C12.318,2,2,12.317,2,25s10.318,23,23,23c12.683,0,23-10.317,23-23S37.683,2,25,2z M32,16h-3.29 C26.772,16,26,16.455,26,17.806V21h6l-1,5h-5v13h-6V26h-3v-5h3v-2.774C20,14.001,21.686,11,26.581,11C29.203,11,32,12,32,12V16z"/>
-                            </svg>
-                        </a>
                     </div>
                 </div>
             </div>
