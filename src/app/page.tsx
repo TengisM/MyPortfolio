@@ -24,7 +24,7 @@ const imageContainerVariants = {
 export default function Home() {
 	return (
 		<main className="flex flex-col items-center">
-			<section id='home' className="w-full max-w-7xl p-5 pt-24 min-h-screen lg:h-screen">
+			<section id='home' className="w-full max-w-7xl p-5 pt-24 min-h-screen md:h-screen">
 				<div className='flex flex-col lg:flex-row gap-4 justify-center items-center h-full'>
 					<motion.div 
 						variants={imageContainerVariants}

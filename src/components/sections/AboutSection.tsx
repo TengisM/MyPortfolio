@@ -53,26 +53,21 @@ const AboutSection = () => {
             </div>
             <div className="w-full my-12 text-center">
                 <h2 className="text-2xl lg:text-4xl font-semibold select-none underline text-cyan-400 mb-12">Experience &amp; Education</h2>
-                <div className="relative pl-6 space-y-12">
-                    <div className="absolute left-3 top-0 h-full w-px bg-linear-to-b from-cyan-400/40 via-purple-400/60 to-transparent" />
+                <div className="relative pl-4 md:pl-6 space-y-12">
+                    <div className="absolute left-1 md:left-3 top-0 h-full w-px bg-linear-to-b from-cyan-400/40 via-purple-400/60 to-transparent" />
                     {experience.map((exp, index) => (
                         <motion.div
                             key={index}
-                            initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+                            initial={{ opacity: 0, x: -20 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true, margin: "-80px" }}
-                            transition={{
-                                type: "spring",
-                                stiffness: 260,
-                                damping: 22,
-                                delay: index * 0.06,
-                            }}
+                            transition={{ duration: 0.45, delay: index * 0.06 }}
                             className="
-                                relative ml-6 p-5 sm:p-6 rounded-2xl cursor-default bg-neutral-900/50 backdrop-blur-md border border-cyan-400/20
+                                relative ml-3 md:ml-6 p-5 sm:p-6 rounded-2xl cursor-default bg-neutral-900/50 backdrop-blur-md border border-cyan-400/20
                                 hover:border-cyan-400/50 hover:shadow-[0_0_40px_rgba(211,34,238,0.3)] transition-all duration-300
                             "
                         >
-                            <span className="absolute -left-2 top-3 w-4 h-4 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.8)]"></span>
+                            <span className="absolute -left-8 md:-left-11 top-[45%] w-4 h-4 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.8)]"></span>
                             <h3 className="text-lg sm:text-xl font-semibold">{exp.position}</h3>
                             <p className="text-xs sm:text-sm text-gray-400">{exp.title} • {exp.duration}</p>
                             <p className="mt-2 text-gray-300 text-sm sm:text-base">{exp.description}</p>
