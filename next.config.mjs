@@ -1,12 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    experimental: {
-        reactCompiler: true,
-    },
-
-    eslint: {
-        ignoreDuringBuilds: true,
-    }
+  experimental: {},
 };
 
 export default nextConfig;
