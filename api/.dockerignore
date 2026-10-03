@@ -1,0 +1,9 @@
+# Secrets and local output never go into the image.
+.env
+bin/
+tmp/
+*.log
+
+# Keep only the placeholder, so a local `make build` cannot embed a site into the API image.
+internal/static/dist/*
+!internal/static/dist/.placeholder

@@ -1,4 +1,4 @@
-// Package notify delivers one notification per lead, through SES or a logger.
+// Package notify delivers one notification per lead, through SES, Resend or a logger.
 package notify
 
 import "context"

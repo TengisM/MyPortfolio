@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -18,6 +19,7 @@ type Config struct {
 	Database DatabaseConfig
 	Notify   NotifyConfig
 	JWT      JWTConfig
+	Publish  PublishConfig
 }
 
 type ServerConfig struct {
@@ -61,15 +63,19 @@ type DatabaseConfig struct {
 	SSLMode  string
 }
 
-// NotifyConfig drives the lead notifier. Driver is "ses" or "log". Load refuses "log" in
+// NotifyConfig drives the lead notifier. Driver is "ses", "resend" or "log". Load refuses "log" in
 // production, where leads would be stored and nobody told.
 type NotifyConfig struct {
-	Driver    string
-	To        string
+	Driver string
+	To     string
+	// From is SES_FROM, used by the ses driver only.
 	From      string
 	AWSRegion string
 	AWSKeyID  string
 	AWSSecret string
+	// ResendAPIKey and ResendFrom are used by the resend driver only.
+	ResendAPIKey string
+	ResendFrom   string
 	// SiteName prefixes the subject line so one inbox can tell several sites apart. Optional.
 	// It copies site.config.ts's name, because the API cannot read a TypeScript file.
 	SiteName string
@@ -83,6 +89,14 @@ type JWTConfig struct {
 	// SessionMaxDays is the absolute lifetime of one login's token family. RefreshExpireDays alone
 	// is an idle timeout, so a stolen token that keeps rotating would never expire without this.
 	SessionMaxDays int
+}
+
+// PublishConfig drives the deploy hook. An empty DeployHookURL turns publishing off: content
+// changes are logged and the site is not rebuilt.
+type PublishConfig struct {
+	DeployHookURL string
+	// Debounce is how long the publisher waits after the last content change before calling the hook.
+	Debounce time.Duration
 }
 
 // DSN builds one connection URL for both golang-migrate and pgxpool. net/url escapes every part,
@@ -117,6 +131,11 @@ func Load() (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid JWT_SESSION_MAX_DAYS: %w", err)
 	}
+	debounceSeconds, err := strconv.Atoi(getEnv("PUBLISH_DEBOUNCE_SECONDS", "30"))
+	if err != nil || debounceSeconds < 0 {
+		return nil, fmt.Errorf("invalid PUBLISH_DEBOUNCE_SECONDS %q: want a whole number of seconds, 0 or more",
+			os.Getenv("PUBLISH_DEBOUNCE_SECONDS"))
+	}
 
 	cfg := &Config{
 		Server: ServerConfig{
@@ -142,6 +161,10 @@ func Load() (*Config, error) {
 			AWSKeyID:  getEnv("AWS_ACCESS_KEY_ID", ""),
 			AWSSecret: getEnv("AWS_SECRET_ACCESS_KEY", ""),
 			SiteName:  getEnv("NOTIFY_SITE_NAME", ""),
+
+			ResendAPIKey: getEnv("RESEND_API_KEY", ""),
+			// Resend's shared test sender. It only delivers to the Resend account's own address.
+			ResendFrom: getEnv("RESEND_FROM", "onboarding@resend.dev"),
 		},
 		JWT: JWTConfig{
 			// No default here: a public default secret would make every deploy's tokens forgeable.
@@ -150,6 +173,10 @@ func Load() (*Config, error) {
 			AccessExpireMinutes: accessExpireMinutes,
 			RefreshExpireDays:   refreshExpireDays,
 			SessionMaxDays:      sessionMaxDays,
+		},
+		Publish: PublishConfig{
+			DeployHookURL: getEnv("VERCEL_DEPLOY_HOOK_URL", ""),
+			Debounce:      time.Duration(debounceSeconds) * time.Second,
 		},
 	}
 
@@ -199,22 +226,11 @@ func Load() (*Config, error) {
 		}
 	}
 
-	if cfg.Notify.Driver != notifyDriverLog && cfg.Notify.Driver != notifyDriverSES {
-		return nil, fmt.Errorf("invalid NOTIFY_DRIVER %q: want \"ses\" or \"log\"", cfg.Notify.Driver)
+	if err := validateNotify(cfg.Notify, cfg.Server.AppEnv); err != nil {
+		return nil, err
 	}
-	// Only "production", on purpose: staging should keep the log driver so it never emails a real client.
-	if cfg.Server.AppEnv == "production" && cfg.Notify.Driver == notifyDriverLog {
-		return nil, errors.New("NOTIFY_DRIVER=log in production: leads would be stored and never delivered")
-	}
-	// A notify failure never fails the request, so a missing value here would mean silent loss.
-	// AWS_REGION is not required: an EC2 or EKS role can supply it. notify.NewSES checks it.
-	if cfg.Notify.Driver == notifyDriverSES {
-		if cfg.Notify.To == "" {
-			return nil, errors.New("NOTIFY_DRIVER=ses requires NOTIFY_TO")
-		}
-		if cfg.Notify.From == "" {
-			return nil, errors.New("NOTIFY_DRIVER=ses requires SES_FROM")
-		}
+	if err := validatePublish(cfg.Publish); err != nil {
+		return nil, err
 	}
 
 	if cfg.Server.AppEnv != defaultAppEnv {
@@ -233,6 +249,51 @@ func Load() (*Config, error) {
 	return cfg, nil
 }
 
+func validateNotify(n NotifyConfig, appEnv string) error {
+	switch n.Driver {
+	case notifyDriverLog, notifyDriverSES, notifyDriverResend:
+	default:
+		return fmt.Errorf("invalid NOTIFY_DRIVER %q: want \"ses\", \"resend\" or \"log\"", n.Driver)
+	}
+	// Only "production", on purpose: staging should keep the log driver so it never emails a real client.
+	if appEnv == "production" && n.Driver == notifyDriverLog {
+		return errors.New("NOTIFY_DRIVER=log in production: leads would be stored and never delivered")
+	}
+	// A notify failure never fails the request, so a missing value here would mean silent loss.
+	// AWS_REGION is not required: an EC2 or EKS role can supply it. notify.NewSES checks it.
+	if n.Driver == notifyDriverSES {
+		if n.To == "" {
+			return errors.New("NOTIFY_DRIVER=ses requires NOTIFY_TO")
+		}
+		if n.From == "" {
+			return errors.New("NOTIFY_DRIVER=ses requires SES_FROM")
+		}
+	}
+	if n.Driver == notifyDriverResend {
+		if n.ResendAPIKey == "" {
+			return errors.New("NOTIFY_DRIVER=resend requires RESEND_API_KEY")
+		}
+		if n.To == "" {
+			return errors.New("NOTIFY_DRIVER=resend requires NOTIFY_TO")
+		}
+	}
+	return nil
+}
+
+// validatePublish catches a mistyped hook at startup. Otherwise it would only show up as a failed
+// publish after the first edit.
+func validatePublish(p PublishConfig) error {
+	if p.DeployHookURL == "" {
+		return nil
+	}
+	u, err := url.Parse(p.DeployHookURL)
+	if err != nil || (u.Scheme != "https" && u.Scheme != "http") || u.Host == "" {
+		// The value is a secret, so the error does not repeat it.
+		return errors.New("VERCEL_DEPLOY_HOOK_URL is not an http(s) URL")
+	}
+	return nil
+}
+
 const devCORSOrigins = "http://localhost:5173"
 
 const defaultAppEnv = "development"
@@ -243,13 +304,14 @@ func (c *Config) IsDevelopment() bool {
 }
 
 const (
-	notifyDriverLog = "log"
-	notifyDriverSES = "ses"
+	notifyDriverLog    = "log"
+	notifyDriverSES    = "ses"
+	notifyDriverResend = "resend"
 )
 
 // defaultDBPort matches the host port in docker-compose.yml, not 5432. A 5432 default would
 // quietly connect a fresh clone to whatever Postgres the developer already runs.
-const defaultDBPort = "5433"
+const defaultDBPort = "5436"
 
 // devJWTSecret is used only in development when JWT_SECRET is unset, so `pnpm dev` needs no .env.
 const devJWTSecret = "development-only-secret-do-not-use-in-prod"

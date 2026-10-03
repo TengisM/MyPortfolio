@@ -27,6 +27,22 @@ type AdminUser struct {
 	CreatedAt    time.Time `json:"created_at"`
 }
 
+type Experience struct {
+	ID             uuid.UUID  `json:"id"`
+	Kind           string     `json:"kind"`
+	OrganizationMn string     `json:"organization_mn"`
+	OrganizationEn string     `json:"organization_en"`
+	PositionMn     string     `json:"position_mn"`
+	PositionEn     string     `json:"position_en"`
+	DescriptionMn  string     `json:"description_mn"`
+	DescriptionEn  string     `json:"description_en"`
+	StartDate      time.Time  `json:"start_date"`
+	EndDate        *time.Time `json:"end_date"`
+	Published      bool       `json:"published"`
+	CreatedAt      time.Time  `json:"created_at"`
+	UpdatedAt      time.Time  `json:"updated_at"`
+}
+
 type Lead struct {
 	ID         uuid.UUID   `json:"id"`
 	Name       string      `json:"name"`
@@ -45,6 +61,33 @@ type LoginAttempt struct {
 	LockedUntil   *time.Time `json:"locked_until"`
 	LastFailureAt time.Time  `json:"last_failure_at"`
 	Ip            string     `json:"ip"`
+}
+
+type Project struct {
+	ID              uuid.UUID `json:"id"`
+	Title           string    `json:"title"`
+	Url             string    `json:"url"`
+	DescriptionMn   string    `json:"description_mn"`
+	DescriptionEn   string    `json:"description_en"`
+	SortOrder       int32     `json:"sort_order"`
+	Published       bool      `json:"published"`
+	Logo            []byte    `json:"logo"`
+	LogoContentType *string   `json:"logo_content_type"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
+}
+
+type ProjectSummary struct {
+	ID            uuid.UUID `json:"id"`
+	Title         string    `json:"title"`
+	Url           string    `json:"url"`
+	DescriptionMn string    `json:"description_mn"`
+	DescriptionEn string    `json:"description_en"`
+	SortOrder     int32     `json:"sort_order"`
+	Published     bool      `json:"published"`
+	HasLogo       bool      `json:"has_logo"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 type RefreshToken struct {

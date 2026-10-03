@@ -36,6 +36,20 @@ var fieldNames = map[string]string{ //nolint:gochecknoglobals // static lookup t
 	"locale":       "Хэл",
 	"honeypot_url": "",
 	"elapsed_ms":   "Хугацаа",
+
+	"title":           "Гарчиг",
+	"url":             "Холбоос",
+	"description_mn":  "Тайлбар (монгол)",
+	"description_en":  "Тайлбар (англи)",
+	"kind":            "Төрөл",
+	"organization_mn": "Байгууллага (монгол)",
+	"organization_en": "Байгууллага (англи)",
+	"position_mn":     "Албан тушаал (монгол)",
+	"position_en":     "Албан тушаал (англи)",
+	"start_date":      "Эхэлсэн огноо",
+	"end_date":        "Дууссан огноо",
+	"ids":             "Жагсаалт",
+	"data_base64":     "Лого",
 }
 
 // ValidateStruct runs the struct tags on s and returns a Mongolian message describing the first
@@ -67,7 +81,7 @@ func ValidateStruct(s any) string {
 	case "min":
 		return fmt.Sprintf("%s хамгийн багадаа %s тэмдэгт байх ёстой", name, fe.Param())
 	case "max":
-		return fmt.Sprintf("%s хамгийн ихдээ %s элемент байх ёстой", name, fe.Param())
+		return fmt.Sprintf("%s хамгийн ихдээ %s тэмдэгт байх ёстой", name, fe.Param())
 	default:
 		return name + " буруу байна"
 	}

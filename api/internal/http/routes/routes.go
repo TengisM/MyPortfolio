@@ -31,7 +31,7 @@ func Setup(app *fiber.App, h *handlers.Handlers, corsOrigins string, tokenServic
 		AllowOrigins: corsOrigins,
 		// Authorization carries the access token. X-Requested-With is the csrfHeader.
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization, X-Requested-With",
-		AllowMethods: "GET, POST, OPTIONS",
+		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
 		// Lets the refresh cookie travel for a same-site split like admin.example.com calling
 		// api.example.com. Because of this, conf.Load rejects any "*" in CORS_ORIGINS.
 		AllowCredentials: true,

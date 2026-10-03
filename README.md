@@ -1,3 +1,20 @@
+# Tenggis Munkhbaatar, portfolio
+
+Built on [`@tanasoftllc/landing-kit`](https://www.npmjs.com/package/@tanasoftllc/landing-kit) with
+the admin backend. Mongolian at `/`, English at `/en`, admin at `/admin`.
+
+- Projects and experience are edited in `/admin` and stored in Postgres. The build pulls them into
+  `src/content/content.json` (see `scripts/fetch-content.mjs`). That file is committed and is the
+  fallback when the API is unreachable.
+- Hosting: Vercel for the site, Koyeb for `api/`, Neon for Postgres. Steps are in
+  [DEPLOY.md](./DEPLOY.md).
+- Local Postgres runs on host port 5436, because 5433 and 5434 belong to other projects on this
+  machine. Go tests need `TESTKIT_POSTGRES_DSN=postgres://postgres:postgres@localhost:5436/postgres?sslmode=disable`.
+
+The rest of this file is the kit's own guide.
+
+---
+
 # Landing Kit
 
 A bilingual (Mongolian + English) landing site, prerendered to static HTML.

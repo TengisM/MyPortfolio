@@ -1,4 +1,4 @@
-.PHONY: run dev build build-site test lint lint-fix sqlc migrate-create seed-admin
+.PHONY: run dev build build-site test lint lint-fix sqlc migrate-create seed-admin import-content
 
 run:
 	go run ./cmd
@@ -46,3 +46,9 @@ seed-admin:
 	  stty echo 2>/dev/null || true; \
 	  printf '\n' >&2; \
 	  printf '%s' "$$pw" | go run ./cmd seed-admin "$(email)"
+
+# Loads a content.json snapshot into empty projects and experience tables. It refuses if either
+# table has rows. Logos are read from the public/ folder two levels above the file, or from public=.
+import-content:
+	@test -n "$(file)" || (echo "usage: make import-content file=../src/content/content.json [public=../public]" && exit 1)
+	go run ./cmd import-content $(if $(public),--public "$(public)") "$(file)"

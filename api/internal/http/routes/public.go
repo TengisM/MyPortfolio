@@ -89,4 +89,8 @@ func setupPublicRoutes(api fiber.Router, h *handlers.Handlers) {
 
 	// No AuthMiddleware: logout uses the refresh cookie, so it works after the access token expires.
 	api.Post("/auth/logout", requireNonSimpleRequest, h.Auth.Logout)
+
+	// Read by the site's build. Only published rows come back.
+	api.Get("/content", h.Content.Public)
+	api.Get("/content/logos/:id", h.Content.Logo)
 }

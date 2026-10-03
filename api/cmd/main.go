@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"log/slog"
@@ -20,6 +21,7 @@ import (
 	"landing-api/internal/http/handlers"
 	"landing-api/internal/http/routes"
 	"landing-api/internal/service"
+	"landing-api/internal/service/content"
 	"landing-api/internal/service/notify"
 	"landing-api/internal/utils"
 
@@ -85,10 +87,13 @@ func run() error {
 	if len(os.Args) > 1 && os.Args[1] == "seed-admin" {
 		return runSeedAdmin(context.Background(), pool, os.Args[2:])
 	}
+	if len(os.Args) > 1 && os.Args[1] == "import-content" {
+		return runImportContent(context.Background(), pool, os.Args[2:])
+	}
 
 	slog.Info("database connection established")
 
-	// conf.Load has already rejected any driver other than "ses" and "log".
+	// conf.Load has already rejected any driver other than "ses", "resend" and "log".
 	var notifier notify.Notifier
 	switch cfg.Notify.Driver {
 	case "ses":
@@ -96,6 +101,8 @@ func run() error {
 		if err != nil {
 			return fmt.Errorf("build ses notifier: %w", err)
 		}
+	case "resend":
+		notifier = notify.NewResend(cfg.Notify)
 	default:
 		notifier = notify.NewLogger()
 	}
@@ -113,8 +120,8 @@ func run() error {
 
 	app := fiber.New(fiber.Config{
 		AppName: "landing-api",
-		// The largest request is a contact form capped at 4000 characters.
-		BodyLimit:   1 * 1024 * 1024,
+		// The largest request is a project logo: 1 MB decoded is about 1.4 MB of base64 in JSON.
+		BodyLimit:   2 * 1024 * 1024,
 		ProxyHeader: cfg.Server.ProxyHeader,
 		// Always on. With it off, Fiber trusts ProxyHeader from every caller, so anyone could
 		// pick their own IP and dodge the login limiter. An empty list means trust nobody.
@@ -159,6 +166,11 @@ func run() error {
 		// Logged, not returned: a non-zero exit would make a supervisor restart a deliberate stop.
 		slog.Error("shutdown error", slog.Any("err", err))
 	}
+
+	// An edit saved in the last debounce window would otherwise never reach the site.
+	flushCtx, cancelFlush := context.WithTimeout(context.Background(), 10*time.Second)
+	services.Publisher.Flush(flushCtx)
+	cancelFlush()
 
 	if failure != nil {
 		return fmt.Errorf("listen on %s: %w", addr, failure)
@@ -225,4 +237,32 @@ func readSeedPassword(r io.Reader) (string, error) {
 		return "", errors.New("no password on stdin: pipe one in, or run `make seed-admin email=...`")
 	}
 	return password, nil
+}
+
+// runImportContent loads a content.json snapshot into empty projects and experience tables. Logo
+// paths in the snapshot are site paths, read from --public, which defaults to the public/ folder
+// two levels above the snapshot (src/content/content.json -> public/).
+func runImportContent(ctx context.Context, pool *pgxpool.Pool, args []string) error {
+	fs := flag.NewFlagSet("import-content", flag.ContinueOnError)
+	publicDir := fs.String("public", "", "the site's public/ folder (default: ../../public from the snapshot)")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if fs.NArg() != 1 {
+		return errors.New("usage: import-content [--public <dir>] <path/to/content.json>")
+	}
+	snapshot := fs.Arg(0)
+	if *publicDir == "" {
+		*publicDir = content.DefaultPublicDir(snapshot)
+	}
+
+	result, err := content.Import(ctx, pool, snapshot, *publicDir)
+	if err != nil {
+		return fmt.Errorf("import content: %w", err)
+	}
+
+	//nolint:errcheck // stdout write on a CLI's success path; nothing meaningful to do if it fails
+	fmt.Fprintf(os.Stdout, "imported %d projects (%d logos) and %d experience rows\n",
+		result.Projects, result.Logos, result.Experience)
+	return nil
 }

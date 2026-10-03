@@ -1,21 +1,22 @@
 # The Go API
 
 `api/` is a GoFiber service on PostgreSQL. It stores the contact form's submissions, emails you
-about each new lead, and lets an admin read them over `GET /api/admin/leads`. The marketing pages
-stay static; this service never touches them.
+about each new lead, and lets an admin read them over `GET /api/admin/leads`. It also holds the
+portfolio's projects and experience. The admin edits them, and the site's build reads them from
+`GET /api/content`. The pages themselves stay static.
 
 ## Running it
 
 ```bash
 cp api/.env.example api/.env   # once
-docker compose up -d db        # Postgres, on host port 5433
+docker compose up -d db        # Postgres, on host port 5436
 cd api && make run             # on PORT (default 3000). `make dev` hot-reloads if you have air.
 ```
 
 Migrations run at startup, forward only. To change the schema, add a new migration with
 `make migrate-create name=add_something` and write its `.up.sql`.
 
-Postgres uses host port 5433 so it doesn't clash with one already on your machine. If you change
+Postgres uses host port 5436 so it doesn't clash with one already on your machine. If you change
 `DB_USER`, `DB_PASSWORD` or `DB_NAME`, change `POSTGRES_USER`, `POSTGRES_PASSWORD` and
 `POSTGRES_DB` in `docker-compose.yml` too.
 
@@ -48,6 +49,98 @@ because it always sends `credentials: 'same-origin'`.
 `NOTIFY_DRIVER=log` (the default) writes a log line. `NOTIFY_DRIVER=ses` sends email through AWS
 SES and needs `NOTIFY_TO` and `SES_FROM`. With `APP_ENV=production`, `log` is refused, because
 leads would be stored and nobody told.
+
+`NOTIFY_DRIVER=resend` sends through Resend's HTTP API and needs `RESEND_API_KEY` and `NOTIFY_TO`.
+Startup fails without either. `RESEND_FROM` defaults to `onboarding@resend.dev`, Resend's shared
+test sender. It only delivers to the address that owns the Resend account, so set `NOTIFY_TO` to
+that address. To send from your own address, verify a domain in Resend and set `RESEND_FROM`.
+Reply-To is the visitor, so replying from your inbox reaches them.
+
+## Content
+
+Projects and experience live in two tables, `projects` and `experience`. Project logos are stored
+in the row, at most 1 MB each.
+
+### Public endpoints
+
+```
+GET /api/content              published projects and experience, Cache-Control: public, max-age=60
+GET /api/content/logos/:id    the logo bytes, Cache-Control: public, max-age=86400
+```
+
+`/api/content` returns `{"success": true, "data": {"projects": [...], "experience": [...]}}`, the
+same shape as `src/content/content.json`. Projects come in their admin order. Experience comes
+newest `start_date` first. A project's `logo` is `/api/content/logos/<id>?v=<unix time>` or `null`.
+The `v` changes with every logo upload, so the day-long cache never serves an old logo.
+
+The logo endpoint also serves logos of unpublished projects, so the panel can preview them. Ids are
+random UUIDs, so nobody finds one by guessing.
+
+### Admin endpoints
+
+All of these need the Bearer token and answer with `Cache-Control: no-store`.
+
+```
+GET    /api/admin/projects               {"items": [AdminProject]}, by sort_order
+POST   /api/admin/projects               {title, url, description_mn, description_en, published}
+PUT    /api/admin/projects/:id           same body
+DELETE /api/admin/projects/:id
+PUT    /api/admin/projects/:id/logo      {content_type, data_base64}
+DELETE /api/admin/projects/:id/logo
+POST   /api/admin/projects/reorder       {ids: [...]}, every project id exactly once
+GET    /api/admin/experience             {"items": [AdminExperience]}, newest start_date first
+POST   /api/admin/experience             {kind, organization_mn, organization_en, position_mn,
+                                          position_en, description_mn, description_en,
+                                          start_date, end_date, published}
+PUT    /api/admin/experience/:id         same body
+DELETE /api/admin/experience/:id
+GET    /api/admin/publish                {configured, pending, last_triggered_at, last_error}
+POST   /api/admin/publish                calls the deploy hook now, returns the same
+```
+
+- A new project goes to the end of the list. `published` defaults to `true` when left out.
+- Titles, organizations and positions take 1 to 200 characters. Descriptions take up to 2000 and
+  may be empty. `url` must start with `http://` or `https://`.
+- Dates are `YYYY-MM-DD`. `end_date` is `null` for a current role and can't be before
+  `start_date`. `kind` is `work` or `education`.
+- The server ignores the logo's `content_type` and reads the type from the bytes. It accepts PNG,
+  JPEG and WebP only. `data_base64` may carry a `data:image/png;base64,` prefix, as
+  `FileReader.readAsDataURL` produces.
+- Bad input is a 400 with `"error": "validation error"` and a Mongolian `message`. An unknown or
+  malformed id is a 404.
+- DELETE answers `{"success": true}` with no `data`.
+
+## Publishing
+
+The site is prerendered, so an edit shows up only after a rebuild. Each successful content write
+starts a timer, and each later write restarts it. When the timer runs out, the API POSTs to
+`VERCEL_DEPLOY_HOOK_URL`. Ten saves in a row cost one deploy.
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `VERCEL_DEPLOY_HOOK_URL` | empty | The hook from Vercel's project settings. Empty turns publishing off. |
+| `PUBLISH_DEBOUNCE_SECONDS` | 30 | How long to wait after the last write |
+
+With the hook unset, writes only log a line and `/api/admin/publish` reports `configured: false`.
+`POST /api/admin/publish` skips the wait. A failed call still answers 200 and shows the reason in
+`last_error`. The state lives in memory, so a crash forgets a pending publish. A graceful stop
+sends it before exiting.
+
+The hook URL is a secret: anyone with it can start builds. The API never logs it.
+
+## Importing a snapshot
+
+To fill empty tables from the committed snapshot:
+
+```bash
+cd api && make import-content file=../src/content/content.json
+```
+
+It keeps every id. Projects keep the file's order. Each `logo` path, like
+`/content/logos/<id>.png`, is read from the `public/` folder two levels above the snapshot. Pass
+`public=path/to/public` to read logos from elsewhere. The import checks every row and logo with
+the same rules as the API, then writes everything in one transaction. It refuses to run when
+either table already has rows, so it can't duplicate or overwrite content.
 
 ## Admin access
 
@@ -153,14 +246,47 @@ Two security header settings in `internal/http/routes/` matter if you add third-
 
 ## Docker
 
-`docker-compose.yml` runs Postgres only. The kit's Dockerfile is built for the kit's own folder
-layout, and the scaffolder doesn't generate one for this project yet. Run the database in Docker
-and the service directly:
+`docker-compose.yml` runs Postgres only. For local work, run the database in Docker and the
+service directly:
 
 ```bash
 docker compose up -d db
 cd api && make run
 ```
+
+`api/Dockerfile` builds an API-only image. The site is on Vercel, so the image never embeds it:
+`.dockerignore` keeps only the placeholder in `internal/static/dist/`. The image runs as a
+non-root user on distroless and listens on `$PORT` (3000 when unset).
+
+```bash
+docker build -t portfolio-api api/
+```
+
+### Koyeb and Neon
+
+On Koyeb, deploy from the repo with `api/` as the work directory and the Dockerfile builder. Set
+the port to match `PORT` and point the health check at `/api/health`. Set these:
+
+```
+APP_ENV=production
+CORS_ORIGINS=https://tenggis.vercel.app
+JWT_SECRET=...                       # openssl rand -base64 32
+DB_HOST=...  DB_USER=...  DB_PASSWORD=...  DB_NAME=...
+DB_PORT=5432
+DB_SSLMODE=require                   # Neon refuses plain connections
+NOTIFY_DRIVER=resend
+RESEND_API_KEY=...
+NOTIFY_TO=...
+VERCEL_DEPLOY_HOOK_URL=...
+```
+
+Take the Neon values from its connection string. Use the direct host, not the `-pooler` one:
+migrations run at startup and need a session that the pooler doesn't keep. `DB_PORT` must be set,
+because the default is 5436 for the local compose database.
+
+Vercel rewrites `/api/*` to Koyeb, so the browser sees one origin. Behind both proxies the API may
+see one client address for everyone. Check that on the first deploy before trusting the rate
+limits. See "Behind a proxy or load balancer" above.
 
 ## Tests
 
