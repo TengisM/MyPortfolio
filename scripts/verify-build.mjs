@@ -86,6 +86,8 @@ const ALLOWED_ROUTE_FILES = new Set([
   'index.tsx',
   '$.tsx',
   'docs.tsx',
+  // A private noindex page, prerendered from its own entry in vite.config.ts.
+  'love.tsx',
   ...(HAS_PANEL ? ['admin.tsx', 'admin'] : []),
 ])
 for (const entry of readdirSync('src/routes')) {

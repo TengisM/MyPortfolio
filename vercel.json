@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist/client",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://YOUR-KOYEB-APP.koyeb.app/api/:path*" },
+    { "source": "/admin/:path*", "destination": "/admin/index.html" }
+  ]
+}

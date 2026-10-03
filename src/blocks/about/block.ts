@@ -12,6 +12,5 @@ export const about = {
   variantNames,
   defaultVariant: 'simple',
   copy: { mn, en },
-  // Add `nav: { labelKey: 'heading' }` to put this block in the header menu.
-  // Add `requires: { blocks: ['contact'] }` if this block's copy links to another block.
+  nav: { labelKey: 'navLabel' },
 } satisfies BlockManifest<AboutCopy, AboutVariant>

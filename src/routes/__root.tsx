@@ -5,11 +5,18 @@ import {
   Scripts,
   useRouterState,
 } from '@tanstack/react-router'
+import { Analytics } from '@vercel/analytics/react'
 import { site } from '@/config/site.config'
 import { ThemeScript } from '@/theme'
 import '@/styles/theme.css'
 
 export const Route = createRootRoute({
+  head: () => ({
+    links: [
+      { rel: 'icon', type: 'image/png', href: '/favicon.png' },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+    ],
+  }),
   component: RootDocument,
 })
 
@@ -34,6 +41,8 @@ function RootDocument() {
       </head>
       <body>
         <Outlet />
+        {/* A no-op outside Vercel, so local and preview builds are unaffected. */}
+        <Analytics />
         <Scripts />
       </body>
     </html>

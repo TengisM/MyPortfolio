@@ -12,12 +12,12 @@ export type ContactCopy = {
 
 export const mn: ContactCopy = {
   navLabel: 'Холбоо барих',
-  heading: 'Бидэнтэй холбогдоно уу',
-  lead: 'Хүсэлтээ илгээгээрэй, бид ажлын өдөрт хариу барина.',
+  heading: 'Надтай холбогдоорой',
+  lead: 'Ажлын санал, төсөл, эсвэл зүгээр л мэндчилгээ. Ихэвчлэн 1-2 өдөрт хариулдаг.',
   fields: { name: 'Нэр', email: 'И-мэйл', message: 'Захидал' },
   submit: 'Илгээх',
   submitting: 'Илгээж байна…',
-  success: 'Баярлалаа! Бид тантай холбогдоно.',
+  success: 'Баярлалаа! Удахгүй хариу бичнэ.',
   error: 'Илгээхэд алдаа гарлаа. Дахин оролдоно уу.',
   validation: 'Бүх талбарыг зөв бөглөнө үү.',
 }
@@ -25,11 +25,11 @@ export const mn: ContactCopy = {
 export const en: ContactCopy = {
   navLabel: 'Contact',
   heading: 'Get in touch',
-  lead: 'Send us a message and we will reply within one business day.',
+  lead: 'A role, a project, or just hello. I usually reply within a day or two.',
   fields: { name: 'Name', email: 'Email', message: 'Message' },
   submit: 'Send',
   submitting: 'Sending…',
-  success: 'Thank you! We will be in touch.',
+  success: "Thanks! I'll get back to you soon.",
   error: 'Something went wrong. Please try again.',
   validation: 'Please complete every field correctly.',
 }

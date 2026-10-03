@@ -5,7 +5,7 @@
 @import "@fontsource-variable/inter/wght.css";
 @import "@fontsource-variable/manrope/wght.css";
 
-@import "./presets/editorial.css";
+@import "./presets/portfolio.css";
 
 /* Animation utilities for the panel's sheet and dropdown. Import it here, inside Tailwind, so
    only used classes ship. Imported from any other stylesheet, the whole library ships. */

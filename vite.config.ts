@@ -78,6 +78,9 @@ export default defineConfig({
         // src/routes/admin/index.tsx is `ssr: false` with no `component` at all, so the
         // prerenderer emits the pending frame, which is the skeleton.
         { path: '/admin', prerender: { enabled: true, outputPath: '/admin/index.html' } },
+        // Same reason as /admin: a standalone route outside pages.config.ts. Static hosting has
+        // no server to render it, so it must exist as a file.
+        { path: '/love', prerender: { enabled: true, outputPath: '/love/index.html' } },
       ],
     }),
     viteReact(),

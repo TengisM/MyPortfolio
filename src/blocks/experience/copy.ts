@@ -1,14 +1,83 @@
+import { type ContentExperience, experienceNewestFirst } from '@/content'
+import type { Locale } from '@/lib/types'
+
+export type ExperienceItem = {
+  id: string
+  kind: 'work' | 'education'
+  organization: string
+  position: string
+  description: string
+  period: string
+  current: boolean
+}
+
 export type ExperienceCopy = {
+  navLabel: string
   heading: string
   lead: string
+  currentLabel: string
+  educationLabel: string
+  items: ExperienceItem[]
+}
+
+const EN_MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
+
+// Fixed tables, not Intl: the server and the browser can ship different ICU data, and a
+// mismatched string breaks hydration.
+function formatMonth(iso: string, locale: Locale): string {
+  const [y, m] = iso.split('-')
+  const month = Number(m)
+  return locale === 'mn' ? `${y}.${m}` : `${EN_MONTHS[month - 1]} ${y}`
+}
+
+function formatPeriod(e: ContentExperience, locale: Locale, present: string): string {
+  // Degrees read as years. Months there are guesses anyway.
+  if (e.kind === 'education') {
+    return `${e.start_date.slice(0, 4)} – ${e.end_date?.slice(0, 4) ?? present}`
+  }
+  const end = e.end_date ? formatMonth(e.end_date, locale) : present
+  return `${formatMonth(e.start_date, locale)} – ${end}`
+}
+
+function itemsFor(locale: Locale, present: string): ExperienceItem[] {
+  return experienceNewestFirst.map((e) => ({
+    id: e.id,
+    kind: e.kind,
+    organization: e.organization[locale],
+    position: e.position[locale],
+    description: e.description[locale],
+    period: formatPeriod(e, locale, present),
+    current: e.end_date === null,
+  }))
 }
 
 export const mn: ExperienceCopy = {
-  heading: 'Experience гарчиг',
-  lead: 'Энд тайлбар бичнэ үү.',
+  navLabel: 'Туршлага',
+  heading: 'Ажлын туршлага ба боловсрол',
+  lead: 'Сүүлийн 5 жилд ажилласан газрууд.',
+  currentLabel: 'Одоо',
+  educationLabel: 'Боловсрол',
+  items: itemsFor('mn', 'Одоог хүртэл'),
 }
 
 export const en: ExperienceCopy = {
-  heading: 'Experience heading',
-  lead: 'Write the description here.',
+  navLabel: 'Experience',
+  heading: 'Experience and education',
+  lead: "Where I've worked over the last five years.",
+  currentLabel: 'Now',
+  educationLabel: 'Education',
+  items: itemsFor('en', 'Present'),
 }
