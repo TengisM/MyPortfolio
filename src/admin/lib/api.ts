@@ -110,6 +110,10 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}, retry = 
     throw await toApiError(res)
   }
 
+  // The content endpoints answer DELETE with `data: null`. A bare 204 would mean the same thing,
+  // and parsing its empty body would turn a success into an error.
+  if (res.status === 204) return null as T
+
   try {
     const body = (await res.json()) as Envelope<T>
     return body.data

@@ -26,7 +26,8 @@ import { z } from 'zod'
 import { useT } from '@/admin/i18n/use-t'
 import { apiFetch } from '@/admin/lib/api'
 import { ApiError } from '@/admin/lib/errors'
-import { type PanelLanguage, useLanguage } from '@/admin/lib/language'
+import { dateFormatter } from '@/admin/lib/format'
+import { useLanguage } from '@/admin/lib/language'
 import { Badge } from '@/admin/ui/badge'
 import { Button } from '@/admin/ui/button'
 import {
@@ -349,27 +350,6 @@ function LeadsPage() {
       </Sheet>
     </section>
   )
-}
-
-// Browsers ship no Mongolian date names (`mn-MN` falls back to English), so Mongolian gets a
-// numeric date instead: 2026.09.24 14:05.
-function dateFormatter(language: PanelLanguage): (iso: string) => string {
-  if (language === 'en') {
-    const f = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' })
-    return (iso) => f.format(new Date(iso))
-  }
-  const f = new Intl.DateTimeFormat('en-GB', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23',
-  })
-  return (iso) => {
-    const p = Object.fromEntries(f.formatToParts(new Date(iso)).map((x) => [x.type, x.value]))
-    return `${p.year}.${p.month}.${p.day} ${p.hour}:${p.minute}`
-  }
 }
 
 type SortDir = false | 'asc' | 'desc'

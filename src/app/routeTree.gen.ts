@@ -13,10 +13,13 @@ import { Route as IndexRouteImport } from './../routes/index'
 import { Route as SplatRouteImport } from './../routes/$'
 import { Route as AdminRouteImport } from './../routes/admin'
 import { Route as DocsRouteImport } from './../routes/docs'
+import { Route as LoveRouteImport } from './../routes/love'
 import { Route as AdminIndexRouteImport } from './../routes/admin/index'
 import { Route as AdminAuthedRouteImport } from './../routes/admin/_authed'
 import { Route as AdminLoginRouteImport } from './../routes/admin/login'
+import { Route as AdminAuthedExperienceRouteImport } from './../routes/admin/_authed/experience'
 import { Route as AdminAuthedLeadsRouteImport } from './../routes/admin/_authed/leads'
+import { Route as AdminAuthedProjectsRouteImport } from './../routes/admin/_authed/projects'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -38,6 +41,11 @@ const DocsRoute = DocsRouteImport.update({
   path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoveRoute = LoveRouteImport.update({
+  id: '/love',
+  path: '/love',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -52,9 +60,19 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAuthedExperienceRoute = AdminAuthedExperienceRouteImport.update({
+  id: '/experience',
+  path: '/experience',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
 const AdminAuthedLeadsRoute = AdminAuthedLeadsRouteImport.update({
   id: '/leads',
   path: '/leads',
+  getParentRoute: () => AdminAuthedRoute,
+} as any)
+const AdminAuthedProjectsRoute = AdminAuthedProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
   getParentRoute: () => AdminAuthedRoute,
 } as any)
 
@@ -63,17 +81,23 @@ export interface FileRoutesByFullPath {
   '/$': typeof SplatRoute
   '/admin': typeof AdminRouteWithChildren
   '/docs': typeof DocsRoute
+  '/love': typeof LoveRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/experience': typeof AdminAuthedExperienceRoute
   '/admin/leads': typeof AdminAuthedLeadsRoute
+  '/admin/projects': typeof AdminAuthedProjectsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/docs': typeof DocsRoute
+  '/love': typeof LoveRoute
   '/admin': typeof AdminIndexRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/experience': typeof AdminAuthedExperienceRoute
   '/admin/leads': typeof AdminAuthedLeadsRoute
+  '/admin/projects': typeof AdminAuthedProjectsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -81,10 +105,13 @@ export interface FileRoutesById {
   '/$': typeof SplatRoute
   '/admin': typeof AdminRouteWithChildren
   '/docs': typeof DocsRoute
+  '/love': typeof LoveRoute
   '/admin/_authed': typeof AdminAuthedRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/_authed/experience': typeof AdminAuthedExperienceRoute
   '/admin/_authed/leads': typeof AdminAuthedLeadsRoute
+  '/admin/_authed/projects': typeof AdminAuthedProjectsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -93,21 +120,36 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin'
     | '/docs'
+    | '/love'
     | '/admin/login'
     | '/admin/'
+    | '/admin/experience'
     | '/admin/leads'
+    | '/admin/projects'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$' | '/docs' | '/admin' | '/admin/login' | '/admin/leads'
+  to:
+    | '/'
+    | '/$'
+    | '/docs'
+    | '/love'
+    | '/admin'
+    | '/admin/login'
+    | '/admin/experience'
+    | '/admin/leads'
+    | '/admin/projects'
   id:
     | '__root__'
     | '/'
     | '/$'
     | '/admin'
     | '/docs'
+    | '/love'
     | '/admin/_authed'
     | '/admin/login'
     | '/admin/'
+    | '/admin/_authed/experience'
     | '/admin/_authed/leads'
+    | '/admin/_authed/projects'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -115,6 +157,7 @@ export interface RootRouteChildren {
   SplatRoute: typeof SplatRoute
   AdminRoute: typeof AdminRouteWithChildren
   DocsRoute: typeof DocsRoute
+  LoveRoute: typeof LoveRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -147,6 +190,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/love': {
+      id: '/love'
+      path: '/love'
+      fullPath: '/love'
+      preLoaderRoute: typeof LoveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
@@ -168,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/_authed/experience': {
+      id: '/admin/_authed/experience'
+      path: '/experience'
+      fullPath: '/admin/experience'
+      preLoaderRoute: typeof AdminAuthedExperienceRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
     '/admin/_authed/leads': {
       id: '/admin/_authed/leads'
       path: '/leads'
@@ -175,15 +232,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuthedLeadsRouteImport
       parentRoute: typeof AdminAuthedRoute
     }
+    '/admin/_authed/projects': {
+      id: '/admin/_authed/projects'
+      path: '/projects'
+      fullPath: '/admin/projects'
+      preLoaderRoute: typeof AdminAuthedProjectsRouteImport
+      parentRoute: typeof AdminAuthedRoute
+    }
   }
 }
 
 interface AdminAuthedRouteChildren {
+  AdminAuthedExperienceRoute: typeof AdminAuthedExperienceRoute
   AdminAuthedLeadsRoute: typeof AdminAuthedLeadsRoute
+  AdminAuthedProjectsRoute: typeof AdminAuthedProjectsRoute
 }
 
 const AdminAuthedRouteChildren: AdminAuthedRouteChildren = {
+  AdminAuthedExperienceRoute: AdminAuthedExperienceRoute,
   AdminAuthedLeadsRoute: AdminAuthedLeadsRoute,
+  AdminAuthedProjectsRoute: AdminAuthedProjectsRoute,
 }
 
 const AdminAuthedRouteWithChildren = AdminAuthedRoute._addFileChildren(
@@ -209,6 +277,7 @@ const rootRouteChildren: RootRouteChildren = {
   SplatRoute: SplatRoute,
   AdminRoute: AdminRouteWithChildren,
   DocsRoute: DocsRoute,
+  LoveRoute: LoveRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

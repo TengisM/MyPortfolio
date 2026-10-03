@@ -8,7 +8,9 @@ const BY_CODE: Record<string, MessageKey> = {
   'rate limited': 'errRateLimited',
   unauthorized: 'errUnauthorized',
   'invalid token': 'errUnauthorized',
-  'validation error': 'errUnknown',
+  'validation error': 'errValidation',
+  // The content routes' code for an unknown id. A guess at the name: keep it in step with api/.
+  'not found': 'errNotFound',
   'internal error': 'errUnknown',
   network: 'errNetwork',
   // Raised by apiFetch, not the API, when a refresh got no useful answer.
@@ -31,4 +33,9 @@ export class ApiError extends Error {
     if (key !== undefined) return t[key]
     return this.serverMessage !== '' ? this.serverMessage : t.errUnknown
   }
+}
+
+// For catch blocks, where the error may not be an ApiError (a FileReader failure, a render bug).
+export function errorMessage(err: unknown, t: typeof mn): string {
+  return err instanceof ApiError ? err.messageFor(t) : t.errUnknown
 }
