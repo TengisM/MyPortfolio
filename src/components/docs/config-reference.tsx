@@ -1,0 +1,70 @@
+import { pages } from '@/config/pages.config'
+import { site } from '@/config/site.config'
+import { enumerateUrls } from '@/lib/pages/enumerate'
+
+// README headings. Plain text, not links: README.md is not deployed.
+const RECIPES = [
+  'Adding a page',
+  'Adding a block',
+  'Adding a variant',
+  'Changing the design',
+  'The contact form',
+  'Fonts and Mongolian Cyrillic',
+  'Rules the build enforces',
+  'Gotchas',
+] as const
+
+export function ConfigReference() {
+  const urls = enumerateUrls(pages, site)
+  return (
+    // min-w-0 on each row, or the long <pre> stretches the grid past the viewport.
+    <div className="grid gap-8">
+      <div className="min-w-0">
+        <h3 className="text-h3 font-semibold">Pages this config produces</h3>
+        <p className="text-muted-foreground mt-1 text-sm">
+          Every prerendered URL, derived from pages.config.ts × site.locales.
+        </p>
+        <ul className="mt-3 grid gap-1">
+          {urls.map((u) => (
+            <li key={u.path}>
+              <code className="text-sm">{u.path}</code>
+              <span className="text-muted-foreground text-sm">
+                {' '}
+                — {u.pageId} / {u.locale}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="min-w-0">
+        <h3 className="text-h3 font-semibold">pages.config.ts</h3>
+        <pre className="bg-muted rounded-base mt-3 overflow-x-auto p-4 text-xs">
+          {JSON.stringify(pages, null, 2)}
+        </pre>
+      </div>
+
+      <div className="min-w-0">
+        <h3 className="text-h3 font-semibold">site.config.ts</h3>
+        <pre className="bg-muted rounded-base mt-3 overflow-x-auto p-4 text-xs">
+          {JSON.stringify(site, null, 2)}
+        </pre>
+      </div>
+
+      <div className="min-w-0">
+        <h3 className="text-h3 font-semibold">Recipes</h3>
+        <p className="text-muted-foreground mt-1 text-sm">
+          Common changes, documented once, in the repository’s README — not restated here, and not
+          linked (README.md is not part of the deployed site).
+        </p>
+        <ul className="mt-3 grid gap-1">
+          {RECIPES.map((r) => (
+            <li key={r}>
+              <code className="text-sm">README.md § {r}</code>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}

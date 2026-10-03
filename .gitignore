@@ -1,42 +1,28 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-.yarn/install-state.gz
-package-lock.json
-pnpm-lock.yaml
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.vscode
+node_modules
 .DS_Store
-*.pem
-.eslintrc.json
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env*.local
+dist
+dist-ssr
+*.local
 .env
+.nitro
+.tanstack
+.wrangler
+.output
+.vinxi
+__unconfig*
 
-# vercel
+# Build artifacts, but keep the record of what was scaffolded
+.kit/*
+!.kit/scaffold.json
+
+!api/internal/static/dist/
+api/internal/static/dist/*
+!api/internal/static/dist/.placeholder
+
+# Go build output. `make build` writes api/bin/landing-api with the whole site embedded, and
+# `make dev` runs air, which rebuilds api/tmp/main on every save.
+api/bin/
+api/tmp/
+
+# Vercel
 .vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-.qodo

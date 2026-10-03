@@ -1,0 +1,20 @@
+{
+  "kitVersion": "0.5.1",
+  "generatedAt": "2026-10-03T10:02:15.548Z",
+  "answers": {
+    "dir": "site",
+    "pages": "one",
+    "theme": "dark",
+    "preset": "editorial",
+    "backend": "admin",
+    "blocks": ["hero", "contact"],
+    "custom": ["about", "experience", "projects"],
+    "variants": {
+      "hero": "split",
+      "contact": "default",
+      "about": "simple",
+      "experience": "simple",
+      "projects": "simple"
+    }
+  }
+}
