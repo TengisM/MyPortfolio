@@ -1,5 +1,5 @@
-/* Portfolio preset: charcoal with film grain, off-white type, one acid-lime accent. Inspired by
-   junni.co.jp. Both families ship cyrillic and cyrillic-ext, so ө and ү render in the face. */
+/* Portfolio preset: plum-grey with film grain, soft white type, one lilac accent. Both families
+   ship cyrillic and cyrillic-ext, so ө and ү render in the face. */
 :root {
   --face-display: "Unbounded Variable", system-ui, sans-serif;
   --face-body: "Inter Variable", system-ui, sans-serif;
@@ -26,16 +26,16 @@
 }
 
 .dark {
-  --c-background: oklch(21.5% 0.006 270);
-  --c-foreground: oklch(95.5% 0.008 90);
-  --c-muted: oklch(25% 0.006 270);
-  --c-muted-foreground: oklch(72% 0.01 90);
-  --c-accent: oklch(28% 0.007 270);
-  --c-border: oklch(34% 0.008 270);
-  /* Acid lime. On the background: 13:1. */
-  --c-primary: oklch(92% 0.2 122);
-  --c-primary-foreground: oklch(21.5% 0.006 270);
-  --c-ring: oklch(92% 0.2 122);
+  /* #19171f plum-grey, #f1eef7 soft white, #b9a3ff lilac. Lilac on the background: 8.4:1. */
+  --c-background: oklch(20.6% 0.012 300);
+  --c-foreground: oklch(95.3% 0.012 300);
+  --c-muted: oklch(24.5% 0.014 300);
+  --c-muted-foreground: oklch(74% 0.02 300);
+  --c-accent: oklch(28% 0.018 300);
+  --c-border: oklch(34% 0.02 300);
+  --c-primary: oklch(76.5% 0.13 293);
+  --c-primary-foreground: oklch(20.6% 0.012 300);
+  --c-ring: oklch(76.5% 0.13 293);
   --c-destructive: oklch(70% 0.16 27);
-  --c-success: oklch(80% 0.16 140);
+  --c-success: oklch(80% 0.14 150);
 }

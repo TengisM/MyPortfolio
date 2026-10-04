@@ -16,16 +16,15 @@ export function ExperienceSimple({
     <Section id={anchorId} surface={surface}>
       <Container>
         <Reveal>
-          <EchoTitle as="p" text={copy.title} outline />
-          <H className="text-h3 mt-6 font-bold">{copy.heading}</H>
-          <p className="text-muted-foreground mt-2">{copy.lead}</p>
+          <EchoTitle as={H} text={copy.heading} />
+          <p className="text-muted-foreground text-lead mt-4">{copy.lead}</p>
         </Reveal>
 
         <ol className="border-border mt-12 border-t">
           {copy.items.map((item) => (
             <li key={item.id} className="border-border border-b">
               <Reveal>
-                {/* A lime band sweeps in from the left on hover and the text flips to ink. */}
+                {/* A lilac band sweeps in from the left on hover and the text flips to ink. */}
                 <div className="group hover:text-primary-foreground relative isolate grid gap-3 py-8 transition-colors duration-300 before:absolute before:inset-0 before:-z-10 before:origin-left before:scale-x-0 before:bg-primary before:transition-transform before:duration-500 hover:before:scale-x-100 md:grid-cols-12 md:gap-8 md:px-4">
                   <p className="font-display text-outline group-hover:text-primary-foreground text-5xl font-black md:col-span-3 md:text-7xl">
                     {item.year}

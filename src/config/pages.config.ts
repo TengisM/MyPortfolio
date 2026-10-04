@@ -8,11 +8,10 @@ export const pages: PageConfig<BlockId>[] = [
     // Explicit surfaces: the kit would otherwise alternate default and muted.
     blocks: [
       { id: 'hero', surface: 'default' },
-      { id: 'marquee', surface: 'default' },
       { id: 'about', surface: 'default' },
       { id: 'experience', surface: 'default' },
       { id: 'projects', surface: 'paper' },
-      { id: 'contact', surface: 'lime' },
+      { id: 'contact', surface: 'lilac' },
     ],
     seo: {
       mn: {

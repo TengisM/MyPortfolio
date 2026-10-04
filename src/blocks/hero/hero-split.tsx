@@ -4,6 +4,7 @@ import type { BlockProps } from '@/lib/types'
 import { FadeIn } from '@/motion'
 import type { HeroCopy } from './copy'
 
+// A personal intro: greeting and photo side by side, the way you'd introduce yourself.
 export function HeroSplit({
   copy,
   resolve,
@@ -13,40 +14,54 @@ export function HeroSplit({
 }: BlockProps<HeroCopy>) {
   const H = headingLevel === 1 ? 'h1' : 'h2'
   return (
-    <Section id={anchorId} surface={surface}>
+    <Section id={anchorId} surface={surface} className="relative isolate overflow-hidden">
+      {/* Soft lilac glow behind the photo. Decorative only. */}
+      <div
+        aria-hidden="true"
+        className="bg-primary/25 absolute top-1/4 -right-24 -z-10 size-96 rounded-full blur-3xl md:right-12"
+      />
       <Container>
-        <div className="grid items-center gap-12 md:grid-cols-5">
-          <FadeIn className="md:col-span-3">
-            <p className="text-primary text-sm font-semibold tracking-wide uppercase">
+        <div className="grid items-center gap-14 md:grid-cols-12">
+          <FadeIn className="md:col-span-7">
+            <p className="border-border text-muted-foreground inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
+              <span aria-hidden="true" className="bg-primary size-2 rounded-full" />
               {copy.eyebrow}
             </p>
-            <H className="mt-3 text-display font-bold text-balance">{copy.heading}</H>
-            <p className="text-muted-foreground mt-5 text-lead text-pretty">{copy.lead}</p>
-            <p className="text-muted-foreground mt-3 text-sm">{copy.location}</p>
+            <H className="text-display mt-6 font-black text-balance">
+              {copy.heading}{' '}
+              <span aria-hidden="true" className="wave">
+                👋
+              </span>
+            </H>
+            <p className="text-muted-foreground text-lead mt-6 text-pretty">{copy.lead}</p>
+            <p className="mt-4 flex items-center gap-2 text-sm font-medium">
+              <span aria-hidden="true">📍</span>
+              {copy.location}
+            </p>
 
-            <p className="mt-8 text-sm font-semibold">{copy.skillsLabel}</p>
-            <ul className="mt-3 flex flex-wrap gap-2">
+            <p className="sr-only">{copy.skillsLabel}</p>
+            <ul className="mt-8 flex flex-wrap gap-2">
               {copy.skills.map((skill) => (
                 <li
                   key={skill}
-                  className="border-border bg-muted text-muted-foreground rounded-full border px-3 py-1 text-xs font-medium"
+                  className="bg-muted border-border hover:border-primary hover:text-primary rounded-full border px-3.5 py-1.5 text-sm transition-colors"
                 >
                   {skill}
                 </li>
               ))}
             </ul>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-10 flex flex-wrap items-center gap-3">
               <a
                 href={resolve(copy.primaryCta.target)}
-                className="bg-primary text-primary-foreground rounded-base px-6 py-3 font-medium"
+                className="bg-primary text-primary-foreground rounded-full px-7 py-3.5 font-semibold transition-transform hover:-translate-y-0.5"
               >
                 {copy.primaryCta.label}
               </a>
               <a
                 href={copy.cv.href}
                 download
-                className="border-border hover:border-primary rounded-base border px-6 py-3 font-medium transition-colors"
+                className="border-foreground/30 hover:border-primary hover:text-primary rounded-full border px-7 py-3.5 font-semibold transition-colors"
               >
                 {copy.cv.label}
               </a>
@@ -56,24 +71,32 @@ export function HeroSplit({
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary px-2 py-3 text-sm font-medium transition-colors"
+                  className="text-muted-foreground hover:text-primary px-3 py-3.5 text-sm font-semibold transition-colors"
                 >
-                  {s.label}
+                  {s.label} ↗
                 </a>
               ))}
             </div>
           </FadeIn>
+
           {copy.image ? (
             // FadeIn, not Reveal: this image is the LCP element and must not wait on scroll.
-            <FadeIn className="md:col-span-2">
-              <img
-                src={copy.image.src}
-                alt={copy.image.alt}
-                width={copy.image.width}
-                height={copy.image.height}
-                fetchPriority="high"
-                className="ring-primary/40 mx-auto aspect-square w-3/4 rounded-full object-cover ring-4 md:w-full"
-              />
+            <FadeIn className="md:col-span-5" delay={0.15}>
+              <div className="group relative mx-auto w-3/4 md:w-full">
+                {/* A lilac card peeking out behind the photo; they line up on hover. */}
+                <div
+                  aria-hidden="true"
+                  className="bg-primary absolute inset-0 translate-x-4 translate-y-4 rotate-3 rounded-4xl transition-transform duration-500 group-hover:translate-0 group-hover:rotate-0"
+                />
+                <img
+                  src={copy.image.src}
+                  alt={copy.image.alt}
+                  width={copy.image.width}
+                  height={copy.image.height}
+                  fetchPriority="high"
+                  className="relative aspect-square w-full -rotate-2 rounded-4xl object-cover transition-transform duration-500 group-hover:rotate-0"
+                />
+              </div>
             </FadeIn>
           ) : null}
         </div>

@@ -2,7 +2,6 @@ import { variants as about } from './about/variants'
 import { variants as contact } from './contact/variants'
 import { variants as experience } from './experience/variants'
 import { variants as hero } from './hero/variants'
-import { variants as marquee } from './marquee/variants'
 import { variants as projects } from './projects/variants'
 import type { BlockId } from './registry'
 import { registerVariants } from './variant-registry'
@@ -22,7 +21,6 @@ const all: Record<BlockId, Parameters<typeof registerVariants>[1]> = {
   about,
   experience,
   projects,
-  marquee,
 }
 
 for (const [id, variants] of Object.entries(all)) registerVariants(id as BlockId, variants)

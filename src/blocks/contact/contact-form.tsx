@@ -58,11 +58,10 @@ export function ContactForm({
     // Pulled up over the section above so the rounded corners show it, like Junni's footer.
     <Section id={anchorId} surface={surface} className="relative -mt-10 rounded-t-4xl">
       <Container>
-        <EchoTitle as="p" text={copy.title} />
+        <EchoTitle as={H} text={copy.heading} />
         <div className="mt-12 grid gap-12 md:mt-16 md:grid-cols-2 md:gap-20">
           <div>
-            <H className="text-h2 font-bold">{copy.heading}</H>
-            <p className="font-hand mt-4 -rotate-1 text-3xl md:text-4xl">{copy.lead}</p>
+            <p className="font-hand -rotate-1 text-3xl md:text-4xl">{copy.lead}</p>
             {site.organization.email ? (
               <div className="mt-10">
                 <p className="text-muted-foreground text-sm font-semibold tracking-widest uppercase">

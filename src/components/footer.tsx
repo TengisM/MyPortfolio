@@ -3,11 +3,11 @@ import type { SiteConfig } from '@/lib/types'
 
 const LINK = 'hover:underline underline-offset-4 decoration-2'
 
-// Continues the lime of the contact section, the way Junni closes its page.
+// Continues the lilac of the contact section.
 export function Footer({ site }: { site: SiteConfig }) {
   const { organization: org } = site
   return (
-    <footer className="surface-lime bg-background text-foreground">
+    <footer className="surface-lilac bg-background text-foreground">
       <Container className="border-border flex flex-wrap items-end justify-between gap-6 border-t py-10 text-sm font-semibold">
         <p className="font-display text-base font-black uppercase">
           © {new Date().getFullYear()} {org.legalName ?? site.name}

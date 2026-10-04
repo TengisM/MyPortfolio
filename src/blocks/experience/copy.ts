@@ -15,7 +15,6 @@ export type ExperienceItem = {
 
 export type ExperienceCopy = {
   navLabel: string
-  title: string
   heading: string
   lead: string
   currentLabel: string
@@ -70,9 +69,8 @@ function itemsFor(locale: Locale, present: string): ExperienceItem[] {
 
 export const mn: ExperienceCopy = {
   navLabel: 'Туршлага',
-  title: 'Туршлага',
-  heading: 'Ажлын туршлага ба боловсрол',
-  lead: 'Сүүлийн 5 жилд ажилласан газрууд.',
+  heading: 'Миний ажилласан газрууд',
+  lead: 'Сүүлийн таван жил, бас сургууль.',
   currentLabel: 'Одоо',
   educationLabel: 'Боловсрол',
   items: itemsFor('mn', 'Одоог хүртэл'),
@@ -80,9 +78,8 @@ export const mn: ExperienceCopy = {
 
 export const en: ExperienceCopy = {
   navLabel: 'Experience',
-  title: 'Career',
-  heading: 'Experience and education',
-  lead: "Where I've worked over the last five years.",
+  heading: "Where I've worked",
+  lead: 'The last five years, plus where I studied.',
   currentLabel: 'Now',
   educationLabel: 'Education',
   items: itemsFor('en', 'Present'),

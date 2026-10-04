@@ -7,7 +7,7 @@ const SURFACE_CLASS: Record<Surface, string> = {
   accent: 'bg-accent text-foreground',
   // These two re-point the colour tokens for everything inside. See src/styles/portfolio.css.
   paper: 'surface-paper bg-background text-foreground',
-  lime: 'surface-lime bg-background text-foreground',
+  lilac: 'surface-lilac bg-background text-foreground',
 }
 
 // `compact` is for reference pages like /docs. Both follow the preset's --section-y.

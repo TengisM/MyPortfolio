@@ -57,7 +57,7 @@ export function Header({
   const themeToggle = <ThemeToggle label={locale === 'mn' ? 'Өнгө хувиргах' : 'Toggle theme'} />
 
   return (
-    <header className="bg-background/70 sticky top-0 z-50 backdrop-blur-md">
+    <header className="bg-background/95 border-border/60 sticky top-0 z-50 border-b backdrop-blur-md">
       <Container className="flex items-center justify-between gap-4 py-3">
         <a
           href={localePath('/', locale, site)}
