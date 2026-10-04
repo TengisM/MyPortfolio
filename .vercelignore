@@ -1,0 +1,3 @@
+# The Go API runs on Render (render.yaml). Without this, Vercel sees .go files under api/ and tries
+# to deploy them as its own serverless functions, which fails the build.
+/api
