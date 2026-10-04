@@ -13,8 +13,8 @@ export type ContactCopy = {
 
 export const mn: ContactCopy = {
   navLabel: 'Холбоо барих',
-  emailLabel: 'Шууд и-мэйл бичих бол:',
-  heading: 'Холбоо барих',
+  emailLabel: 'Эсвэл шууд бичээрэй',
+  heading: 'Холбогдоорой',
   lead: 'Ажлын санал, төсөл, эсвэл зүгээр л мэндчилгээ. Ихэвчлэн 1-2 өдөрт хариулдаг.',
   fields: { name: 'Нэр', email: 'И-мэйл', message: 'Захидал' },
   submit: 'Илгээх',
@@ -26,11 +26,11 @@ export const mn: ContactCopy = {
 
 export const en: ContactCopy = {
   navLabel: 'Contact',
-  emailLabel: 'To email me directly:',
-  heading: 'Contact',
+  emailLabel: 'Or write directly',
+  heading: 'Say hello',
   lead: 'A role, a project, or just hello. I usually reply within a day or two.',
   fields: { name: 'Name', email: 'Email', message: 'Message' },
-  submit: 'Send message',
+  submit: 'Send',
   submitting: 'Sending…',
   success: "Thanks! I'll get back to you soon.",
   error: 'Something went wrong. Please try again.',

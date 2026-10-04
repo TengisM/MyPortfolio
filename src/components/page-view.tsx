@@ -1,8 +1,8 @@
 import type { BlockId } from '@/blocks/registry'
+import { Backdrop } from '@/components/backdrop'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { RenderBlocks } from '@/components/render-blocks'
-import { ScriptRail } from '@/components/script-rail'
 import { pages } from '@/config/pages.config'
 import { site } from '@/config/site.config'
 import { createResolver } from '@/lib/pages/resolve-link'
@@ -14,22 +14,17 @@ export function PageView({ resolved }: { resolved: ResolvedPage<BlockId> }) {
   // No <h1> here. The first block renders it.
   return (
     <>
-      <ScriptRail
-        label={resolved.locale === 'mn' ? 'Тэнгис, монгол бичгээр' : 'Tenggis in Mongolian script'}
-      />
-      {/* Everything clears the fixed rail on desktop. */}
-      <div className="md:pl-36">
-        <Header site={site} locale={resolved.locale} path={resolved.path} resolve={resolve} />
-        <main>
-          <RenderBlocks
-            blocks={resolved.page.blocks}
-            locale={resolved.locale}
-            site={site}
-            resolve={resolve}
-          />
-        </main>
-        <Footer site={site} />
-      </div>
+      <Backdrop />
+      <Header site={site} locale={resolved.locale} path={resolved.path} resolve={resolve} />
+      <main>
+        <RenderBlocks
+          blocks={resolved.page.blocks}
+          locale={resolved.locale}
+          site={site}
+          resolve={resolve}
+        />
+      </main>
+      <Footer site={site} />
     </>
   )
 }

@@ -2,9 +2,13 @@ import type { ReactNode } from 'react'
 import type { Surface } from '@/lib/types'
 
 const SURFACE_CLASS: Record<Surface, string> = {
-  default: 'bg-background text-foreground',
+  // No background: the page's moving backdrop shows through (see src/components/backdrop.tsx).
+  default: 'text-foreground',
   muted: 'bg-muted text-foreground',
   accent: 'bg-accent text-foreground',
+  // These two re-point the colour tokens for everything inside. See src/styles/portfolio.css.
+  paper: 'surface-paper bg-background text-foreground',
+  lilac: 'surface-lilac bg-background text-foreground',
 }
 
 // `compact` is for reference pages like /docs. Both follow the preset's --section-y.

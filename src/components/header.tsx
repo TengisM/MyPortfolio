@@ -6,9 +6,6 @@ import { normalizePath } from '@/lib/pages/resolve-request'
 import type { Locale, SiteConfig } from '@/lib/types'
 import { ThemeToggle } from '@/theme'
 
-// Each language named in itself, the way a visitor looking for it would read it.
-const LANGUAGE_NAME: Record<Locale, string> = { en: 'English', mn: 'Монгол' }
-
 function labelFor(target: string, locale: Locale): string {
   const page = pages.find((p) => p.id === target)
   if (page) return page.seo[locale].title
@@ -40,7 +37,7 @@ export function Header({
     <a
       key={item.target}
       href={resolve(item.target)}
-      className="hover:text-primary flex min-h-11 items-center transition-colors"
+      className="hover:text-primary flex min-h-11 items-center font-semibold tracking-widest uppercase transition-colors"
     >
       {labelFor(item.target, locale)}
     </a>
@@ -51,26 +48,35 @@ export function Header({
       key={l}
       href={switchLocale(path, locale, l, site)}
       hrefLang={l}
-      className="text-muted-foreground hover:text-primary flex min-h-11 items-center transition-colors"
+      className="border-foreground/30 hover:border-primary hover:text-primary flex min-h-9 items-center rounded-full border px-3 font-semibold tracking-widest uppercase transition-colors"
     >
-      {LANGUAGE_NAME[l]}
+      {l}
     </a>
   ))
 
   const themeToggle = <ThemeToggle label={locale === 'mn' ? 'Өнгө хувиргах' : 'Toggle theme'} />
 
   return (
-    <header className="bg-background/95 sticky top-0 z-30 backdrop-blur">
+    <header className="bg-background/95 border-border/60 sticky top-0 z-50 border-b backdrop-blur-md">
       <Container className="flex items-center justify-between gap-4 py-3">
-        {/* First name only; site.name stays complete for titles and JSON-LD. */}
         <a
           href={localePath('/', locale, site)}
-          className="flex min-h-11 items-center font-semibold"
+          className="font-display flex min-h-11 items-center gap-2 font-black tracking-tight uppercase"
         >
-          {site.name.split(' ')[0]}
+          {/* Short mark, not the full name: site.name stays complete for titles and JSON-LD. */}
+          <span
+            aria-hidden="true"
+            className="bg-primary text-primary-foreground grid size-9 place-items-center rounded-xl text-sm"
+          >
+            T
+          </span>
+          <span className="sr-only">{site.name}</span>
+          <span aria-hidden="true" className="normal-case">
+            tenggis<span className="text-primary">.</span>
+          </span>
         </a>
 
-        <nav aria-label={navLabel} className="hidden items-center gap-7 text-sm md:flex">
+        <nav aria-label={navLabel} className="hidden items-center gap-7 text-xs md:flex">
           {pageLinks}
           {localeLinks}
           {themeToggle}

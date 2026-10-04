@@ -8,12 +8,17 @@ export type ExperienceItem = {
   position: string
   description: string
   period: string
+  /** The first year, set large. */
+  year: string
   current: boolean
 }
 
 export type ExperienceCopy = {
   navLabel: string
   heading: string
+  lead: string
+  currentLabel: string
+  educationLabel: string
   items: ExperienceItem[]
 }
 
@@ -57,18 +62,25 @@ function itemsFor(locale: Locale, present: string): ExperienceItem[] {
     position: e.position[locale],
     description: e.description[locale],
     period: formatPeriod(e, locale, present),
+    year: e.start_date.slice(0, 4),
     current: e.end_date === null,
   }))
 }
 
 export const mn: ExperienceCopy = {
   navLabel: 'Туршлага',
-  heading: 'Ажил',
-  items: itemsFor('mn', 'одоо'),
+  heading: 'Миний ажилласан газрууд',
+  lead: 'Сүүлийн таван жил, бас сургууль.',
+  currentLabel: 'Одоо',
+  educationLabel: 'Боловсрол',
+  items: itemsFor('mn', 'Одоог хүртэл'),
 }
 
 export const en: ExperienceCopy = {
   navLabel: 'Experience',
-  heading: 'Work',
-  items: itemsFor('en', 'now'),
+  heading: "Where I've worked",
+  lead: 'The last five years, plus where I studied.',
+  currentLabel: 'Now',
+  educationLabel: 'Education',
+  items: itemsFor('en', 'Present'),
 }

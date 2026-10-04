@@ -32,10 +32,19 @@ export function FadeIn({ children, className, delay = 0 }: Props) {
   )
 }
 
-// A plain wrapper. Sections don't animate in: the one moving moment on the page is the script
-// in the rail. Kept as a component so blocks keep a single motion import.
-export function Reveal({ children, className }: Props) {
-  return <div className={className}>{children}</div>
+// CSS-driven, not motion: the element only starts hidden once ScrollEffects puts `js-reveal` on
+// <html>, so the static HTML never carries `opacity:0` and works without JavaScript. The delay
+// maps to a tenth-of-a-second step (see [data-reveal-step] in src/styles/portfolio.css).
+export function Reveal({ children, className, delay = 0 }: Props) {
+  return (
+    <div
+      className={className}
+      data-reveal=""
+      data-reveal-step={Math.min(Math.round(delay * 10), 4)}
+    >
+      {children}
+    </div>
+  )
 }
 
 // No opacity in `hidden`/`shown` here or in child variants.
