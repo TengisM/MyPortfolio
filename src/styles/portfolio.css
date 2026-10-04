@@ -199,6 +199,70 @@ body::before {
   }
 }
 
+/* Moving backdrop. Three blurred blobs drift on long, offset loops so the pattern never visibly
+   repeats; the spotlight sits wherever --mx/--my put it (set by Backdrop on pointer move). */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+  pointer-events: none;
+}
+.aurora > span {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  will-change: transform;
+}
+.aurora > span:nth-child(1) {
+  top: -10%;
+  left: -10%;
+  width: 55vw;
+  height: 55vw;
+  background: oklch(76.5% 0.13 293 / 0.28);
+  animation: drift-a 26s ease-in-out infinite alternate;
+}
+.aurora > span:nth-child(2) {
+  right: -15%;
+  top: 20%;
+  width: 50vw;
+  height: 50vw;
+  background: oklch(55% 0.22 285 / 0.26);
+  animation: drift-b 32s ease-in-out infinite alternate;
+}
+.aurora > span:nth-child(3) {
+  left: 20%;
+  bottom: -20%;
+  width: 45vw;
+  height: 45vw;
+  background: oklch(78% 0.1 220 / 0.16);
+  animation: drift-c 38s ease-in-out infinite alternate;
+}
+@keyframes drift-a {
+  to {
+    transform: translate(30vw, 25vh) scale(1.25);
+  }
+}
+@keyframes drift-b {
+  to {
+    transform: translate(-35vw, -15vh) scale(0.85);
+  }
+}
+@keyframes drift-c {
+  to {
+    transform: translate(20vw, -35vh) scale(1.2);
+  }
+}
+.aurora .spotlight {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    560px circle at var(--mx, -999px) var(--my, -999px),
+    oklch(76.5% 0.13 293 / 0.12),
+    transparent 65%
+  );
+}
+
 /* A friendly wave for the greeting. */
 .wave {
   display: inline-block;
@@ -228,6 +292,7 @@ body::before {
 
 @media (prefers-reduced-motion: reduce) {
   body::before,
+  .aurora > span,
   .wave,
   .scroll-progress,
   .parallax-photo,

@@ -14,12 +14,7 @@ export function HeroSplit({
 }: BlockProps<HeroCopy>) {
   const H = headingLevel === 1 ? 'h1' : 'h2'
   return (
-    <Section id={anchorId} surface={surface} className="relative isolate overflow-hidden">
-      {/* Soft lilac glow behind the photo. Decorative only. */}
-      <div
-        aria-hidden="true"
-        className="bg-primary/25 absolute top-1/4 -right-24 -z-10 size-96 rounded-full blur-3xl md:right-12"
-      />
+    <Section id={anchorId} surface={surface}>
       <Container>
         <div className="grid items-center gap-14 md:grid-cols-12">
           <FadeIn className="md:col-span-7">
@@ -84,7 +79,7 @@ export function HeroSplit({
           {copy.image ? (
             // FadeIn, not Reveal: this image is the LCP element and must not wait on scroll.
             <FadeIn className="md:col-span-5" delay={0.15}>
-              <div className="parallax-photo group relative mx-auto w-3/4 md:w-full">
+              <div className="parallax-photo group relative mx-auto w-1/2 md:mr-0 md:w-3/4 lg:w-2/3">
                 {/* A lilac card peeking out behind the photo; they line up on hover. */}
                 <div
                   aria-hidden="true"

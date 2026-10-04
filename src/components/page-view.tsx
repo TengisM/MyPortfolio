@@ -1,4 +1,5 @@
 import type { BlockId } from '@/blocks/registry'
+import { Backdrop } from '@/components/backdrop'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { RenderBlocks } from '@/components/render-blocks'
@@ -13,6 +14,7 @@ export function PageView({ resolved }: { resolved: ResolvedPage<BlockId> }) {
   // No <h1> here. The first block renders it.
   return (
     <>
+      <Backdrop />
       <Header site={site} locale={resolved.locale} path={resolved.path} resolve={resolve} />
       <main>
         <RenderBlocks
