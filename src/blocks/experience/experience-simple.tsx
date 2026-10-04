@@ -24,7 +24,7 @@ export function ExperienceSimple({
           {copy.items.map((item) => (
             <li key={item.id} className="border-border border-b">
               <Reveal>
-                {/* A lilac band sweeps in from the left on hover and the text flips to ink. */}
+                {/* A blue band sweeps in from the left on hover and the text flips to ink. */}
                 <div className="group hover:text-primary-foreground relative isolate grid gap-3 py-8 transition-colors duration-300 before:absolute before:inset-0 before:-z-10 before:origin-left before:scale-x-0 before:bg-primary before:transition-transform before:duration-500 hover:before:scale-x-100 md:grid-cols-12 md:gap-8 md:px-4">
                   <p className="year-slide font-display text-outline group-hover:text-primary-foreground text-4xl font-black md:col-span-3 md:text-5xl">
                     {item.year}

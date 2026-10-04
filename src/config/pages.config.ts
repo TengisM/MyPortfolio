@@ -11,7 +11,7 @@ export const pages: PageConfig<BlockId>[] = [
       { id: 'about', surface: 'default' },
       { id: 'experience', surface: 'default' },
       { id: 'projects', surface: 'paper' },
-      { id: 'contact', surface: 'lilac' },
+      { id: 'contact', surface: 'blue' },
     ],
     seo: {
       mn: {

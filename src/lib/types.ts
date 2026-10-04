@@ -1,5 +1,5 @@
 export type Locale = 'mn' | 'en'
-export type Surface = 'default' | 'muted' | 'accent' | 'paper' | 'lilac'
+export type Surface = 'default' | 'muted' | 'accent' | 'paper' | 'blue'
 
 export type JsonLdNode = Record<string, unknown>
 

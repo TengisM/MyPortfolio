@@ -31,30 +31,31 @@ body::before {
 
 /* Section surfaces beyond the preset's three. They re-point the colour tokens, so every utility
    inside (text-muted-foreground, border-border, bg-primary) follows without per-block classes. */
-/* Soft white with a lilac tint; the accent turns deep violet so it still reads on light. */
+/* Cool white with a blue tint; the accent deepens so it still reads on light. */
 .surface-paper {
-  --c-background: oklch(95.3% 0.012 300);
-  --c-foreground: oklch(20.6% 0.012 300);
-  --c-muted: oklch(91.5% 0.016 300);
-  --c-muted-foreground: oklch(45% 0.02 300);
-  --c-accent: oklch(89% 0.02 300);
-  --c-border: oklch(84% 0.02 300);
-  --c-primary: oklch(48% 0.2 290);
-  --c-primary-foreground: oklch(97% 0.01 300);
-  --c-ring: oklch(48% 0.2 290);
+  --c-background: #eef1f8;
+  --c-foreground: #11131a;
+  --c-muted: #e3e8f3;
+  --c-muted-foreground: #4f5870;
+  --c-accent: #dce3f2;
+  --c-border: #cfd7e8;
+  --c-primary: #2b5ce6;
+  --c-primary-foreground: #ffffff;
+  --c-ring: #2b5ce6;
 }
-.surface-lilac {
-  --c-background: oklch(76.5% 0.13 293);
-  --c-foreground: oklch(20.6% 0.012 300);
-  --c-muted: oklch(72% 0.13 293);
-  --c-muted-foreground: oklch(30% 0.06 295);
-  --c-accent: oklch(70% 0.13 293);
-  --c-border: oklch(36% 0.08 295);
-  --c-primary: oklch(20.6% 0.012 300);
-  --c-primary-foreground: oklch(95.3% 0.012 300);
-  --c-ring: oklch(20.6% 0.012 300);
-  --c-destructive: oklch(40% 0.18 27);
-  --c-success: oklch(32% 0.12 150);
+/* The contact section and footer: electric blue with ink type. */
+.surface-blue {
+  --c-background: #5b8cff;
+  --c-foreground: #0d1220;
+  --c-muted: #4f80f5;
+  --c-muted-foreground: #1c2a52;
+  --c-accent: #4a7af0;
+  --c-border: #23376e;
+  --c-primary: #0d1220;
+  --c-primary-foreground: #eef1f8;
+  --c-ring: #0d1220;
+  --c-destructive: #7a0f0f;
+  --c-success: #0b4d26;
 }
 
 /* Hollow-looking letters. Unbounded draws each glyph from overlapping shapes, so a plain stroke
@@ -219,7 +220,7 @@ body::before {
   left: -10%;
   width: 55vw;
   height: 55vw;
-  background: oklch(76.5% 0.13 293 / 0.28);
+  background: rgb(91 140 255 / 0.26);
   animation: drift-a 26s ease-in-out infinite alternate;
 }
 .aurora > span:nth-child(2) {
@@ -227,7 +228,7 @@ body::before {
   top: 20%;
   width: 50vw;
   height: 50vw;
-  background: oklch(55% 0.22 285 / 0.26);
+  background: rgb(79 70 229 / 0.24);
   animation: drift-b 32s ease-in-out infinite alternate;
 }
 .aurora > span:nth-child(3) {
@@ -235,7 +236,7 @@ body::before {
   bottom: -20%;
   width: 45vw;
   height: 45vw;
-  background: oklch(78% 0.1 220 / 0.16);
+  background: rgb(56 189 248 / 0.12);
   animation: drift-c 38s ease-in-out infinite alternate;
 }
 @keyframes drift-a {
@@ -258,7 +259,7 @@ body::before {
   inset: 0;
   background: radial-gradient(
     560px circle at var(--mx, -999px) var(--my, -999px),
-    oklch(76.5% 0.13 293 / 0.12),
+    rgb(91 140 255 / 0.12),
     transparent 65%
   );
 }

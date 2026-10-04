@@ -80,7 +80,7 @@ export function HeroSplit({
             // FadeIn, not Reveal: this image is the LCP element and must not wait on scroll.
             <FadeIn className="md:col-span-5" delay={0.15}>
               <div className="parallax-photo group relative mx-auto w-1/2 md:mr-0 md:w-3/4 lg:w-2/3">
-                {/* A lilac card peeking out behind the photo; they line up on hover. */}
+                {/* A blue card peeking out behind the photo; they line up on hover. */}
                 <div
                   aria-hidden="true"
                   className="bg-primary absolute inset-0 translate-x-4 translate-y-4 rotate-3 rounded-4xl transition-transform duration-500 group-hover:translate-0 group-hover:rotate-0"

@@ -1,4 +1,4 @@
-/* Portfolio preset: plum-grey with film grain, soft white type, one lilac accent. Both families
+/* Portfolio preset: soft navy-grey with film grain, cool white type, one electric-blue accent. Both families
    ship cyrillic and cyrillic-ext, so ө and ү render in the face. */
 :root {
   --face-display: "Unbounded Variable", system-ui, sans-serif;
@@ -26,16 +26,17 @@
 }
 
 .dark {
-  /* #19171f plum-grey, #f1eef7 soft white, #b9a3ff lilac. Lilac on the background: 8.4:1. */
-  --c-background: oklch(20.6% 0.012 300);
-  --c-foreground: oklch(95.3% 0.012 300);
-  --c-muted: oklch(24.5% 0.014 300);
-  --c-muted-foreground: oklch(74% 0.02 300);
-  --c-accent: oklch(28% 0.018 300);
-  --c-border: oklch(34% 0.02 300);
-  --c-primary: oklch(76.5% 0.13 293);
-  --c-primary-foreground: oklch(20.6% 0.012 300);
-  --c-ring: oklch(76.5% 0.13 293);
+  /* A softer dark: navy-grey #171b26 rather than near-black, cool white #eef1f8, electric blue
+     #5b8cff. Blue on the background: 6.1:1. */
+  --c-background: #171b26;
+  --c-foreground: #eef1f8;
+  --c-muted: #1e2331;
+  --c-muted-foreground: #a3acc2;
+  --c-accent: #252b3b;
+  --c-border: #303749;
+  --c-primary: #5b8cff;
+  --c-primary-foreground: #0d1220;
+  --c-ring: #5b8cff;
   --c-destructive: oklch(70% 0.16 27);
   --c-success: oklch(80% 0.14 150);
 }
