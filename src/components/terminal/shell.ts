@@ -5,12 +5,13 @@ export type Tone = 'dir' | 'exec' | 'link' | 'err' | 'muted' | 'accent'
 export type Segment = { text: string; tone?: Tone; href?: string; download?: boolean }
 export type Line = Segment[]
 
-export type GameId = 'tetris'
+export type GameId = 'tetris' | 'tron'
 
 export type Effect =
   | { kind: 'clear' }
   | { kind: 'open'; href: string; download?: boolean }
-  | { kind: 'game'; game: GameId }
+  /** `players: 2` is Tron's two-on-one-keyboard mode. */
+  | { kind: 'game'; game: GameId; players?: 1 | 2 }
   /** Jump straight to the regular site, optionally at one section. */
   | { kind: 'website'; target?: string }
   /** Play the dev-server start-up, then open the regular site. */
@@ -128,7 +129,7 @@ export function buildFs(data: ShellData): DirNode {
           [],
           text('Start the website:  cd website && pnpm dev'),
           text('Look around:        ls, cd <dir>, cat <file>'),
-          text('Play:               tetris'),
+          text('Play:               tetris, tron (tron 2p for two players)'),
           text('Everything else:    help'),
         ],
       },
@@ -207,7 +208,10 @@ export function buildFs(data: ShellData): DirNode {
       },
       games: {
         type: 'dir',
-        children: { tetris: { type: 'exec', game: 'tetris' } },
+        children: {
+          tetris: { type: 'exec', game: 'tetris' },
+          tron: { type: 'exec', game: 'tron' },
+        },
       },
     },
   }
@@ -294,6 +298,7 @@ export const COMMANDS = [
   'npm',
   'yarn',
   'tetris',
+  'tron',
 ] as const
 
 const HELP: [string, string][] = [
@@ -303,6 +308,8 @@ const HELP: [string, string][] = [
   ['cat <file>', 'print a file'],
   ['open <name>', 'jump to that section, or open the link'],
   ['tetris', 'play Tetris'],
+  ['tron', 'light cycles against 3 bots'],
+  ['tron 2p', 'two players on one keyboard, plus 2 bots'],
   ['pwd', 'show where you are'],
   ['whoami', 'who runs this machine'],
   ['history', 'commands you have typed'],
@@ -389,7 +396,14 @@ function runOne(root: DirNode, cwd: string, input: string, history: string[]): R
     cwd: next,
   })
   const err = (s: string) => out([text(s, 'err')])
-  const tetris = () => out([text('starting tetris…', 'muted')], [{ kind: 'game', game: 'tetris' }])
+  const launch = (game: GameId) => {
+    // `tron 2p`, `tron --2p`, `tron -2`: two players on one keyboard.
+    const players = game === 'tron' && args.some((a) => /^-*2(p|players?)?$/.test(a)) ? 2 : 1
+    return out(
+      [text(`starting ${game}${players === 2 ? ' for two players' : ''}…`, 'muted')],
+      [{ kind: 'game', game, players }],
+    )
+  }
 
   if (cmd === '') return out([])
 
@@ -398,8 +412,9 @@ function runOne(root: DirNode, cwd: string, input: string, history: string[]): R
   }
 
   // Running a program by path: ./tetris, ./games/tetris, games/tetris.
-  if (cmd.includes('/') && lookup(root, resolvePath(cwd, cmd))?.type === 'exec') return tetris()
-  if (cmd === 'tetris') return tetris()
+  const program = cmd.includes('/') ? lookup(root, resolvePath(cwd, cmd)) : undefined
+  if (program?.type === 'exec') return launch(program.game)
+  if (cmd === 'tetris' || cmd === 'tron') return launch(cmd)
   if (cmd === 'website' || cmd === 'exit') {
     return runAll(root, cwd, 'cd ~/tenggis-port/website && pnpm dev', history)
   }
@@ -454,7 +469,8 @@ function runOne(root: DirNode, cwd: string, input: string, history: string[]): R
       const node = lookup(root, resolvePath(cwd, arg))
       if (!node) return err(`cat: ${arg}: No such file or directory`)
       if (node.type === 'dir') return err(`cat: ${arg}: Is a directory. Try \`ls ${arg}\`.`)
-      if (node.type === 'exec') return err(`cat: ${arg}: It's a program. Run it with \`tetris\`.`)
+      if (node.type === 'exec')
+        return err(`cat: ${arg}: It's a program. Run it with \`${node.game}\`.`)
       return out(node.body)
     }
     case 'open': {
@@ -462,7 +478,7 @@ function runOne(root: DirNode, cwd: string, input: string, history: string[]): R
       // Section names work from anywhere: fall back to the portfolio's top folder.
       const node = lookup(root, resolvePath(cwd, arg)) ?? lookup(root, resolvePath(START, arg))
       if (!node) return err(`open: ${arg}: No such file or directory`)
-      if (node.type === 'exec') return tetris()
+      if (node.type === 'exec') return launch(node.game)
       if (!node.open) return err(`open: ${arg}: nothing to open. Try \`cat ${arg}\`.`)
       return out([text(`opening ${arg}…`, 'muted')], [node.open])
     }

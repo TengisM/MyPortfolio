@@ -145,7 +145,7 @@ export function InteractiveTerminal({
   const [value, setValue] = useState('')
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState<number | null>(null)
-  const [game, setGame] = useState<GameId | null>(null)
+  const [game, setGame] = useState<{ id: GameId; players: 1 | 2 } | null>(null)
   const [booting, setBooting] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -202,7 +202,7 @@ export function InteractiveTerminal({
       case 'game':
         // A game takes the keyboard: drop focus so its arrow keys don't walk the history here.
         inputRef.current?.blur()
-        setGame(effect.game)
+        setGame({ id: effect.game, players: effect.players ?? 1 })
         return
       case 'website':
         onWebsite(effect.target)
@@ -348,10 +348,10 @@ export function InteractiveTerminal({
       </div>
 
       {/* tmux-style status bar: windows on the left, the way out in the middle, the clock. */}
-      <div className="bg-primary text-primary-foreground flex h-8 shrink-0 items-center gap-4 px-3 font-mono text-xs">
+      <div className="bg-primary text-primary-foreground flex h-8 shrink-0 items-center gap-4 px-3 font-mono text-xs whitespace-nowrap">
         <span className="font-bold">[tenggis-port]</span>
         <span className={game ? '' : 'font-bold'}>0:zsh{game ? '-' : '*'}</span>
-        {game ? <span className="font-bold">1:{game}*</span> : null}
+        {game ? <span className="font-bold">1:{game.id}*</span> : null}
         <button
           type="button"
           onClick={() => executeRef.current('website')}
@@ -364,7 +364,7 @@ export function InteractiveTerminal({
 
       {game ? (
         <Suspense fallback={null}>
-          <GameWindow game={game} onExit={closeGame} />
+          <GameWindow game={game.id} players={game.players} onExit={closeGame} />
         </Suspense>
       ) : null}
     </>

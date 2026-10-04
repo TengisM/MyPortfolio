@@ -1,34 +1,19 @@
-import { motion, useReducedMotion } from 'motion/react'
-import { type ReactNode, useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import type { MotionModule } from '@/integrations/motion.types'
 
 type Props = { children: ReactNode; className?: string; delay?: number }
 
-// The server always renders the animated branch. Reading the OS setting during hydration would
-// mismatch and freeze the element at `initial`, so switch only after mount.
-function useReducedMotionAfterMount() {
-  const reduce = useReducedMotion()
-  const [committed, setCommitted] = useState(false)
-  useEffect(() => {
-    if (reduce) setCommitted(true)
-  }, [reduce])
-  return committed
-}
+// All CSS, no animation library: the `motion` package cost 40 KB gzipped for one hero fade.
+// The delay maps to a tenth-of-a-second step, the same steps as Reveal.
 
 // Transform only, never opacity. An opacity of 0 gets written into the static HTML, so visitors
-// without JS would see a blank hero.
+// without JS would see a blank hero. It plays when the site view appears (see [data-fade-in] in
+// src/styles/portfolio.css), so it isn't spent behind the terminal.
 export function FadeIn({ children, className, delay = 0 }: Props) {
-  const reduce = useReducedMotionAfterMount()
-  if (reduce) return <div className={className}>{children}</div>
   return (
-    <motion.div
-      className={className}
-      initial={{ y: 12 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.4, delay, ease: 'easeOut' }}
-    >
+    <div className={className} data-fade-in="" data-fade-step={Math.min(Math.round(delay * 10), 4)}>
       {children}
-    </motion.div>
+    </div>
   )
 }
 
@@ -47,21 +32,9 @@ export function Reveal({ children, className, delay = 0 }: Props) {
   )
 }
 
-// No opacity in `hidden`/`shown` here or in child variants.
+// Kept for the MotionModule contract. Nothing staggers today, so it is a plain wrapper.
 export function Stagger({ children, className }: { children: ReactNode; className?: string }) {
-  const reduce = useReducedMotionAfterMount()
-  if (reduce) return <div className={className}>{children}</div>
-  return (
-    <motion.div
-      className={className}
-      initial="hidden"
-      whileInView="shown"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={{ shown: { transition: { staggerChildren: 0.08 } } }}
-    >
-      {children}
-    </motion.div>
-  )
+  return <div className={className}>{children}</div>
 }
 
 // Checks every export against the shared type. Callers only check what they import.

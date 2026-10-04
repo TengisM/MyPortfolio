@@ -1,7 +1,7 @@
-import interCyrillic from '@fontsource-variable/inter/files/inter-cyrillic-wght-normal.woff2'
-import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2'
-import manropeCyrillic from '@fontsource-variable/manrope/files/manrope-cyrillic-wght-normal.woff2'
-import manropeLatin from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2'
+import monoCyrillic from '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-cyrillic-wght-normal.woff2'
+import monoLatin from '@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2'
+import unboundedCyrillic from '@fontsource-variable/unbounded/files/unbounded-cyrillic-wght-normal.woff2'
+import unboundedLatin from '@fontsource-variable/unbounded/files/unbounded-latin-wght-normal.woff2'
 import type { BlockId } from '@/blocks/registry'
 import { localePath } from '@/lib/pages/enumerate'
 import type { ResolvedPage } from '@/lib/pages/resolve-request'
@@ -9,10 +9,11 @@ import type { Locale, PageConfig, SiteConfig } from '@/lib/types'
 import { blockPreloadHrefs } from './block-preloads'
 import { buildJsonLd } from './json-ld'
 
-// Preload hero fonts so they load with the CSS, not after it. Mongolian needs the Cyrillic subset.
+// Preload the fonts of the first screen, the terminal: JetBrains Mono for the text and Unbounded
+// for the name. Mongolian needs the Cyrillic subset.
 const CRITICAL_FONTS_BY_LOCALE: Partial<Record<Locale, string[]>> = {
-  mn: [manropeCyrillic, interCyrillic],
-  en: [manropeLatin, interLatin],
+  mn: [monoCyrillic, unboundedCyrillic],
+  en: [monoLatin, unboundedLatin],
 }
 
 export function buildHead(
