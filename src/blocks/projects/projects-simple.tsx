@@ -44,6 +44,8 @@ export function ProjectsSimple({
                     {project.shot ? (
                       <img
                         src={project.shot}
+                        srcSet={project.shotSrcSet ?? undefined}
+                        sizes="(min-width: 1280px) 600px, (min-width: 768px) 50vw, 100vw"
                         alt=""
                         loading="lazy"
                         width={1200}
@@ -57,6 +59,8 @@ export function ProjectsSimple({
                             src={project.logo}
                             alt=""
                             loading="lazy"
+                            width={56}
+                            height={56}
                             className="h-14 w-auto rounded-2xl bg-white p-3 shadow-lg transition-transform duration-500 group-hover:scale-110"
                           />
                         ) : (

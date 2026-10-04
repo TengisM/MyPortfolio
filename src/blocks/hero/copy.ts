@@ -1,3 +1,10 @@
+// Imported rather than kept in public/, so the file name carries a hash and browsers can cache it
+// for a year. The photo shows at 186 to 340 CSS pixels, so a 360px copy serves most screens.
+import portrait from './tenggis.webp'
+import portraitSmall from './tenggis.webp?w=360&format=webp&imagetools'
+
+const portraitSrcSet = `${portraitSmall} 360w, ${portrait} 720w`
+
 export type HeroCopy = {
   navLabel: string
   eyebrow: string
@@ -11,7 +18,7 @@ export type HeroCopy = {
   cv: { label: string; href: string }
   socials: { label: string; href: string }[]
   /** `split` variant only — optional, so `centered` is not forced to supply it. */
-  image?: { src: string; alt: string; width: number; height: number }
+  image?: { src: string; srcSet?: string; alt: string; width: number; height: number }
 }
 
 // Shared by both languages: product names are not translated.
@@ -48,7 +55,8 @@ export const mn: HeroCopy = {
   cv: { label: 'CV татах', href: cvHref },
   socials,
   image: {
-    src: '/images/tenggis.webp',
+    src: portrait,
+    srcSet: portraitSrcSet,
     alt: 'Тэнгис Мөнхбаатарын хөрөг зураг',
     width: 720,
     height: 720,
@@ -67,7 +75,8 @@ export const en: HeroCopy = {
   cv: { label: 'Download CV', href: cvHref },
   socials,
   image: {
-    src: '/images/tenggis.webp',
+    src: portrait,
+    srcSet: portraitSrcSet,
     alt: 'Portrait of Tenggis Munkhbaatar',
     width: 720,
     height: 720,

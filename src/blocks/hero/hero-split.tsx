@@ -88,6 +88,8 @@ export function HeroSplit({
                 />
                 <img
                   src={copy.image.src}
+                  srcSet={copy.image.srcSet}
+                  sizes="(min-width: 768px) 340px, 45vw"
                   alt={copy.image.alt}
                   width={copy.image.width}
                   height={copy.image.height}

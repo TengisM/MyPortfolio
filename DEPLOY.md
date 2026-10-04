@@ -86,6 +86,12 @@ VITE_TRON_WS=wss://<your-app>.koyeb.app/api/tron/ws
    Koyeb as `VERCEL_DEPLOY_HOOK_URL` and redeploy the API.
 5. Set the production domain to `tenggis.vercel.app` (or whatever `url` in
    `src/config/site.config.ts` says; they must match).
+6. Analytics tab → Enable Web Analytics (free on Hobby). The site loads
+   `/_vercel/insights/script.js` on every page. Until analytics is on, that file 404s, which
+   shows as a console error and costs 4 points of Lighthouse's best-practices score.
+
+`vercel.json` gives `/assets/*` a one-year immutable cache. Every file there has a content hash in
+its name, so a new build never reuses a cached copy.
 
 ## How an edit goes live
 

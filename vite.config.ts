@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import { imagetools } from 'vite-imagetools'
 import { pages } from './src/config/pages.config.ts'
 import { site } from './src/config/site.config.ts'
 import { enumerateUrls } from './src/lib/pages/enumerate.ts'
@@ -46,6 +47,8 @@ export default defineConfig({
   },
   plugins: [
     tailwindcss(),
+    // Resized copies for srcset: `./photo.webp?w=360&format=webp&imagetools`.
+    imagetools(),
     tanstackStart({
       // By default these are found by filename directly under `src/`. They live in `src/app/`
       // here, so each one must be named. The paths are relative to `src/`.

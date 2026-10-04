@@ -64,9 +64,7 @@ export function ContactForm({
             <p className="font-hand -rotate-1 text-2xl md:text-3xl">{copy.lead}</p>
             {site.organization.email ? (
               <div className="mt-10">
-                <p className="text-muted-foreground text-sm font-semibold tracking-widest uppercase">
-                  {copy.emailLabel}
-                </p>
+                <p className="text-sm font-semibold tracking-widest uppercase">{copy.emailLabel}</p>
                 <a
                   href={`mailto:${site.organization.email}`}
                   className="font-display mt-2 inline-block text-lg font-bold break-all underline decoration-2 underline-offset-8 transition-colors hover:decoration-transparent md:text-2xl"

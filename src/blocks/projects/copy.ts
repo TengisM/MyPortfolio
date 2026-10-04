@@ -8,6 +8,8 @@ export type ProjectItem = {
   logo: string | null
   /** A screenshot of the live site, or null to show a designed card instead. */
   shot: string | null
+  /** The screenshot at 640 and 1200 pixels wide, for `srcset`. */
+  shotSrcSet: string | null
   description: string
 }
 
@@ -26,7 +28,18 @@ const shots = import.meta.glob<string>('../../content/shots/*.webp', {
   query: '?url',
   import: 'default',
 })
+// A 640px copy of each for phones and narrow cards. The originals are 1200px wide.
+const smallShots = import.meta.glob<string>('../../content/shots/*.webp', {
+  eager: true,
+  query: '?w=640&format=webp&imagetools',
+  import: 'default',
+})
 const shotFor = (id: string): string | null => shots[`../../content/shots/${id}.webp`] ?? null
+const shotSrcSet = (id: string): string | null => {
+  const small = smallShots[`../../content/shots/${id}.webp`]
+  const full = shotFor(id)
+  return small && full ? `${small} 640w, ${full} 1200w` : null
+}
 
 function itemsFor(locale: Locale): ProjectItem[] {
   return content.projects.map((p) => ({
@@ -35,6 +48,7 @@ function itemsFor(locale: Locale): ProjectItem[] {
     url: p.url,
     logo: p.logo,
     shot: shotFor(p.id),
+    shotSrcSet: shotSrcSet(p.id),
     description: p.description[locale],
   }))
 }

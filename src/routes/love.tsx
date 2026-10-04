@@ -73,7 +73,7 @@ function LovePage() {
   return (
     <main className="relative flex h-dvh flex-col items-center justify-center overflow-hidden bg-linear-to-br from-rose-200 via-pink-100 to-rose-300 p-6 text-center">
       {/* biome-ignore lint/a11y/useMediaCaption: background music, no speech to caption. */}
-      <audio ref={audioRef} src="/love/i-aint-worried.flac" loop />
+      <audio ref={audioRef} src="/love/i-aint-worried.m4a" loop />
       <button
         type="button"
         onClick={toggleMusic}
