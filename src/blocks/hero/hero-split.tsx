@@ -4,7 +4,11 @@ import type { BlockProps } from '@/lib/types'
 import { FadeIn } from '@/motion'
 import type { HeroCopy } from './copy'
 
-// A personal intro: greeting and photo side by side, the way you'd introduce yourself.
+const PROMPT = 'text-primary select-none'
+const FILE_LINK = 'text-primary underline-offset-4 hover:underline'
+
+// The intro as a terminal session. Every line is real text in the HTML (the name is the page's
+// h1); `.term` in src/styles/portfolio.css plays it back as typing on load.
 export function HeroSplit({
   copy,
   resolve,
@@ -13,73 +17,98 @@ export function HeroSplit({
   headingLevel,
 }: BlockProps<HeroCopy>) {
   const H = headingLevel === 1 ? 'h1' : 'h2'
+  const [github, linkedin] = copy.socials
   return (
     <Section id={anchorId} surface={surface}>
       <Container>
-        <div className="grid items-center gap-14 md:grid-cols-12">
-          <FadeIn className="md:col-span-7">
-            <div className="parallax-text">
-              <p className="border-border text-muted-foreground inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-medium">
-                <span aria-hidden="true" className="bg-primary size-2 rounded-full" />
-                {copy.eyebrow}
-              </p>
-              <H className="font-display mt-6 text-5xl leading-none font-black text-balance md:text-7xl">
-                {copy.heading}{' '}
-                <span aria-hidden="true" className="wave">
-                  👋
+        <div className="grid items-center gap-12 md:grid-cols-12">
+          <FadeIn className="min-w-0 md:col-span-8">
+            <div className="border-border bg-muted/80 overflow-hidden rounded-2xl border shadow-2xl backdrop-blur">
+              <div className="border-border flex items-center gap-2 border-b px-4 py-3">
+                <span aria-hidden="true" className="size-3 rounded-full bg-red-400/80" />
+                <span aria-hidden="true" className="size-3 rounded-full bg-amber-400/80" />
+                <span aria-hidden="true" className="size-3 rounded-full bg-green-400/80" />
+                <span className="text-muted-foreground ml-3 truncate font-mono text-xs">
+                  {copy.terminalTitle}
                 </span>
-              </H>
-              <p className="text-muted-foreground mt-6 text-lg text-pretty">{copy.lead}</p>
-              <p className="mt-4 flex items-center gap-2 text-sm font-medium">
-                <span aria-hidden="true">📍</span>
-                {copy.location}
-              </p>
-
-              <p className="sr-only">{copy.skillsLabel}</p>
-              <ul className="mt-8 flex flex-wrap gap-2">
-                {copy.skills.map((skill) => (
-                  <li
-                    key={skill}
-                    className="bg-muted border-border hover:border-primary hover:text-primary rounded-full border px-3.5 py-1.5 text-sm transition-colors"
-                  >
-                    {skill}
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-10 flex flex-wrap items-center gap-3">
-                <a
-                  href={resolve(copy.primaryCta.target)}
-                  className="bg-primary text-primary-foreground rounded-full px-7 py-3.5 font-semibold transition-transform hover:-translate-y-0.5"
-                >
-                  {copy.primaryCta.label}
-                </a>
-                <a
-                  href={copy.cv.href}
-                  download
-                  className="border-foreground/30 hover:border-primary hover:text-primary rounded-full border px-7 py-3.5 font-semibold transition-colors"
-                >
-                  {copy.cv.label}
-                </a>
-                {copy.socials.map((s) => (
-                  <a
-                    key={s.href}
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-muted-foreground hover:text-primary px-3 py-3.5 text-sm font-semibold transition-colors"
-                  >
-                    {s.label} ↗
-                  </a>
-                ))}
               </div>
+
+              <div className="term grid gap-1.5 p-5 font-mono text-sm md:p-7 md:text-base">
+                <p className="cmd">
+                  <span className={PROMPT}>$ </span>whoami
+                </p>
+                <H className="out font-display mb-2 text-4xl leading-tight font-black md:text-6xl">
+                  {copy.heading}
+                </H>
+                <p className="cmd">
+                  <span className={PROMPT}>$ </span>cat about.txt
+                </p>
+                <p className="out text-muted-foreground mb-2">
+                  <span className="text-foreground font-semibold">{copy.role}.</span> {copy.lead}
+                </p>
+                <p className="cmd">
+                  <span className={PROMPT}>$ </span>cat location.txt
+                </p>
+                <p className="out text-muted-foreground mb-2">{copy.location}</p>
+                <p className="cmd">
+                  <span className={PROMPT}>$ </span>ls ./links
+                </p>
+                <p className="out mb-2 flex flex-wrap gap-x-6 gap-y-1">
+                  {github ? (
+                    <a
+                      href={github.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={FILE_LINK}
+                    >
+                      {copy.linkNames.github}
+                    </a>
+                  ) : null}
+                  {linkedin ? (
+                    <a
+                      href={linkedin.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={FILE_LINK}
+                    >
+                      {copy.linkNames.linkedin}
+                    </a>
+                  ) : null}
+                  <a href={copy.cv.href} download className={FILE_LINK}>
+                    {copy.linkNames.cv}
+                  </a>
+                  <a href={resolve(copy.primaryCta.target)} className={FILE_LINK}>
+                    {copy.linkNames.contact}
+                  </a>
+                </p>
+                <p className="prompt-end">
+                  <span className={PROMPT}>$ </span>
+                  <span aria-hidden="true" className="caret" />
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <a
+                href={resolve(copy.primaryCta.target)}
+                className="bg-primary text-primary-foreground rounded-full px-7 py-3.5 font-semibold transition-transform hover:-translate-y-0.5"
+              >
+                {copy.primaryCta.label}
+              </a>
+              <a
+                href={copy.cv.href}
+                download
+                className="border-foreground/30 hover:border-primary hover:text-primary rounded-full border px-7 py-3.5 font-semibold transition-colors"
+              >
+                {copy.cv.label}
+              </a>
             </div>
           </FadeIn>
 
           {copy.image ? (
             // FadeIn, not Reveal: this image is the LCP element and must not wait on scroll.
-            <FadeIn className="md:col-span-5" delay={0.15}>
-              <div className="parallax-photo group relative mx-auto w-1/2 md:mr-0 md:w-3/4 lg:w-2/3">
+            <FadeIn className="md:col-span-4" delay={0.15}>
+              <div className="parallax-photo group relative mx-auto w-1/2 md:w-full">
                 {/* A blue card peeking out behind the photo; they line up on hover. */}
                 <div
                   aria-hidden="true"

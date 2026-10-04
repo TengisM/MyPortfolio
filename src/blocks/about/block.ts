@@ -13,4 +13,6 @@ export const about = {
   defaultVariant: 'simple',
   copy: { mn, en },
   nav: { labelKey: 'navLabel' },
+  // The editor's projects.ts tab links to the projects block.
+  requires: { blocks: ['projects'] },
 } satisfies BlockManifest<AboutCopy, AboutVariant>

@@ -7,6 +7,8 @@
 @import "@fontsource-variable/unbounded/wght.css";
 @import "lenis/dist/lenis.css";
 @import "@fontsource-variable/caveat/wght.css";
+/* The terminal and the code editor. Ships cyrillic, so Mongolian output renders in it too. */
+@import "@fontsource-variable/jetbrains-mono/wght.css";
 
 @import "./presets/portfolio.css";
 @import "./portfolio.css";
@@ -72,6 +74,7 @@
   --font-display: var(--face-display);
   --font-body: var(--face-body);
   --font-hand: "Caveat Variable", cursive;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
 
   --radius-base: var(--radius);
   --spacing-section: var(--section-y);

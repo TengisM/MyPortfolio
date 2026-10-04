@@ -1,75 +1,53 @@
 export type HeroCopy = {
   navLabel: string
-  eyebrow: string
+  /** The window title of the terminal. */
+  terminalTitle: string
   heading: string
+  role: string
   lead: string
   location: string
-  skillsLabel: string
-  skills: string[]
+  /** Labels for the files `ls ./links` prints. */
+  linkNames: { github: string; linkedin: string; cv: string; contact: string }
   primaryCta: { label: string; target: string }
   /** A file under public/, downloaded rather than navigated to. */
   cv: { label: string; href: string }
   socials: { label: string; href: string }[]
-  /** `split` variant only — optional, so `centered` is not forced to supply it. */
   image?: { src: string; alt: string; width: number; height: number }
 }
-
-// Shared by both languages: product names are not translated.
-const skills = [
-  'React',
-  'Next.js',
-  'TypeScript',
-  'TanStack Start',
-  'Node.js',
-  'Go',
-  'Elixir / Phoenix',
-  'PostgreSQL',
-  'Tailwind CSS',
-  'Vue.js',
-  'Web3',
-]
 
 const socials = [
   { label: 'GitHub', href: 'https://github.com/TengisM' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/tenggis-munkhbaatar-2a32b025a/' },
 ]
-
 const cvHref = '/files/Tenggis_CV.pdf'
+const image = { src: '/images/tenggis.webp', width: 720, height: 720 }
+// File names stay in English in both languages, as they would in a real shell.
+const linkNames = { github: 'github', linkedin: 'linkedin', cv: 'cv.pdf', contact: 'contact' }
 
 export const mn: HeroCopy = {
   navLabel: 'Эхлэл',
-  eyebrow: 'Frontend / Fullstack инженер',
-  heading: 'Сайн уу, би Тэнгис',
-  lead: 'Хэрэглэгчдэд ойлгомжтой, найдвартай интерфейс бүтээдэг. 2020 оноос хойш банк, тээвэр, боловсрол, Web3 салбарын back-office болон хэрэглэгчийн бүтээгдэхүүн хөгжүүлж байна.',
-  location: 'Улаанбаатарт амьдардаг, удахгүй Берлин рүү нүүнэ',
-  skillsLabel: 'Ур чадвар',
-  skills,
+  terminalTitle: 'tenggis@ulaanbaatar: ~',
+  heading: 'Тэнгис Мөнхбаатар',
+  role: 'Frontend / Fullstack инженер',
+  lead: '2020 оноос хойш банк, тээвэр, боловсрол, Web3 салбарын back-office болон хэрэглэгчийн бүтээгдэхүүн хөгжүүлж байна.',
+  location: 'Улаанбаатар → Берлин (удахгүй нүүнэ)',
+  linkNames,
   primaryCta: { label: 'Холбоо барих', target: 'contact' },
   cv: { label: 'CV татах', href: cvHref },
   socials,
-  image: {
-    src: '/images/tenggis.webp',
-    alt: 'Тэнгис Мөнхбаатарын хөрөг зураг',
-    width: 720,
-    height: 720,
-  },
+  image: { ...image, alt: 'Тэнгис Мөнхбаатарын хөрөг зураг' },
 }
 
 export const en: HeroCopy = {
   navLabel: 'Home',
-  eyebrow: 'Frontend / Fullstack Engineer',
-  heading: "Hi, I'm Tenggis",
-  lead: "I build interfaces people find clear and can rely on. Since 2020 I've shipped back-office tools and user-facing products in banking, ride-hailing, education and Web3.",
-  location: 'Based in Ulaanbaatar, moving to Berlin soon',
-  skillsLabel: 'Skills',
-  skills,
+  terminalTitle: 'tenggis@ulaanbaatar: ~',
+  heading: 'Tenggis Munkhbaatar',
+  role: 'Frontend / Fullstack Engineer',
+  lead: "Since 2020 I've shipped back-office tools and user-facing products in banking, ride-hailing, education and Web3.",
+  location: 'Ulaanbaatar → Berlin (moving soon)',
+  linkNames,
   primaryCta: { label: 'Get in touch', target: 'contact' },
   cv: { label: 'Download CV', href: cvHref },
   socials,
-  image: {
-    src: '/images/tenggis.webp',
-    alt: 'Portrait of Tenggis Munkhbaatar',
-    width: 720,
-    height: 720,
-  },
+  image: { ...image, alt: 'Portrait of Tenggis Munkhbaatar' },
 }
