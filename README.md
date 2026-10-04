@@ -1,7 +1,7 @@
 # Tenggis Munkhbaatar, portfolio
 
 Built on [`@tanasoftllc/landing-kit`](https://www.npmjs.com/package/@tanasoftllc/landing-kit) with
-the admin backend. Mongolian at `/`, English at `/en`, admin at `/admin`.
+the admin backend. English at `/`, Mongolian at `/mn`, admin at `/admin`.
 
 - Projects and experience are edited in `/admin` and stored in Postgres. The build pulls them into
   `src/content/content.json` (see `scripts/fetch-content.mjs`). That file is committed and is the
