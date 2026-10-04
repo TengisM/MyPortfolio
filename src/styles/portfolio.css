@@ -57,10 +57,13 @@ body::before {
   --c-success: oklch(32% 0.12 150);
 }
 
-/* Hollow letters, drawn with the current primary colour. */
-.text-outline {
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--c-primary);
+/* Hollow letters, drawn with the current primary colour. In the components layer so a utility
+   like group-hover:text-primary-foreground can still fill them. */
+@layer components {
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--c-primary);
+  }
 }
 /* Echo title: outlined copies stacked above the solid word, fading out upward. */
 .echo {

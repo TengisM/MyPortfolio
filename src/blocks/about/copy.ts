@@ -4,10 +4,7 @@ export type AboutCopy = {
   paragraphs: string[]
   /** Small personal facts, each with an emoji. */
   facts: { icon: string; text: string }[]
-  image: { src: string; alt: string; width: number; height: number }
 }
-
-const image = { src: '/images/smile.webp', width: 720, height: 960 }
 
 export const mn: AboutCopy = {
   navLabel: 'Миний тухай',
@@ -20,9 +17,7 @@ export const mn: AboutCopy = {
     { icon: '💼', text: '2020 оноос хойш вэб бүтээж байна' },
     { icon: '🎓', text: 'ШУТИС, Программ хангамжийн инженер' },
     { icon: '🗣️', text: 'Монгол, англи хэлтэй' },
-    { icon: '🎮', text: 'Чөлөөт цагаараа CS2 тоглодог (тохиргоо маань footer-т бий)' },
   ],
-  image: { ...image, alt: 'Уулын энгэрт инээмсэглэн сууж буй Тэнгис' },
 }
 
 export const en: AboutCopy = {
@@ -36,7 +31,5 @@ export const en: AboutCopy = {
     { icon: '💼', text: 'Building for the web since 2020' },
     { icon: '🎓', text: 'Software Engineering, MUST' },
     { icon: '🗣️', text: 'Speaks Mongolian and English' },
-    { icon: '🎮', text: 'Plays CS2 after hours (my config is in the footer)' },
   ],
-  image: { ...image, alt: 'Tenggis smiling, sitting on a mountain slope' },
 }

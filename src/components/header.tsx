@@ -63,8 +63,17 @@ export function Header({
           href={localePath('/', locale, site)}
           className="font-display flex min-h-11 items-center gap-2 font-black tracking-tight uppercase"
         >
-          <span aria-hidden="true" className="bg-primary size-2.5 rounded-full" />
-          {site.name}
+          {/* Short mark, not the full name: site.name stays complete for titles and JSON-LD. */}
+          <span
+            aria-hidden="true"
+            className="bg-primary text-primary-foreground grid size-9 place-items-center rounded-xl text-sm"
+          >
+            T
+          </span>
+          <span className="sr-only">{site.name}</span>
+          <span aria-hidden="true" className="normal-case">
+            tenggis<span className="text-primary">.</span>
+          </span>
         </a>
 
         <nav aria-label={navLabel} className="hidden items-center gap-7 text-xs md:flex">

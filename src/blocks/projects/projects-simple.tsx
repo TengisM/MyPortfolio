@@ -19,7 +19,7 @@ export function ProjectsSimple({
       <Container>
         <Reveal>
           <EchoTitle as={H} text={copy.heading} />
-          <p className="text-muted-foreground text-lead mt-4">{copy.lead}</p>
+          <p className="text-muted-foreground mt-4 text-lg">{copy.lead}</p>
         </Reveal>
 
         <ul className="mt-12 grid gap-8 md:mt-16 md:grid-cols-2">
@@ -69,7 +69,7 @@ export function ProjectsSimple({
                   </div>
                   <div className="flex flex-1 flex-col p-6">
                     <div className="flex items-center justify-between gap-4">
-                      <h3 className="font-display text-2xl font-black">{project.title}</h3>
+                      <h3 className="font-display text-xl font-black">{project.title}</h3>
                       <span
                         aria-hidden="true"
                         className="border-foreground grid size-10 shrink-0 place-items-center rounded-full border transition-all duration-300 group-hover:rotate-45 group-hover:bg-foreground group-hover:text-background"

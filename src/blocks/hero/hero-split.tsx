@@ -27,13 +27,13 @@ export function HeroSplit({
               <span aria-hidden="true" className="bg-primary size-2 rounded-full" />
               {copy.eyebrow}
             </p>
-            <H className="text-display mt-6 font-black text-balance">
+            <H className="font-display mt-6 text-5xl leading-none font-black text-balance md:text-7xl">
               {copy.heading}{' '}
               <span aria-hidden="true" className="wave">
                 👋
               </span>
             </H>
-            <p className="text-muted-foreground text-lead mt-6 text-pretty">{copy.lead}</p>
+            <p className="text-muted-foreground mt-6 text-lg text-pretty">{copy.lead}</p>
             <p className="mt-4 flex items-center gap-2 text-sm font-medium">
               <span aria-hidden="true">📍</span>
               {copy.location}

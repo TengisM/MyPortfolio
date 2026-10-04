@@ -61,7 +61,7 @@ export function ContactForm({
         <EchoTitle as={H} text={copy.heading} />
         <div className="mt-12 grid gap-12 md:mt-16 md:grid-cols-2 md:gap-20">
           <div>
-            <p className="font-hand -rotate-1 text-3xl md:text-4xl">{copy.lead}</p>
+            <p className="font-hand -rotate-1 text-2xl md:text-3xl">{copy.lead}</p>
             {site.organization.email ? (
               <div className="mt-10">
                 <p className="text-muted-foreground text-sm font-semibold tracking-widest uppercase">
@@ -69,7 +69,7 @@ export function ContactForm({
                 </p>
                 <a
                   href={`mailto:${site.organization.email}`}
-                  className="font-display mt-2 inline-block text-xl font-bold break-all underline decoration-2 underline-offset-8 transition-colors hover:decoration-transparent md:text-3xl"
+                  className="font-display mt-2 inline-block text-lg font-bold break-all underline decoration-2 underline-offset-8 transition-colors hover:decoration-transparent md:text-2xl"
                 >
                   {site.organization.email}
                 </a>

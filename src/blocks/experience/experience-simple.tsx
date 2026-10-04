@@ -17,7 +17,7 @@ export function ExperienceSimple({
       <Container>
         <Reveal>
           <EchoTitle as={H} text={copy.heading} />
-          <p className="text-muted-foreground text-lead mt-4">{copy.lead}</p>
+          <p className="text-muted-foreground mt-4 text-lg">{copy.lead}</p>
         </Reveal>
 
         <ol className="border-border mt-12 border-t">
@@ -26,7 +26,7 @@ export function ExperienceSimple({
               <Reveal>
                 {/* A lilac band sweeps in from the left on hover and the text flips to ink. */}
                 <div className="group hover:text-primary-foreground relative isolate grid gap-3 py-8 transition-colors duration-300 before:absolute before:inset-0 before:-z-10 before:origin-left before:scale-x-0 before:bg-primary before:transition-transform before:duration-500 hover:before:scale-x-100 md:grid-cols-12 md:gap-8 md:px-4">
-                  <p className="font-display text-outline group-hover:text-primary-foreground text-5xl font-black md:col-span-3 md:text-7xl">
+                  <p className="font-display text-outline group-hover:text-primary-foreground text-4xl font-black md:col-span-3 md:text-5xl">
                     {item.year}
                   </p>
                   <div className="md:col-span-5">
@@ -43,7 +43,7 @@ export function ExperienceSimple({
                         </span>
                       ) : null}
                     </p>
-                    <h3 className="text-h3 mt-2 font-bold">{item.position}</h3>
+                    <h3 className="mt-2 text-xl font-bold">{item.position}</h3>
                     <p className="text-primary group-hover:text-primary-foreground mt-1 font-semibold">
                       {item.organization}
                     </p>

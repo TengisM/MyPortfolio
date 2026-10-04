@@ -8,8 +8,8 @@ export const site: SiteConfig = {
   // Every canonical URL, hreflang tag and sitemap entry is built from this. Change it when the
   // site moves to its own domain.
   url: 'https://tenggis.vercel.app',
-  defaultLocale: 'mn',
-  locales: ['mn', 'en'],
+  defaultLocale: 'en',
+  locales: ['en', 'mn'],
   ogImageDefault: '/og-default.jpg',
   organization: {
     kind: 'Organization',
