@@ -161,6 +161,9 @@ func run() error {
 	case failure = <-listenErr:
 	}
 
+	// Open game sockets would otherwise hold the shutdown for its whole timeout.
+	services.Tron.Shutdown()
+
 	// Safe after a bind failure too: it returns nil because Serve never ran.
 	if err := app.ShutdownWithTimeout(10 * time.Second); err != nil {
 		// Logged, not returned: a non-zero exit would make a supervisor restart a deliberate stop.

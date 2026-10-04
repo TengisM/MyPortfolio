@@ -24,7 +24,8 @@ export default defineConfig({
   // API's origin allowlist, and why the panel has no base URL to configure.
   server: {
     proxy: {
-      '/api': { target: 'http://localhost:3000' },
+      // ws: online Tron's socket lives under /api too.
+      '/api': { target: 'http://localhost:3000', ws: true },
     },
   },
   resolve: {

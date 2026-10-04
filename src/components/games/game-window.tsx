@@ -7,6 +7,8 @@ const KEYS = {
   tetris: '← → move · ↑ rotate · ↓ soft drop · space hard drop · p pause · esc quit',
   tron: 'arrows or wasd steer · p pause · r reset the score · esc quit',
   tron2: 'p1 (blue) wasd · p2 (amber) arrows · p pause · r reset the score · esc quit',
+  online:
+    'arrows or wasd steer · enter starts the match (host) · c copies the invite link · esc leaves the room',
 }
 
 // On-screen buttons for touch screens, mapped to the same keys the keyboard sends.
@@ -24,12 +26,22 @@ const PADS = {
     { label: '↓', key: 'ArrowDown' },
     { label: '→', key: 'ArrowRight' },
   ],
+  // Phones have no Enter key to start with, or a handy way to copy the link.
+  online: [
+    { label: '←', key: 'ArrowLeft' },
+    { label: '↑', key: 'ArrowUp' },
+    { label: '↓', key: 'ArrowDown' },
+    { label: '→', key: 'ArrowRight' },
+    { label: 'start', key: 'Enter' },
+    { label: 'copy link', key: 'c' },
+  ],
 }
 
 // Each game loads on its own, so Tetris players never download Tron and the other way round.
-const LOADERS: Record<GameId, () => Promise<{ start: StartGame }>> = {
+const LOADERS: Record<GameId | 'online', () => Promise<{ start: StartGame }>> = {
   tetris: () => import('./tetris'),
   tron: () => import('./tron'),
+  online: () => import('./tron-online'),
 }
 
 const HUD_LINE = 'mt-1 min-h-5 whitespace-pre'
@@ -58,10 +70,13 @@ function HudRow({ line }: { line: HudLine }) {
 export default function GameWindow({
   game,
   players = 1,
+  room,
   onExit,
 }: {
   game: GameId
   players?: 1 | 2
+  /** Online Tron: 'new' opens a room, a code joins one. */
+  room?: string
   onExit: (summary: string) => void
 }) {
   const stageRef = useRef<HTMLDivElement>(null)
@@ -80,10 +95,10 @@ export default function GameWindow({
       scoreRef.current = h.score
       setHud(h)
     }
-    LOADERS[game]()
+    LOADERS[room ? 'online' : game]()
       .then((m) => {
         if (disposed) return
-        gameRef.current = m.start(stage, onHud, { players })
+        gameRef.current = m.start(stage, onHud, { players, room })
       })
       .catch(() => setFailed(true))
     return () => {
@@ -91,7 +106,7 @@ export default function GameWindow({
       gameRef.current?.dispose()
       gameRef.current = null
     }
-  }, [game, players])
+  }, [game, players, room])
 
   // Read through a ref so the listener never holds a stale onExit.
   const quitRef = useRef(quit)
@@ -125,6 +140,7 @@ export default function GameWindow({
         <span className="text-primary">~/tenggis-port/games</span>
         <span className="text-muted-foreground">$ </span>./{game}
         {players === 2 ? ' --2p' : ''}
+        {room === 'new' ? ' --online' : room ? ` --join ${room}` : ''}
       </p>
 
       <div className="flex min-h-0 flex-1 flex-col items-stretch gap-4 p-4 md:flex-row md:gap-8 md:px-8">
@@ -163,7 +179,13 @@ export default function GameWindow({
           ) : null}
           {failed ? <p className="text-destructive mt-4">could not load the game.</p> : null}
           <p className="text-muted-foreground mt-6 hidden text-xs leading-relaxed md:block">
-            {game === 'tetris' ? KEYS.tetris : players === 2 ? KEYS.tron2 : KEYS.tron}
+            {game === 'tetris'
+              ? KEYS.tetris
+              : room
+                ? KEYS.online
+                : players === 2
+                  ? KEYS.tron2
+                  : KEYS.tron}
           </p>
           <button
             type="button"
@@ -176,7 +198,7 @@ export default function GameWindow({
       </div>
 
       <div className="flex flex-wrap justify-center gap-2 p-3 md:hidden">
-        {PADS[game].map((p) => (
+        {PADS[room ? 'online' : game].map((p) => (
           <button
             key={p.label}
             type="button"

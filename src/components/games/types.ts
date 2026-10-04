@@ -25,7 +25,8 @@ export type Game = {
   dispose: () => void
 }
 
-export type GameOptions = { players?: 1 | 2 }
+/** `room`: 'new' opens an online room, four letters join one. */
+export type GameOptions = { players?: 1 | 2; room?: string }
 
 export type StartGame = (
   stage: HTMLElement,

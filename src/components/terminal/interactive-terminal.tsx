@@ -145,7 +145,7 @@ export function InteractiveTerminal({
   const [value, setValue] = useState('')
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState<number | null>(null)
-  const [game, setGame] = useState<{ id: GameId; players: 1 | 2 } | null>(null)
+  const [game, setGame] = useState<{ id: GameId; players: 1 | 2; room?: string } | null>(null)
   const [booting, setBooting] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -202,7 +202,7 @@ export function InteractiveTerminal({
       case 'game':
         // A game takes the keyboard: drop focus so its arrow keys don't walk the history here.
         inputRef.current?.blur()
-        setGame({ id: effect.game, players: effect.players ?? 1 })
+        setGame({ id: effect.game, players: effect.players ?? 1, room: effect.room })
         return
       case 'website':
         onWebsite(effect.target)
@@ -364,7 +364,7 @@ export function InteractiveTerminal({
 
       {game ? (
         <Suspense fallback={null}>
-          <GameWindow game={game.id} players={game.players} onExit={closeGame} />
+          <GameWindow game={game.id} players={game.players} room={game.room} onExit={closeGame} />
         </Suspense>
       ) : null}
     </>

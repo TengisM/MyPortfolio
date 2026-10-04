@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { en as aboutEn, mn as aboutMn } from '@/blocks/about/copy'
 import { en as experienceEn, mn as experienceMn } from '@/blocks/experience/copy'
 import { en as heroEn, mn as heroMn } from '@/blocks/hero/copy'
@@ -96,6 +97,17 @@ const PROMPT = 'text-primary select-none'
 export function TerminalApp({ locale, site }: { locale: Locale; site: SiteConfig }) {
   const t = TEXT[locale]
   const hero = HERO[locale]
+
+  // An invite link, /?tron=KXQP, joins that online Tron room straight away.
+  useEffect(() => {
+    const url = new URL(location.href)
+    const code = url.searchParams.get('tron') ?? ''
+    if (!/^[a-z]{4}$/i.test(code)) return
+    url.searchParams.delete('tron')
+    history.replaceState(history.state, '', url)
+    openTerminal()
+    runInTerminal(`tron join ${code}`)
+  }, [])
   return (
     // A div with role="region", not <section>: the kit reserves <section> for its <Section>
     // layout primitive, and this is a fixed overlay, not a page section.

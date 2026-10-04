@@ -76,6 +76,29 @@ The `v` changes with every logo upload, so the day-long cache never serves an ol
 The logo endpoint also serves logos of unpublished projects, so the panel can preview them. Ids are
 random UUIDs, so nobody finds one by guessing.
 
+## Online Tron
+
+`GET /api/tron/ws` is a WebSocket for the terminal's `tron online` game. The server runs every
+match (`internal/service/tron`): the browser only sends turns and draws what comes back, so lag
+can't decide a crash and nobody can cheat by editing their copy.
+
+```
+client → {"t":"create"}                 open a room; you get seat 0 and host
+client → {"t":"join","code":"KXQP"}     take the first free seat (2 to 4 riders)
+client → {"t":"start"}                  host only, with at least 2 riders
+client → {"t":"turn","d":0}             0 up, 1 right, 2 down, 3 left
+server → room   code, your seat, host, seats taken, wins, whether a match is on
+server → round  arena size, countdown in ms, start cells as [seat, x, y, dir]
+server → tick   moves as [seat, x, y, dir], crashed seats, ms until the next tick
+server → over   the winner's seat (-1 for a draw) and everyone's wins
+server → error  why a join or start was refused
+```
+
+Rooms live in memory and go when their last player leaves; a restart ends every match. The
+handler refuses sockets from origins not in `CORS_ORIGINS`, takes 20 new connections a minute per
+client, drops anyone sending over 30 messages a second, and closes a connection that stays silent
+for a minute (the server pings every 20 seconds, which browsers answer on their own).
+
 ### Admin endpoints
 
 All of these need the Bearer token and answer with `Cache-Control: no-store`.

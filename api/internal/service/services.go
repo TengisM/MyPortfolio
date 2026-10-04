@@ -12,6 +12,7 @@ import (
 	"landing-api/internal/service/lead"
 	"landing-api/internal/service/notify"
 	"landing-api/internal/service/publish"
+	"landing-api/internal/service/tron"
 	"landing-api/internal/utils/secure"
 )
 
@@ -23,8 +24,10 @@ type Services struct {
 	Content *content.Service
 	// Publisher is exposed so main can flush a pending publish on shutdown.
 	Publisher *publish.Publisher
-	Queries   *sqlc.Queries
-	Pool      *pgxpool.Pool
+	// Tron holds the online game rooms. In memory: a restart ends every match.
+	Tron    *tron.Hub
+	Queries *sqlc.Queries
+	Pool    *pgxpool.Pool
 	// TokenService is exposed for AuthMiddleware.
 	TokenService *secure.TokenService
 }
@@ -44,6 +47,7 @@ func New(pool *pgxpool.Pool, notifier notify.Notifier, cfg *conf.Config) *Servic
 		Audit:        auditService,
 		Content:      content.New(pool, q, publisher),
 		Publisher:    publisher,
+		Tron:         tron.NewHub(tron.Default),
 		Queries:      q,
 		Pool:         pool,
 		TokenService: tokenService,

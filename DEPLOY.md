@@ -10,7 +10,8 @@ Three free services. The public site never waits on the other two.
 | Lead emails | Resend | 100 a day, and only to your own address until you verify a domain |
 
 Vercel forwards `/api/*` to Koyeb (see `vercel.json`), so the browser sees one origin. The admin
-login cookie depends on that.
+login cookie depends on that. Online Tron is the exception: Vercel can't forward a WebSocket, so
+the game connects to Koyeb directly (`VITE_TRON_WS` below).
 
 ## 1. Neon
 
@@ -75,7 +76,11 @@ make seed-admin email=you@example.com
 ```
 CONTENT_API_URL=https://<your-app>.koyeb.app
 VITE_CONTACT_ENDPOINT=/api/leads
+VITE_TRON_WS=wss://<your-app>.koyeb.app/api/tron/ws
 ```
+
+   The game server only accepts sockets from pages listed in `CORS_ORIGINS` on Koyeb, so the
+   site's address must be there (it already is for the admin panel).
 
 4. Settings → Git → Deploy Hooks: create one for the production branch. Copy the URL into
    Koyeb as `VERCEL_DEPLOY_HOOK_URL` and redeploy the API.
@@ -106,6 +111,13 @@ SELECT ip, created_at FROM leads ORDER BY created_at DESC LIMIT 5;
 If it's your real IP, you're done. If it's a Vercel or Koyeb address, set `PROXY_HEADER` and
 `TRUSTED_PROXIES` on Koyeb (see `api/README.md`). If that still isn't enough, the fallback is a
 Vercel middleware that forwards the client IP with a shared secret.
+
+## Online Tron
+
+`tron online` in the terminal opens a room on the API and prints a four-letter code. Friends join
+with `tron join CODE` or the link `/?tron=CODE`. Rooms live in the API's memory, so a redeploy or
+Koyeb putting the API to sleep ends every match. The first player of the day waits a few seconds
+while Koyeb wakes the API; the game says so.
 
 ## A custom domain later
 
