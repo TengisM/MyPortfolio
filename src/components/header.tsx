@@ -1,5 +1,6 @@
 import { registry } from '@/blocks/registry'
 import { Container } from '@/components/layout/container'
+import { TerminalToggle } from '@/components/terminal/terminal-toggle'
 import { pages } from '@/config/pages.config'
 import { localePath } from '@/lib/pages/enumerate'
 import { normalizePath } from '@/lib/pages/resolve-request'
@@ -55,6 +56,9 @@ export function Header({
   ))
 
   const themeToggle = <ThemeToggle label={locale === 'mn' ? 'Өнгө хувиргах' : 'Toggle theme'} />
+  const terminalToggle = (
+    <TerminalToggle label={locale === 'mn' ? 'Терминал нээх' : 'Open the terminal'} />
+  )
 
   return (
     <header className="bg-background/95 border-border/60 sticky top-0 z-50 border-b backdrop-blur-md">
@@ -79,6 +83,7 @@ export function Header({
         <nav aria-label={navLabel} className="hidden items-center gap-7 text-xs md:flex">
           {pageLinks}
           {localeLinks}
+          {terminalToggle}
           {themeToggle}
         </nav>
 
@@ -99,6 +104,7 @@ export function Header({
             {pageLinks}
             <span className="border-border my-2 border-t" aria-hidden="true" />
             {localeLinks}
+            <span className="mt-2">{terminalToggle}</span>
             {themeToggle}
           </nav>
         </details>

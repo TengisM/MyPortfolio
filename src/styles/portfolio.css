@@ -325,7 +325,16 @@ body::before {
 }
 /* The live prompt shows up once the scripted intro has finished typing. */
 .term-live {
-  animation: appear 0.01s 3.3s both;
+  animation: appear 0.01s 2.9s both;
+}
+
+/* The full-screen terminal covers the site until the visitor picks "website". The choice lives
+   on <html data-view="site"> (set by ViewScript before paint, and by openWebsite). */
+html[data-view="site"] .terminal-app {
+  display: none;
+}
+html:not([data-view="site"]):has(.terminal-app) {
+  overflow: hidden;
 }
 
 /* The game window: faint scanlines and a dark vignette, like an old monitor. */

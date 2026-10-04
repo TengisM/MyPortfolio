@@ -4,6 +4,7 @@ import {
   lazy,
   type ReactNode,
   Suspense,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -12,7 +13,7 @@ import type { Effect, GameId, Line, Segment, ShellData } from './shell'
 import { buildFs, complete, displayPath, run, START } from './shell'
 
 // Three.js and the games only download when someone actually starts one.
-const GameOverlay = lazy(() => import('@/components/games/game-overlay'))
+const GameWindow = lazy(() => import('@/components/games/game-window'))
 
 type Entry = { id: number; cwd: string; input: string; lines: Line[] }
 
@@ -57,7 +58,11 @@ function Prompt({ cwd, user }: { cwd: string; user: string }) {
   )
 }
 
-function applyEffect(effect: Effect, startGame: (g: GameId) => void) {
+function applyEffect(
+  effect: Effect,
+  startGame: (g: GameId) => void,
+  openWebsite: (target?: string) => void,
+) {
   switch (effect.kind) {
     case 'open': {
       const a = document.createElement('a')
@@ -76,6 +81,9 @@ function applyEffect(effect: Effect, startGame: (g: GameId) => void) {
     case 'game':
       startGame(effect.game)
       return
+    case 'website':
+      openWebsite(effect.target)
+      return
     case 'clear':
       return
   }
@@ -91,12 +99,15 @@ export function InteractiveTerminal({
   user,
   inputLabel,
   hint,
+  onWebsite,
 }: {
   intro: ReactNode
   data: ShellData
   user: string
   inputLabel: string
   hint: string
+  /** Called when the visitor asks for the regular site, with a section id when they named one. */
+  onWebsite: (target?: string) => void
 }) {
   const root = useMemo(() => buildFs(data), [data])
   const [cwd, setCwd] = useState(START)
@@ -116,9 +127,8 @@ export function InteractiveTerminal({
       if (el) el.scrollTop = el.scrollHeight
     })
 
-  const submit = (e: FormEvent) => {
-    e.preventDefault()
-    const input = value
+  // Runs one command line, as typed at the prompt or sent by a click in the intro's menu.
+  const execute = (input: string) => {
     const nextHistory = input.trim() ? [...history, input] : history
     const result = run(root, cwd, input, nextHistory)
     setValue('')
@@ -133,9 +143,23 @@ export function InteractiveTerminal({
     setCwd(result.cwd)
     // A game takes the keyboard: drop focus so its arrow keys don't also walk the history here.
     if (result.effects.some((fx) => fx.kind === 'game')) inputRef.current?.blur()
-    for (const fx of result.effects) applyEffect(fx, setGame)
+    for (const fx of result.effects) applyEffect(fx, setGame, onWebsite)
     scrollToEnd()
   }
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault()
+    execute(value)
+  }
+
+  // The intro's clickable menu sends commands here (see runInTerminal in terminal-app.tsx).
+  const executeRef = useRef(execute)
+  executeRef.current = execute
+  useEffect(() => {
+    const onRun = (e: Event) => executeRef.current((e as CustomEvent<string>).detail)
+    addEventListener('terminal:run', onRun)
+    return () => removeEventListener('terminal:run', onRun)
+  }, [])
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (game) return
@@ -186,7 +210,7 @@ export function InteractiveTerminal({
         ref={scrollRef}
         data-lenis-prevent=""
         onClick={() => inputRef.current?.focus({ preventScroll: true })}
-        className="max-h-144 overflow-y-auto p-5 font-mono text-sm md:p-7 md:text-base"
+        className="min-h-0 flex-1 overflow-y-auto p-5 font-mono text-sm md:p-8 md:text-base"
       >
         <div className={introHidden ? 'hidden' : 'term grid gap-1.5'}>{intro}</div>
 
@@ -236,7 +260,7 @@ export function InteractiveTerminal({
 
       {game ? (
         <Suspense fallback={null}>
-          <GameOverlay game={game} onExit={closeGame} />
+          <GameWindow game={game} onExit={closeGame} />
         </Suspense>
       ) : null}
     </>

@@ -3,6 +3,7 @@ import { Backdrop } from '@/components/backdrop'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { RenderBlocks } from '@/components/render-blocks'
+import { TerminalApp } from '@/components/terminal/terminal-app'
 import { pages } from '@/config/pages.config'
 import { site } from '@/config/site.config'
 import { createResolver } from '@/lib/pages/resolve-link'
@@ -15,6 +16,7 @@ export function PageView({ resolved }: { resolved: ResolvedPage<BlockId> }) {
   return (
     <>
       <Backdrop />
+      <TerminalApp locale={resolved.locale} site={site} />
       <Header site={site} locale={resolved.locale} path={resolved.path} resolve={resolve} />
       <main>
         <RenderBlocks

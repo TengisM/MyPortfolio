@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router'
 import { Analytics } from '@vercel/analytics/react'
 import { ScrollEffects } from '@/components/scroll-effects'
+import { ViewScript } from '@/components/view-script'
 import { site } from '@/config/site.config'
 import { ThemeScript } from '@/theme'
 import '@/styles/theme.css'
@@ -39,6 +40,7 @@ function RootDocument() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <HeadContent />
         <ThemeScript />
+        <ViewScript />
       </head>
       <body>
         <Outlet />

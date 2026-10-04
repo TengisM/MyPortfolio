@@ -12,15 +12,18 @@ export type Effect =
   | { kind: 'open'; href: string; download?: boolean }
   | { kind: 'scroll'; target: string }
   | { kind: 'game'; game: GameId }
+  /** Leave the terminal for the regular site, optionally at one section. */
+  | { kind: 'website'; target?: string }
 
 type FileNode = { type: 'file'; body: Line[]; open?: Effect }
 type ExecNode = { type: 'exec'; game: GameId; about: string }
+type SiteNode = { type: 'site' }
 type DirNode = { type: 'dir'; children: Record<string, Node>; open?: Effect }
-type Node = FileNode | ExecNode | DirNode
+type Node = FileNode | ExecNode | SiteNode | DirNode
 
 export type ShellData = {
   aboutParagraphs: string[]
-  stack: { frontend: string[]; backend: string[] }
+  skills: string[]
   projects: { title: string; url: string; description: string }[]
   career: { period: string; position: string; organization: string }[]
   email?: string
@@ -29,6 +32,20 @@ export type ShellData = {
 }
 
 export const HOME = '/home/tenggis'
+
+/**
+ * The top-level entries, in `ls` order, and what choosing one does. Used by the clickable menu
+ * in the intro, and when someone types just the name ("projects") as a command.
+ */
+export const MENU: { name: string; tone: 'exec' | 'dir' | 'file'; command: string }[] = [
+  { name: 'website', tone: 'exec', command: 'website' },
+  { name: 'about-me', tone: 'dir', command: 'cat ~/tenggis-port/about-me/about.md' },
+  { name: 'projects', tone: 'dir', command: 'ls ~/tenggis-port/projects' },
+  { name: 'experience', tone: 'dir', command: 'cat ~/tenggis-port/experience/career.log' },
+  { name: 'contact', tone: 'dir', command: 'ls ~/tenggis-port/contact' },
+  { name: 'games', tone: 'dir', command: 'ls ~/tenggis-port/games' },
+  { name: 'cv.pdf', tone: 'file', command: 'open ~/tenggis-port/cv.pdf' },
+]
 export const START = `${HOME}/tenggis-port`
 
 const text = (s: string, tone?: Tone): Line => [{ text: s, tone }]
@@ -84,12 +101,14 @@ export function buildFs(data: ShellData): DirNode {
               'tenggis-port': {
                 type: 'dir',
                 children: {
+                  website: { type: 'site' },
                   'README.md': {
                     type: 'file',
                     body: [
                       text("# tenggis-port: Tenggis Munkhbaatar's portfolio", 'accent'),
                       [],
-                      text('Look around with `ls`, `cd <dir>` and `cat <file>`.'),
+                      text('Run `website` for the regular site.'),
+                      text('Or look around with `ls`, `cd <dir>` and `cat <file>`.'),
                       text('`open <name>` jumps to a section or opens a link.'),
                       text('There are games in ./games. Try `./games/tetris`.'),
                       text('`help` lists everything.'),
@@ -97,18 +116,18 @@ export function buildFs(data: ShellData): DirNode {
                   },
                   'about-me': {
                     type: 'dir',
-                    open: { kind: 'scroll', target: 'about' },
+                    open: { kind: 'website', target: 'about' },
                     children: {
                       'about.md': {
                         type: 'file',
                         body: data.aboutParagraphs.flatMap((p, i) =>
                           i ? [[], text(p)] : [text(p)],
                         ),
-                        open: { kind: 'scroll', target: 'about' },
+                        open: { kind: 'website', target: 'about' },
                       },
                       'stack.json': {
                         type: 'file',
-                        body: JSON.stringify(data.stack, null, 2)
+                        body: JSON.stringify({ skills: data.skills }, null, 2)
                           .split('\n')
                           .map((l) => text(l)),
                       },
@@ -116,12 +135,12 @@ export function buildFs(data: ShellData): DirNode {
                   },
                   projects: {
                     type: 'dir',
-                    open: { kind: 'scroll', target: 'projects' },
+                    open: { kind: 'website', target: 'projects' },
                     children: projects,
                   },
                   experience: {
                     type: 'dir',
-                    open: { kind: 'scroll', target: 'experience' },
+                    open: { kind: 'website', target: 'experience' },
                     children: {
                       'career.log': {
                         type: 'file',
@@ -130,13 +149,13 @@ export function buildFs(data: ShellData): DirNode {
                           { text: c.position },
                           { text: ` @ ${c.organization}`, tone: 'accent' },
                         ]),
-                        open: { kind: 'scroll', target: 'experience' },
+                        open: { kind: 'website', target: 'experience' },
                       },
                     },
                   },
                   contact: {
                     type: 'dir',
-                    open: { kind: 'scroll', target: 'contact' },
+                    open: { kind: 'website', target: 'contact' },
                     children: contact,
                   },
                   'cv.pdf': {
@@ -210,7 +229,7 @@ function listing(dir: DirNode): Line {
     const seg: Segment =
       n?.type === 'dir'
         ? { text: `${name}/`, tone: 'dir' }
-        : n?.type === 'exec'
+        : n?.type === 'exec' || n?.type === 'site'
           ? { text: `${name}*`, tone: 'exec' }
           : { text: name }
     return i === 0 ? [seg] : [{ text: '   ' }, seg]
@@ -231,14 +250,19 @@ export const COMMANDS = [
   'history',
   'echo',
   'date',
+  'website',
+  'play',
+  'tetris',
+  'snake',
 ] as const
 
 const HELP: [string, string][] = [
+  ['website', 'open the regular website'],
   ['ls [dir]', 'list what is in a folder'],
   ['cd <dir>', 'move into a folder (`cd ..` goes up)'],
   ['cat <file>', 'print a file'],
   ['open <name>', 'jump to that section, or open the link'],
-  ['./games/<name>', 'start a game (tetris, snake)'],
+  ['tetris, snake', 'start a game (also ./games/tetris, play snake)'],
   ['pwd', 'show where you are'],
   ['whoami', 'who runs this machine'],
   ['history', 'commands you have typed'],
@@ -248,7 +272,17 @@ const HELP: [string, string][] = [
 export type RunResult = { lines: Line[]; effects: Effect[]; cwd: string }
 
 export function run(root: DirNode, cwd: string, input: string, history: string[]): RunResult {
-  const [cmd = '', ...args] = input.trim().split(/\s+/)
+  // `ls` marks programs with a trailing *, and people type it back. Accept it.
+  const words = input
+    .trim()
+    .split(/\s+/)
+    .map((w) => w.replace(/\*$/, ''))
+  let [cmd = '', ...args] = words
+  // `play tetris`, `run snake`, `start website` all mean "run that thing".
+  if ((cmd === 'play' || cmd === 'run' || cmd === 'start') && args[0]) {
+    cmd = args[0]
+    args = args.slice(1)
+  }
   const arg = args.join(' ')
   const out = (lines: Line[], effects: Effect[] = [], next = cwd): RunResult => ({
     lines,
@@ -259,7 +293,7 @@ export function run(root: DirNode, cwd: string, input: string, history: string[]
 
   if (cmd === '') return out([])
 
-  // Running a game: ./tetris, ./games/tetris, games/tetris, or just the name.
+  // Running a program by path: ./tetris, ./games/tetris, games/snake, ./website.
   const execTarget = cmd.includes('/') ? resolvePath(cwd, cmd) : null
   const execNode = execTarget ? lookup(root, execTarget) : null
   if (execNode?.type === 'exec') {
@@ -268,9 +302,15 @@ export function run(root: DirNode, cwd: string, input: string, history: string[]
       [{ kind: 'game', game: execNode.game }],
     )
   }
+  if (execNode?.type === 'site' || cmd === 'website' || cmd === 'site' || cmd === 'exit') {
+    return out([text('opening the website…', 'muted')], [{ kind: 'website' }])
+  }
   if (cmd === 'tetris' || cmd === 'snake') {
     return out([text(`starting ${cmd}…`, 'muted')], [{ kind: 'game', game: cmd }])
   }
+  // Typing just a name from the menu ("projects", "about-me/") does what clicking it does.
+  const menuHit = MENU.find((m) => m.name === cmd.replace(/\/$/, ''))
+  if (menuHit && args.length === 0) return run(root, cwd, menuHit.command, history)
 
   switch (cmd) {
     case 'help':
@@ -318,23 +358,24 @@ export function run(root: DirNode, cwd: string, input: string, history: string[]
       const node = lookup(root, resolvePath(cwd, arg))
       if (!node) return err(`cat: ${arg}: No such file or directory`)
       if (node.type === 'dir') return err(`cat: ${arg}: Is a directory. Try \`ls ${arg}\`.`)
-      if (node.type === 'exec')
-        return err(`cat: ${arg}: It's a game. Run it with ./${arg.split('/').pop()}`)
+      if (node.type === 'exec' || node.type === 'site')
+        return err(`cat: ${arg}: It's a program. Run it with ./${arg.split('/').pop()}`)
       return out(node.body)
     }
     case 'open': {
       if (!arg) return err('open: open what? Try `open projects` or `open cv.pdf`.')
-      const node = lookup(root, resolvePath(cwd, arg))
+      // Section names work from anywhere: fall back to the portfolio's top folder.
+      const node = lookup(root, resolvePath(cwd, arg)) ?? lookup(root, resolvePath(START, arg))
       if (!node) return err(`open: ${arg}: No such file or directory`)
       if (node.type === 'exec')
         return out([text(`starting ${arg}…`, 'muted')], [{ kind: 'game', game: node.game }])
+      if (node.type === 'site')
+        return out([text('opening the website…', 'muted')], [{ kind: 'website' }])
       if (!node.open) return err(`open: ${arg}: nothing to open. Try \`cat ${arg}\`.`)
       return out([text(`opening ${arg}…`, 'muted')], [node.open])
     }
     case 'sudo':
       return err('sudo: you are not in the sudoers file. This incident will be reported.')
-    case 'exit':
-      return err("There's no leaving. Try `help`.")
     case 'rm':
       return err('rm: read-only file system. Nice try.')
     default:
