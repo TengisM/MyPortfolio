@@ -8,11 +8,11 @@ export function Footer({ site }: { site: SiteConfig }) {
   const { organization: org } = site
   return (
     <footer className="surface-blue bg-background text-foreground">
-      <Container className="border-border flex flex-wrap items-end justify-between gap-6 border-t py-10 text-sm font-semibold">
-        <p className="font-display text-base font-black uppercase">
+      <Container className="border-border flex flex-wrap items-center justify-between gap-3 border-t py-4 text-xs font-semibold">
+        <p className="font-display font-bold uppercase">
           © {new Date().getFullYear()} {org.legalName ?? site.name}
         </p>
-        <p className="flex flex-wrap gap-5 tracking-wide uppercase">
+        <p className="flex flex-wrap gap-4 tracking-wide uppercase">
           <a
             className={LINK}
             href="https://github.com/TengisM"

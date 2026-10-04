@@ -1,8 +1,38 @@
 import { Container } from '@/components/layout/container'
 import { Section } from '@/components/layout/section'
+import { InteractiveTerminal } from '@/components/terminal/interactive-terminal'
+import type { ShellData } from '@/components/terminal/shell'
+import { content } from '@/content'
 import type { BlockProps } from '@/lib/types'
 import { FadeIn } from '@/motion'
+// The terminal's files mirror the other sections, so it reads their copy rather than repeating it.
+import { en as aboutEn, mn as aboutMn } from '../about/copy'
+import { en as experienceEn, mn as experienceMn } from '../experience/copy'
 import type { HeroCopy } from './copy'
+
+const ABOUT = { en: aboutEn, mn: aboutMn }
+const EXPERIENCE = { en: experienceEn, mn: experienceMn }
+
+function shellData(copy: HeroCopy, email: string | undefined): ShellData {
+  const aboutCopy = ABOUT[copy.locale]
+  return {
+    aboutParagraphs: aboutCopy.paragraphs,
+    stack: { frontend: aboutCopy.profile.frontend, backend: aboutCopy.profile.backend },
+    projects: content.projects.map((p) => ({
+      title: p.title,
+      url: p.url,
+      description: p.description[copy.locale],
+    })),
+    career: EXPERIENCE[copy.locale].items.map((i) => ({
+      period: i.period,
+      position: i.position,
+      organization: i.organization,
+    })),
+    email,
+    socials: copy.socials,
+    cvHref: copy.cv.href,
+  }
+}
 
 const PROMPT = 'text-primary select-none'
 const FILE_LINK = 'text-primary underline-offset-4 hover:underline'
@@ -11,6 +41,7 @@ const FILE_LINK = 'text-primary underline-offset-4 hover:underline'
 // h1); `.term` in src/styles/portfolio.css plays it back as typing on load.
 export function HeroSplit({
   copy,
+  site,
   resolve,
   surface,
   anchorId,
@@ -33,59 +64,64 @@ export function HeroSplit({
                 </span>
               </div>
 
-              <div className="term grid gap-1.5 p-5 font-mono text-sm md:p-7 md:text-base">
-                <p className="cmd">
-                  <span className={PROMPT}>$ </span>whoami
-                </p>
-                <H className="out font-display mb-2 text-4xl leading-tight font-black md:text-6xl">
-                  {copy.heading}
-                </H>
-                <p className="cmd">
-                  <span className={PROMPT}>$ </span>cat about.txt
-                </p>
-                <p className="out text-muted-foreground mb-2">
-                  <span className="text-foreground font-semibold">{copy.role}.</span> {copy.lead}
-                </p>
-                <p className="cmd">
-                  <span className={PROMPT}>$ </span>cat location.txt
-                </p>
-                <p className="out text-muted-foreground mb-2">{copy.location}</p>
-                <p className="cmd">
-                  <span className={PROMPT}>$ </span>ls ./links
-                </p>
-                <p className="out mb-2 flex flex-wrap gap-x-6 gap-y-1">
-                  {github ? (
-                    <a
-                      href={github.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={FILE_LINK}
-                    >
-                      {copy.linkNames.github}
-                    </a>
-                  ) : null}
-                  {linkedin ? (
-                    <a
-                      href={linkedin.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={FILE_LINK}
-                    >
-                      {copy.linkNames.linkedin}
-                    </a>
-                  ) : null}
-                  <a href={copy.cv.href} download className={FILE_LINK}>
-                    {copy.linkNames.cv}
-                  </a>
-                  <a href={resolve(copy.primaryCta.target)} className={FILE_LINK}>
-                    {copy.linkNames.contact}
-                  </a>
-                </p>
-                <p className="prompt-end">
-                  <span className={PROMPT}>$ </span>
-                  <span aria-hidden="true" className="caret" />
-                </p>
-              </div>
+              <InteractiveTerminal
+                user="tenggis@ulaanbaatar"
+                inputLabel={copy.inputLabel}
+                hint={copy.inputHint}
+                data={shellData(copy, site.organization.email)}
+                intro={
+                  <>
+                    <p className="cmd">
+                      <span className={PROMPT}>$ </span>whoami
+                    </p>
+                    <H className="out font-display mb-2 text-3xl leading-tight font-black sm:text-4xl md:text-6xl">
+                      {copy.heading}
+                    </H>
+                    <p className="cmd">
+                      <span className={PROMPT}>$ </span>cat about.txt
+                    </p>
+                    <p className="out text-muted-foreground mb-2">
+                      <span className="text-foreground font-semibold">{copy.role}.</span>{' '}
+                      {copy.lead}
+                    </p>
+                    <p className="cmd">
+                      <span className={PROMPT}>$ </span>cat location.txt
+                    </p>
+                    <p className="out text-muted-foreground mb-2">{copy.location}</p>
+                    <p className="cmd">
+                      <span className={PROMPT}>$ </span>ls ./links
+                    </p>
+                    <p className="out mb-2 flex flex-wrap gap-x-6 gap-y-1">
+                      {github ? (
+                        <a
+                          href={github.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={FILE_LINK}
+                        >
+                          {copy.linkNames.github}
+                        </a>
+                      ) : null}
+                      {linkedin ? (
+                        <a
+                          href={linkedin.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={FILE_LINK}
+                        >
+                          {copy.linkNames.linkedin}
+                        </a>
+                      ) : null}
+                      <a href={copy.cv.href} download className={FILE_LINK}>
+                        {copy.linkNames.cv}
+                      </a>
+                      <a href={resolve(copy.primaryCta.target)} className={FILE_LINK}>
+                        {copy.linkNames.contact}
+                      </a>
+                    </p>
+                  </>
+                }
+              />
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">

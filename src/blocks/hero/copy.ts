@@ -1,5 +1,12 @@
+import type { Locale } from '@/lib/types'
+
 export type HeroCopy = {
   navLabel: string
+  /** Which language this copy is, so the terminal can load the matching content. */
+  locale: Locale
+  /** Accessible name of the terminal's input, and the hint shown in it before the first command. */
+  inputLabel: string
+  inputHint: string
   /** The window title of the terminal. */
   terminalTitle: string
   heading: string
@@ -26,6 +33,9 @@ const linkNames = { github: 'github', linkedin: 'linkedin', cv: 'cv.pdf', contac
 
 export const mn: HeroCopy = {
   navLabel: 'Эхлэл',
+  locale: 'mn',
+  inputLabel: 'Терминалын тушаал',
+  inputHint: '`help` гэж бичээд Enter дарна уу',
   terminalTitle: 'tenggis@ulaanbaatar: ~',
   heading: 'Тэнгис Мөнхбаатар',
   role: 'Frontend / Fullstack инженер',
@@ -40,6 +50,9 @@ export const mn: HeroCopy = {
 
 export const en: HeroCopy = {
   navLabel: 'Home',
+  locale: 'en',
+  inputLabel: 'Terminal command',
+  inputHint: 'type `help` and press Enter',
   terminalTitle: 'tenggis@ulaanbaatar: ~',
   heading: 'Tenggis Munkhbaatar',
   role: 'Frontend / Fullstack Engineer',
