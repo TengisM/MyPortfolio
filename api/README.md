@@ -98,10 +98,17 @@ server → error  why a join or start was refused
 
 Bots run on the server too (`bot.go`, the same logic as the site's offline bots). A round ends
 when one rider is left, or when every person has crashed. Rooms live in memory and go when their
-last person leaves, bots or not; a restart ends every match. The
-handler refuses sockets from origins not in `CORS_ORIGINS` (in development, any localhost port), takes 20 new connections a minute per
-client, drops anyone sending over 30 messages a second, and closes a connection that stays silent
-for a minute (the server pings every 20 seconds, which browsers answer on their own).
+last person leaves, bots or not; a restart ends every match. The handler refuses sockets from
+origins not in `CORS_ORIGINS`, takes 20 new connections a minute per client, drops anyone sending
+over 30 messages a second, and closes a connection that stays silent for a minute (the server
+pings every 20 seconds, which browsers answer on their own). In development it also accepts any
+localhost port and any private network address.
+
+To play against another computer on the same Wi-Fi during development, run the API, then
+`pnpm dev --host`. Vite prints a Network URL such as `http://192.168.1.13:5173/`. Open the site
+from that URL, not localhost, and type `tron online`. The invite link it copies then points at
+your machine, and the other computer opens it or types `tron join CODE`. If the other computer
+can't load the page, macOS may be asking whether to allow incoming connections for node.
 
 ### Admin endpoints
 

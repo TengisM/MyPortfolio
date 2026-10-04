@@ -7,6 +7,7 @@ package tronhandler
 
 import (
 	"encoding/json"
+	"net"
 	"net/url"
 	"strings"
 	"sync"
@@ -40,8 +41,9 @@ type Handler struct {
 }
 
 // New takes the CORS allowlist: the same sites that may call the API may open a game socket.
-// allowLocalhost also lets in any localhost port, for development, where Vite moves to the next
-// free port when 5173 is taken.
+// allowLocalhost is for development. It lets in any port on localhost, where Vite moves to the
+// next free port when 5173 is taken, and pages served from a private network address
+// (`pnpm dev --host`), so another computer on the same Wi-Fi can join a room.
 func New(hub *tron.Hub, corsOrigins string, allowLocalhost bool) *Handler {
 	origins := map[string]bool{}
 	for _, o := range strings.Split(corsOrigins, ",") {
@@ -60,7 +62,15 @@ func (h *Handler) allowed(origin string) bool {
 		return false
 	}
 	u, err := url.Parse(origin)
-	return err == nil && (u.Hostname() == "localhost" || u.Hostname() == "127.0.0.1")
+	if err != nil {
+		return false
+	}
+	name := u.Hostname()
+	if name == "localhost" || strings.HasSuffix(name, ".local") {
+		return true
+	}
+	ip := net.ParseIP(name)
+	return ip != nil && (ip.IsLoopback() || ip.IsPrivate())
 }
 
 // Upgrade refuses plain HTTP and pages from other sites before the socket opens. Browsers always

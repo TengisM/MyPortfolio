@@ -62,6 +62,7 @@ export const start: StartGame = (stage, onHud, options) => {
 
   const name = (seat: number) =>
     seat === you ? 'you' : bots[seat] ? `bot-${seat + 1}` : `p${seat + 1}`
+  const onLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
   const link = () => `${location.origin}${location.pathname}?tron=${code}`
   const copyLink = () =>
     navigator.clipboard
@@ -95,6 +96,14 @@ export const start: StartGame = (stage, onHud, options) => {
               `invite: tron join ${code}`,
               'or send',
               `${location.host}${location.pathname}?tron=${code}`,
+              // A localhost link opens the friend's own computer. Vite prints a Network URL with
+              // `pnpm dev --host`; opened from there, the link works across the Wi-Fi.
+              ...(onLocalhost
+                ? [
+                    { text: "friends can't open localhost.", tone: 'muted' as const },
+                    { text: 'use the Network URL instead', tone: 'muted' as const },
+                  ]
+                : []),
             ]
           : []),
         ...(note ? [{ text: note, tone: 'bold' as const }] : []),

@@ -85,7 +85,7 @@ func TestForeignOriginIsRefused(t *testing.T) {
 	}
 }
 
-func TestAnyLocalhostPortInDevelopment(t *testing.T) {
+func TestLocalOriginsInDevelopment(t *testing.T) {
 	t.Parallel()
 	hub := tron.NewHub(tron.Default)
 	t.Cleanup(hub.Shutdown)
@@ -96,6 +96,11 @@ func TestAnyLocalhostPortInDevelopment(t *testing.T) {
 	}{
 		{dev: true, origin: "http://localhost:5174", want: fiber.StatusSwitchingProtocols},
 		{dev: false, origin: "http://localhost:5174", want: fiber.StatusForbidden},
+		{dev: true, origin: "http://192.168.1.13:5174", want: fiber.StatusSwitchingProtocols},
+		{dev: true, origin: "http://10.0.0.7:5173", want: fiber.StatusSwitchingProtocols},
+		{dev: true, origin: "http://my-mac.local:5173", want: fiber.StatusSwitchingProtocols},
+		{dev: false, origin: "http://192.168.1.13:5174", want: fiber.StatusForbidden},
+		{dev: true, origin: "http://8.8.8.8:5173", want: fiber.StatusForbidden},
 		{dev: true, origin: "https://evil.example", want: fiber.StatusForbidden},
 	} {
 		app := fiber.New()
