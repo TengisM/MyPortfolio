@@ -76,6 +76,9 @@ export const start: StartGame = (stage, onHud) => {
   let fallTimer = 0
   let flashRows: number[] = []
   let flashTimer = 0
+  // Redraw only when something changed. Rendering every frame for a board that moves a few
+  // times a second was most of the lag.
+  let dirty = true
 
   const draw = () => {
     if (bag.length === 0) {
@@ -110,6 +113,7 @@ export const start: StartGame = (stage, onHud) => {
     flashRows = []
     next = draw()
     spawn()
+    dirty = true
     pushHud()
   }
 
@@ -131,6 +135,7 @@ export const start: StartGame = (stage, onHud) => {
   }
 
   const lock = () => {
+    dirty = true
     for (const [x, y] of cells(piece)) {
       if (y < 0) {
         over = true
@@ -152,6 +157,7 @@ export const start: StartGame = (stage, onHud) => {
   }
 
   const clearFlashed = () => {
+    dirty = true
     board = board.filter((_, y) => !flashRows.includes(y))
     while (board.length < H) board.unshift(Array(W).fill(0))
     flashRows = []
@@ -161,6 +167,7 @@ export const start: StartGame = (stage, onHud) => {
     const moved = { ...piece, x: piece.x + dx, y: piece.y + dy }
     if (fits(moved)) {
       piece = moved
+      dirty = true
       return true
     }
     return false
@@ -172,6 +179,7 @@ export const start: StartGame = (stage, onHud) => {
       const turned = { ...piece, shape, x: piece.x + kick }
       if (fits(turned)) {
         piece = turned
+        dirty = true
         return
       }
     }
@@ -184,8 +192,13 @@ export const start: StartGame = (stage, onHud) => {
   }
 
   // ---- rendering --------------------------------------------------------------------------------
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
+  const renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    alpha: true,
+    powerPreference: 'high-performance',
+  })
+  // 1.5x is sharp enough for cubes and far cheaper than 2x on a full-screen canvas.
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5))
   renderer.domElement.className = 'absolute inset-0 h-full w-full'
   stage.appendChild(renderer.domElement)
 
@@ -199,6 +212,8 @@ export const start: StartGame = (stage, onHud) => {
   const root = new THREE.Group()
   // Board coordinates: cell (x, y) sits at (x - W/2 + 0.5, H/2 - y - 0.5).
   scene.add(root)
+  // A fixed tilt so the board reads as 3D. It used to sway, which forced a redraw every frame.
+  root.rotation.set(-0.08, 0.12, 0)
 
   const primary =
     getComputedStyle(document.documentElement).getPropertyValue('--c-primary').trim() || '#5b8cff'
@@ -231,7 +246,8 @@ export const start: StartGame = (stage, onHud) => {
   const COUNT = W * H + 8
   const blocks = new THREE.InstancedMesh(
     new THREE.BoxGeometry(0.88, 0.88, 0.88),
-    new THREE.MeshStandardMaterial({ roughness: 0.35, metalness: 0.1 }),
+    // Lambert: cheap per-vertex lighting, plenty for flat-faced cubes.
+    new THREE.MeshLambertMaterial(),
     COUNT,
   )
   root.add(blocks)
@@ -294,6 +310,7 @@ export const start: StartGame = (stage, onHud) => {
     const fitWidth = (W + 2) / 2 / (tanV * camera.aspect)
     camera.position.z = Math.max(fitHeight, fitWidth)
     camera.updateProjectionMatrix()
+    dirty = true
   }
   const ro = new ResizeObserver(resize)
   ro.observe(stage)
@@ -303,7 +320,6 @@ export const start: StartGame = (stage, onHud) => {
   const clock = new THREE.Clock()
   renderer.setAnimationLoop(() => {
     const dt = Math.min(clock.getDelta(), 0.05)
-    const t = clock.elapsedTime
     if (!over && !paused) {
       if (flashRows.length) {
         flashTimer -= dt
@@ -317,11 +333,11 @@ export const start: StartGame = (stage, onHud) => {
         }
       }
     }
-    // A slow sway so the board reads as 3D without getting in the way.
-    root.rotation.y = Math.sin(t * 0.4) * 0.12
-    root.rotation.x = -0.08 + Math.sin(t * 0.3) * 0.03
-    paint()
-    renderer.render(scene, camera)
+    if (dirty) {
+      dirty = false
+      paint()
+      renderer.render(scene, camera)
+    }
   })
 
   reset()

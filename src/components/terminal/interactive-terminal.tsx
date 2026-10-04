@@ -12,7 +12,7 @@ import {
 import type { Effect, GameId, Line, Segment, ShellData } from './shell'
 import { buildFs, complete, displayPath, run, START } from './shell'
 
-// Three.js and the games only download when someone actually starts one.
+// Three.js and the game only download when someone actually starts it.
 const GameWindow = lazy(() => import('@/components/games/game-window'))
 
 type Entry = { id: number; cwd: string; input: string; lines: Line[] }
@@ -58,40 +58,67 @@ function Prompt({ cwd, user }: { cwd: string; user: string }) {
   )
 }
 
-function applyEffect(
-  effect: Effect,
-  startGame: (g: GameId) => void,
-  openWebsite: (target?: string) => void,
-) {
-  switch (effect.kind) {
-    case 'open': {
-      const a = document.createElement('a')
-      a.href = effect.href
-      if (effect.download) a.download = ''
-      else if (effect.href.startsWith('http')) {
-        a.target = '_blank'
-        a.rel = 'noopener noreferrer'
-      }
-      a.click()
-      return
-    }
-    case 'scroll':
-      document.getElementById(effect.target)?.scrollIntoView({ behavior: 'smooth' })
-      return
-    case 'game':
-      startGame(effect.game)
-      return
-    case 'website':
-      openWebsite(effect.target)
-      return
-    case 'clear':
-      return
+function followLink(href: string, download?: boolean) {
+  const a = document.createElement('a')
+  a.href = href
+  if (download) a.download = ''
+  else if (href.startsWith('http')) {
+    a.target = '_blank'
+    a.rel = 'noopener noreferrer'
   }
+  a.click()
+}
+
+// The dev-server start-up played by `pnpm dev`: [delay ms, line]. A null line is where the
+// progress bar animates.
+const BOOT: [number, Line | null][] = [
+  [0, [{ text: '> tenggis-portfolio@1.0.0 dev', tone: 'muted' }]],
+  [60, [{ text: '> vite dev', tone: 'muted' }]],
+  [120, []],
+  [200, null],
+  [1350, []],
+  [
+    1400,
+    [
+      { text: '  VITE ', tone: 'accent' },
+      { text: 'v8.3.2', tone: 'muted' },
+      { text: '  ready in ' },
+      { text: '612 ms', tone: 'accent' },
+    ],
+  ],
+  [1460, []],
+  [1520, [{ text: '  ➜  Local:   ' }, { text: 'https://tenggis.vercel.app/', tone: 'dir' }]],
+  [1580, [{ text: '  ➜  opening the website…', tone: 'muted' }]],
+]
+const BOOT_DONE_MS = 2100
+const BAR_STEPS = 12
+
+const bar = (step: number): Line => {
+  const width = 24
+  const filled = Math.round((step / BAR_STEPS) * width)
+  return [
+    { text: '  building ', tone: 'muted' },
+    { text: '█'.repeat(filled), tone: 'dir' },
+    { text: '░'.repeat(width - filled), tone: 'muted' },
+    { text: ` ${String(Math.round((step / BAR_STEPS) * 100)).padStart(3)}%` },
+  ]
+}
+
+function Clock() {
+  const [now, setNow] = useState<string | null>(null)
+  useEffect(() => {
+    const format = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' })
+    const tick = () => setNow(format.format(new Date()))
+    tick()
+    const id = setInterval(tick, 15_000)
+    return () => clearInterval(id)
+  }, [])
+  return <span className="tabular">{now ?? '--:--'}</span>
 }
 
 /**
- * The live half of the hero terminal. `intro` is the scripted session that types itself out
- * (server-rendered, so it is in the HTML); after it, this adds a working prompt.
+ * The full-screen terminal: the scripted `intro` (server-rendered, types itself out with CSS),
+ * then a working prompt, and a tmux-style status bar. A game opens as a second tmux window.
  */
 export function InteractiveTerminal({
   intro,
@@ -99,6 +126,7 @@ export function InteractiveTerminal({
   user,
   inputLabel,
   hint,
+  openSiteLabel,
   onWebsite,
 }: {
   intro: ReactNode
@@ -106,6 +134,7 @@ export function InteractiveTerminal({
   user: string
   inputLabel: string
   hint: string
+  openSiteLabel: string
   /** Called when the visitor asks for the regular site, with a section id when they named one. */
   onWebsite: (target?: string) => void
 }) {
@@ -117,9 +146,13 @@ export function InteractiveTerminal({
   const [history, setHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState<number | null>(null)
   const [game, setGame] = useState<GameId | null>(null)
+  const [booting, setBooting] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const nextId = useRef(0)
+  const timers = useRef<number[]>([])
+
+  useEffect(() => () => timers.current.forEach(clearTimeout), [])
 
   const scrollToEnd = () =>
     requestAnimationFrame(() => {
@@ -127,23 +160,78 @@ export function InteractiveTerminal({
       if (el) el.scrollTop = el.scrollHeight
     })
 
+  const appendLines = (id: number, more: Line[]) => {
+    setEntries((prev) =>
+      prev.map((e) => (e.id === id ? { ...e, lines: [...e.lines, ...more] } : e)),
+    )
+    scrollToEnd()
+  }
+  const replaceLast = (id: number, line: Line) => {
+    setEntries((prev) =>
+      prev.map((e) => (e.id === id ? { ...e, lines: [...e.lines.slice(0, -1), line] } : e)),
+    )
+  }
+
+  // `pnpm dev`: prints the start-up line by line, fills the progress bar, then opens the site.
+  const boot = (id: number) => {
+    setBooting(true)
+    for (const [delay, line] of BOOT) {
+      timers.current.push(
+        window.setTimeout(() => {
+          if (line) return appendLines(id, [line])
+          appendLines(id, [bar(0)])
+          for (let step = 1; step <= BAR_STEPS; step++) {
+            timers.current.push(window.setTimeout(() => replaceLast(id, bar(step)), step * 85))
+          }
+        }, delay),
+      )
+    }
+    timers.current.push(
+      window.setTimeout(() => {
+        setBooting(false)
+        onWebsite()
+      }, BOOT_DONE_MS),
+    )
+  }
+
+  const applyEffect = (effect: Effect, entryId: number) => {
+    switch (effect.kind) {
+      case 'open':
+        followLink(effect.href, effect.download)
+        return
+      case 'game':
+        // A game takes the keyboard: drop focus so its arrow keys don't walk the history here.
+        inputRef.current?.blur()
+        setGame(effect.game)
+        return
+      case 'website':
+        onWebsite(effect.target)
+        return
+      case 'boot':
+        boot(entryId)
+        return
+      case 'clear':
+        return
+    }
+  }
+
   // Runs one command line, as typed at the prompt or sent by a click in the intro's menu.
   const execute = (input: string) => {
+    if (booting) return
     const nextHistory = input.trim() ? [...history, input] : history
     const result = run(root, cwd, input, nextHistory)
     setValue('')
     setHistory(nextHistory)
     setHistoryIndex(null)
+    const id = nextId.current++
     if (result.effects.some((fx) => fx.kind === 'clear')) {
       setEntries([])
       setIntroHidden(true)
     } else {
-      setEntries((prev) => [...prev, { id: nextId.current++, cwd, input, lines: result.lines }])
+      setEntries((prev) => [...prev, { id, cwd, input, lines: result.lines }])
     }
     setCwd(result.cwd)
-    // A game takes the keyboard: drop focus so its arrow keys don't also walk the history here.
-    if (result.effects.some((fx) => fx.kind === 'game')) inputRef.current?.blur()
-    for (const fx of result.effects) applyEffect(fx, setGame, onWebsite)
+    for (const fx of result.effects) applyEffect(fx, id)
     scrollToEnd()
   }
 
@@ -202,15 +290,15 @@ export function InteractiveTerminal({
   return (
     <>
       {/* Its own scroll area; data-lenis-prevent keeps the page's smooth scroll out of it.
-          Clicking anywhere in the window puts the cursor in the prompt, like a real terminal.
-          Keyboard users already reach the input directly, so this click needs no key twin. */}
+          Clicking anywhere puts the cursor in the prompt, like a real terminal. Keyboard users
+          reach the input directly, so the click needs no key twin. */}
       {/* biome-ignore lint/a11y/noStaticElementInteractions: mouse convenience only, see above. */}
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: the input itself is keyboard-reachable. */}
       <div
         ref={scrollRef}
         data-lenis-prevent=""
         onClick={() => inputRef.current?.focus({ preventScroll: true })}
-        className="min-h-0 flex-1 overflow-y-auto p-5 font-mono text-sm md:p-8 md:text-base"
+        className="min-h-0 flex-1 overflow-y-auto px-4 py-5 font-mono text-sm md:px-8 md:py-7 md:text-base"
       >
         <div className={introHidden ? 'hidden' : 'term grid gap-1.5'}>{intro}</div>
 
@@ -235,8 +323,9 @@ export function InteractiveTerminal({
             </div>
           ))}
 
-          {/* On narrow screens the input wraps under the prompt instead of being squeezed. */}
-          <form onSubmit={submit} className="flex flex-wrap items-center">
+          {/* Hidden while `pnpm dev` runs, like a real foreground process. On narrow screens the
+              input wraps under the prompt instead of being squeezed. */}
+          <form onSubmit={submit} className={booting ? 'hidden' : 'flex flex-wrap items-center'}>
             <label htmlFor="terminal-input" className="sr-only">
               {inputLabel}
             </label>
@@ -256,6 +345,21 @@ export function InteractiveTerminal({
             />
           </form>
         </div>
+      </div>
+
+      {/* tmux-style status bar: windows on the left, the way out in the middle, the clock. */}
+      <div className="bg-primary text-primary-foreground flex h-8 shrink-0 items-center gap-4 px-3 font-mono text-xs">
+        <span className="font-bold">[tenggis-port]</span>
+        <span className={game ? '' : 'font-bold'}>0:zsh{game ? '-' : '*'}</span>
+        {game ? <span className="font-bold">1:{game}*</span> : null}
+        <button
+          type="button"
+          onClick={() => executeRef.current('website')}
+          className="ml-auto truncate underline-offset-2 hover:underline"
+        >
+          {openSiteLabel}
+        </button>
+        <Clock />
       </div>
 
       {game ? (

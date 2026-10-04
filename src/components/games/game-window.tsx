@@ -3,31 +3,20 @@ import { createPortal } from 'react-dom'
 import type { GameId } from '@/components/terminal/shell'
 import type { Game, GameHud } from './types'
 
-const KEYS: Record<GameId, string> = {
-  tetris: '← → move · ↑ rotate · ↓ soft drop · space hard drop · p pause · esc quit',
-  snake: '← ↑ → ↓ or WASD steer · p pause · esc quit',
-}
+const KEYS = '← → move · ↑ rotate · ↓ soft drop · space hard drop · p pause · esc quit'
 
 // On-screen buttons for touch screens, mapped to the same keys the keyboard sends.
-const PADS: Record<GameId, { label: string; key: string }[]> = {
-  tetris: [
-    { label: '←', key: 'ArrowLeft' },
-    { label: '↻', key: 'ArrowUp' },
-    { label: '→', key: 'ArrowRight' },
-    { label: '↓', key: 'ArrowDown' },
-    { label: 'drop', key: ' ' },
-  ],
-  snake: [
-    { label: '←', key: 'ArrowLeft' },
-    { label: '↑', key: 'ArrowUp' },
-    { label: '↓', key: 'ArrowDown' },
-    { label: '→', key: 'ArrowRight' },
-  ],
-}
+const PADS = [
+  { label: '←', key: 'ArrowLeft' },
+  { label: '↻', key: 'ArrowUp' },
+  { label: '→', key: 'ArrowRight' },
+  { label: '↓', key: 'ArrowDown' },
+  { label: 'drop', key: ' ' },
+]
 
 /**
- * A second terminal window that opens over the first and runs one game, the way launching a
- * program in a new terminal would. Esc or the red button closes it.
+ * The game as a second tmux window: it fills the screen above the status bar (which shows
+ * `1:tetris*`), and Esc switches back to the shell.
  */
 export default function GameWindow({
   game,
@@ -51,8 +40,7 @@ export default function GameWindow({
       scoreRef.current = h.score
       setHud(h)
     }
-    const load = game === 'tetris' ? import('./tetris') : import('./snake')
-    load
+    import('./tetris')
       .then((m) => {
         if (disposed) return
         gameRef.current = m.start(stage, onHud)
@@ -63,7 +51,7 @@ export default function GameWindow({
       gameRef.current?.dispose()
       gameRef.current = null
     }
-  }, [game])
+  }, [])
 
   // Read through a ref so the listener never holds a stale onExit.
   const quitRef = useRef(quit)
@@ -81,80 +69,72 @@ export default function GameWindow({
     return () => removeEventListener('keydown', onKey)
   }, [])
 
-  // Portalled to <body> so no transformed ancestor can trap `fixed`.
+  // Portalled to <body> so no transformed ancestor can trap `fixed`. bottom-8 leaves the
+  // terminal's status bar showing underneath.
   return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-label={game}
       data-lenis-prevent=""
-      className="fixed inset-x-3 top-10 bottom-3 z-70 flex flex-col md:inset-x-16 md:top-14 md:bottom-8"
+      className="crt bg-background fixed inset-x-0 top-0 bottom-8 z-70 flex flex-col font-mono"
     >
-      <div className="crt border-border bg-background relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border font-mono shadow-2xl">
-        <div className="border-border bg-muted flex items-center gap-2 border-b px-4 py-2.5">
+      <p className="px-4 pt-4 text-sm md:px-8">
+        <span className="tok-str">tenggis@ulaanbaatar</span>
+        <span className="text-muted-foreground">:</span>
+        <span className="text-primary">~/tenggis-port/games</span>
+        <span className="text-muted-foreground">$ </span>./{game}
+      </p>
+
+      <div className="flex min-h-0 flex-1 flex-col items-stretch gap-4 p-4 md:flex-row md:gap-8 md:px-8">
+        <div ref={stageRef} className="relative min-h-0 flex-1" />
+        <div className="shrink-0 text-sm md:w-56">
+          <p className="text-muted-foreground">score</p>
+          <p className="text-primary text-3xl font-bold">{hud.score}</p>
+          {hud.lines.map((l, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: lines repeat (preview rows), position is the identity.
+            <p key={i} className="text-muted-foreground mt-1 min-h-5 whitespace-pre">
+              {l}
+            </p>
+          ))}
+          {hud.paused ? <p className="mt-4 font-bold">paused. p to resume</p> : null}
+          {hud.over ? (
+            <p className="text-destructive mt-4 font-bold">game over. r to restart</p>
+          ) : null}
+          {failed ? <p className="text-destructive mt-4">could not load the game.</p> : null}
+          <p className="text-muted-foreground mt-6 hidden text-xs leading-relaxed md:block">
+            {KEYS}
+          </p>
           <button
             type="button"
             onClick={quit}
-            aria-label="close"
-            className="size-3 rounded-full bg-red-400/80 hover:bg-red-400"
-          />
-          <span aria-hidden="true" className="size-3 rounded-full bg-amber-400/80" />
-          <span aria-hidden="true" className="size-3 rounded-full bg-green-400/80" />
-          <span className="text-muted-foreground ml-3 truncate text-xs">
-            {game}: tenggis@ulaanbaatar: ~/tenggis-port/games
-          </span>
+            className="border-border hover:border-primary hover:text-primary mt-6 rounded-md border px-3 py-1 text-xs transition-colors"
+          >
+            esc: back to the shell
+          </button>
         </div>
+      </div>
 
-        <p className="px-4 pt-3 text-sm">
-          <span className="tok-str">tenggis@ulaanbaatar</span>
-          <span className="text-muted-foreground">:</span>
-          <span className="text-primary">~/tenggis-port/games</span>
-          <span className="text-muted-foreground">$ </span>./{game}
-        </p>
-
-        <div className="flex min-h-0 flex-1 flex-col items-stretch gap-4 p-4 md:flex-row md:gap-8">
-          <div ref={stageRef} className="relative min-h-0 flex-1" />
-          <div className="shrink-0 text-sm md:w-56">
-            <p className="text-muted-foreground">score</p>
-            <p className="text-primary text-3xl font-bold">{hud.score}</p>
-            {hud.lines.map((l, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: lines repeat (preview rows), position is the identity.
-              <p key={i} className="text-muted-foreground mt-1 min-h-5 whitespace-pre">
-                {l}
-              </p>
-            ))}
-            {hud.paused ? <p className="mt-4 font-bold">paused. p to resume</p> : null}
-            {hud.over ? (
-              <p className="text-destructive mt-4 font-bold">game over. r to restart</p>
-            ) : null}
-            {failed ? <p className="text-destructive mt-4">could not load the game.</p> : null}
-            <p className="text-muted-foreground mt-6 hidden text-xs leading-relaxed md:block">
-              {KEYS[game]}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-2 p-3 md:hidden">
-          {PADS[game].map((p) => (
-            <button
-              key={p.label}
-              type="button"
-              onClick={() => gameRef.current?.key(p.key)}
-              className="border-border active:bg-primary active:text-primary-foreground min-h-12 min-w-12 rounded-lg border px-3 text-lg"
-            >
-              {p.label}
-            </button>
-          ))}
-          {hud.over ? (
-            <button
-              type="button"
-              onClick={() => gameRef.current?.key('r')}
-              className="border-primary text-primary min-h-12 rounded-lg border px-4"
-            >
-              restart
-            </button>
-          ) : null}
-        </div>
+      <div className="flex flex-wrap justify-center gap-2 p-3 md:hidden">
+        {PADS.map((p) => (
+          <button
+            key={p.label}
+            type="button"
+            onClick={() => gameRef.current?.key(p.key)}
+            className="border-border active:bg-primary active:text-primary-foreground min-h-12 min-w-12 rounded-lg border px-3 text-lg"
+          >
+            {p.label}
+          </button>
+        ))}
+        {hud.over ? (
+          <button
+            type="button"
+            onClick={() => gameRef.current?.key('r')}
+            className="border-primary text-primary min-h-12 rounded-lg border px-4"
+          >
+            restart
+          </button>
+        ) : null}
       </div>
     </div>,
     document.body,
