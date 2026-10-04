@@ -8,7 +8,7 @@ const KEYS = {
   tron: 'arrows or wasd steer · p pause · r reset the score · esc quit',
   tron2: 'p1 (blue) wasd · p2 (amber) arrows · p pause · r reset the score · esc quit',
   online:
-    'arrows or wasd steer · enter starts the match (host) · c copies the invite link · esc leaves the room',
+    'arrows or wasd steer · enter starts the match · b adds a bot, - removes one (host) · c copies the invite link · esc leaves the room',
 }
 
 // On-screen buttons for touch screens, mapped to the same keys the keyboard sends.
@@ -33,6 +33,8 @@ const PADS = {
     { label: '↓', key: 'ArrowDown' },
     { label: '→', key: 'ArrowRight' },
     { label: 'start', key: 'Enter' },
+    { label: '+ bot', key: 'b' },
+    { label: '- bot', key: '-' },
     { label: 'copy link', key: 'c' },
   ],
 }

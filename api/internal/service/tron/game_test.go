@@ -1,6 +1,7 @@
 package tron_test
 
 import (
+	"math/rand/v2"
 	"slices"
 	"testing"
 
@@ -102,5 +103,16 @@ func TestCrashFreesTheTrail(t *testing.T) {
 	}
 	if slices.Contains(g.Alive(), 0) {
 		t.Fatal("seat 0 still alive after Crash")
+	}
+}
+
+func TestBotTurnsAwayFromTheWall(t *testing.T) {
+	t.Parallel()
+	g := tron.NewGame(seated(0))
+	// Facing the right wall, one cell from it.
+	g.Place(0, tron.Width-1, 10, 1)
+	g.Steer(0, nil, rand.New(rand.NewPCG(1, 2))) //nolint:gosec // a fixed seed keeps the test repeatable
+	if _, crashed := g.Step(); len(crashed) > 0 {
+		t.Fatal("bot drove into the wall")
 	}
 }

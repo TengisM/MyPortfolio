@@ -15,6 +15,7 @@ type ServerMessage =
       you: number
       host: number
       seats: boolean[]
+      bots: boolean[]
       wins: number[]
       playing: boolean
     }
@@ -42,6 +43,7 @@ export const start: StartGame = (stage, onHud, options) => {
   let you = -1
   let host = -1
   let seats = [false, false, false, false]
+  let bots = [false, false, false, false]
   let wins = [0, 0, 0, 0]
   let rounds = 0
   const alive = new Set<number>()
@@ -58,7 +60,8 @@ export const start: StartGame = (stage, onHud, options) => {
   let opened = false
   let ws: WebSocket | null = null
 
-  const name = (seat: number) => (seat === you ? 'you' : `p${seat + 1}`)
+  const name = (seat: number) =>
+    seat === you ? 'you' : bots[seat] ? `bot-${seat + 1}` : `p${seat + 1}`
   const link = () => `${location.origin}${location.pathname}?tron=${code}`
   const copyLink = () =>
     navigator.clipboard
@@ -74,7 +77,7 @@ export const start: StartGame = (stage, onHud, options) => {
     const rows: HudLine[] = SEAT_TONES.map((tone, seat) =>
       seats[seat]
         ? {
-            text: `██ ${name(seat).padEnd(4)} ${seat === host ? 'host' : '    '} ${String(wins[seat] ?? 0).padStart(2)}${inRound && !alive.has(seat) ? '  ✗' : ''}`,
+            text: `██ ${name(seat).padEnd(5)} ${seat === host ? 'host' : '    '} ${String(wins[seat] ?? 0).padStart(2)}${inRound && !alive.has(seat) ? '  ✗' : ''}`,
             tone,
           }
         : { text: '░░ open seat', tone: 'muted' },
@@ -106,7 +109,7 @@ export const start: StartGame = (stage, onHud, options) => {
   const lobbyMessage = () => {
     const riders = seats.filter(Boolean).length
     if (you !== host) return 'waiting for the host to start'
-    return riders >= 2 ? 'press enter to start' : 'waiting for a second rider'
+    return riders >= 2 ? 'press enter to start' : 'invite a friend, or press b for a bot'
   }
 
   // ---- drawing --------------------------------------------------------------------------------
@@ -150,7 +153,7 @@ export const start: StartGame = (stage, onHud, options) => {
     switch (msg.t) {
       case 'room': {
         const first = !code
-        ;({ code, you, host, seats, wins } = msg)
+        ;({ code, you, host, seats, bots, wins } = msg)
         if (!msg.playing) {
           phase = 'lobby'
           message = lobbyMessage()
@@ -206,9 +209,12 @@ export const start: StartGame = (stage, onHud, options) => {
         message =
           msg.win === you
             ? 'you win the round'
-            : msg.win < 0
-              ? 'draw'
-              : `${name(msg.win)} wins the round`
+            : msg.win >= 0
+              ? `${name(msg.win)} wins the round`
+              : // No winner with bots still riding: every person crashed.
+                alive.size > 0
+                ? 'all players derezzed'
+                : 'draw'
         pushHud()
         return
       case 'error':
@@ -248,6 +254,11 @@ export const start: StartGame = (stage, onHud, options) => {
       if (leaving || phase === 'closed') return
       phase = 'closed'
       message = opened ? 'disconnected from the game server' : "can't reach the game server"
+      if (!opened) {
+        note = import.meta.env.DEV
+          ? 'is the API running? cd api && make run'
+          : 'it may be restarting. try again in a minute'
+      }
       pushHud()
     }
   } catch {
@@ -265,6 +276,15 @@ export const start: StartGame = (stage, onHud, options) => {
       }
       if (key === 'Enter') {
         if (phase === 'lobby' && you === host) send({ t: 'start' })
+        return true
+      }
+      // Bots fill empty seats. Host only; the server says so if a guest tries.
+      if (key.toLowerCase() === 'b' || key === '+') {
+        send({ t: 'addbot' })
+        return true
+      }
+      if (key === '-') {
+        send({ t: 'dropbot' })
         return true
       }
       if (key.toLowerCase() === 'c' && code) {

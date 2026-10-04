@@ -147,3 +147,52 @@ func TestShutdownClosesEveryConnection(t *testing.T) {
 		t.Fatalf("Create after Shutdown = %v, want tron.ErrShutdown", err)
 	}
 }
+
+func TestOnePersonAndABotCanPlay(t *testing.T) {
+	t.Parallel()
+	h := tron.NewHub(fast)
+	host, guest := &inbox{}, &inbox{}
+	room, seat, _ := h.Create(host)
+	if err := room.Start(seat); !errors.Is(err, tron.ErrTooFew) {
+		t.Fatalf("Start alone = %v, want tron.ErrTooFew", err)
+	}
+	if err := room.AddBot(seat); err != nil {
+		t.Fatalf("AddBot = %v", err)
+	}
+	_, guestSeat, _ := h.Join(room.Code(), guest)
+	if err := room.AddBot(guestSeat); !errors.Is(err, tron.ErrNotHost) {
+		t.Fatalf("guest AddBot = %v, want tron.ErrNotHost", err)
+	}
+	room.Leave(guestSeat)
+	if err := room.Start(seat); err != nil {
+		t.Fatalf("Start with a bot = %v", err)
+	}
+	if round := host.wait(t, "round"); len(round["r"].([]any)) != 2 {
+		t.Fatalf("round riders = %v, want you and the bot", round["r"])
+	}
+	// You don't steer, so you hit the wall first and the round ends without watching the bot.
+	host.wait(t, "over")
+}
+
+func TestAPersonTakesABotsSeatInAFullRoom(t *testing.T) {
+	t.Parallel()
+	h := tron.NewHub(fast)
+	room, seat, _ := h.Create(&inbox{})
+	for range tron.Seats - 1 {
+		if err := room.AddBot(seat); err != nil {
+			t.Fatalf("AddBot = %v", err)
+		}
+	}
+	if err := room.AddBot(seat); !errors.Is(err, tron.ErrNoSeat) {
+		t.Fatalf("AddBot into a full room = %v, want tron.ErrNoSeat", err)
+	}
+	guest := &inbox{}
+	if _, s, err := h.Join(room.Code(), guest); err != nil || s != tron.Seats-1 {
+		t.Fatalf("Join a room of bots = seat %d, %v, want the last bot's seat", s, err)
+	}
+	room.Leave(seat)
+	room.Leave(tron.Seats - 1)
+	if h.Rooms() != 0 {
+		t.Fatal("bots kept the room open after the people left")
+	}
+}

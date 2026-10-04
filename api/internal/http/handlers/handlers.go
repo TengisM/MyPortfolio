@@ -24,6 +24,6 @@ func New(services *service.Services, cfg *conf.Config) *Handlers {
 		Lead:    leadhandler.New(services.Lead),
 		Auth:    authhandler.New(services.Auth, !cfg.IsDevelopment()),
 		Content: contenthandler.New(services.Content, services.Publisher),
-		Tron:    tronhandler.New(services.Tron, cfg.Server.CORSOrigins),
+		Tron:    tronhandler.New(services.Tron, cfg.Server.CORSOrigins, cfg.IsDevelopment()),
 	}
 }

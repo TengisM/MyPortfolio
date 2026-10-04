@@ -1,12 +1,13 @@
 // Package tronhandler connects players to online Tron rooms over a WebSocket.
 //
 // The first message opens or joins a room: {"t":"create"} or {"t":"join","code":"ABCD"}. After
-// that the host sends {"t":"start"} and everyone steers with {"t":"turn","d":0..3}. Everything
-// the server says is described in the tron service package.
+// that the host sends {"t":"addbot"}, {"t":"dropbot"} and {"t":"start"}, and everyone steers
+// with {"t":"turn","d":0..3}. Everything the server says is described in the tron service package.
 package tronhandler
 
 import (
 	"encoding/json"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -33,19 +34,33 @@ const (
 )
 
 type Handler struct {
-	hub     *tron.Hub
-	origins map[string]bool
+	hub            *tron.Hub
+	origins        map[string]bool
+	allowLocalhost bool
 }
 
 // New takes the CORS allowlist: the same sites that may call the API may open a game socket.
-func New(hub *tron.Hub, corsOrigins string) *Handler {
+// allowLocalhost also lets in any localhost port, for development, where Vite moves to the next
+// free port when 5173 is taken.
+func New(hub *tron.Hub, corsOrigins string, allowLocalhost bool) *Handler {
 	origins := map[string]bool{}
 	for _, o := range strings.Split(corsOrigins, ",") {
 		if o = strings.TrimSpace(o); o != "" {
 			origins[o] = true
 		}
 	}
-	return &Handler{hub: hub, origins: origins}
+	return &Handler{hub: hub, origins: origins, allowLocalhost: allowLocalhost}
+}
+
+func (h *Handler) allowed(origin string) bool {
+	if origin == "" || h.origins[origin] {
+		return true
+	}
+	if !h.allowLocalhost {
+		return false
+	}
+	u, err := url.Parse(origin)
+	return err == nil && (u.Hostname() == "localhost" || u.Hostname() == "127.0.0.1")
 }
 
 // Upgrade refuses plain HTTP and pages from other sites before the socket opens. Browsers always
@@ -54,7 +69,7 @@ func (h *Handler) Upgrade(c *fiber.Ctx) error {
 	if !websocket.IsWebSocketUpgrade(c) {
 		return fiber.ErrUpgradeRequired
 	}
-	if o := c.Get(fiber.HeaderOrigin); o != "" && !h.origins[o] {
+	if !h.allowed(c.Get(fiber.HeaderOrigin)) {
 		return fiber.ErrForbidden
 	}
 	return c.Next()
@@ -154,8 +169,17 @@ func (h *Handler) serve(ws *websocket.Conn) {
 			if msg.D >= 0 && msg.D <= 3 {
 				room.Turn(seat, tron.Dir(msg.D))
 			}
-		case "start":
-			if err := room.Start(seat); err != nil {
+		case "start", "addbot", "dropbot":
+			var err error
+			switch msg.T {
+			case "start":
+				err = room.Start(seat)
+			case "addbot":
+				err = room.AddBot(seat)
+			default:
+				err = room.RemoveBot(seat)
+			}
+			if err != nil {
 				// Not fatal: tell them why and keep the connection.
 				c.Send(tron.ErrorMessage(err))
 			}

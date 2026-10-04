@@ -312,7 +312,7 @@ const HELP: [string, string][] = [
   ['tetris', 'play Tetris'],
   ['tron', 'light cycles against 3 bots'],
   ['tron 2p', 'two players on one keyboard, plus 2 bots'],
-  ['tron online', 'open a room and invite friends'],
+  ['tron online', 'open a room: invite friends, add bots'],
   ['tron join <code>', "join a friend's room"],
   ['pwd', 'show where you are'],
   ['whoami', 'who runs this machine'],

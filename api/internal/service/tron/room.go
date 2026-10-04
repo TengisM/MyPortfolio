@@ -2,8 +2,10 @@ package tron
 
 import (
 	"crypto/rand"
+	"encoding/binary"
 	"encoding/json"
 	"errors"
+	mrand "math/rand/v2"
 	"sync"
 	"time"
 )
@@ -37,7 +39,9 @@ var (
 	ErrFull     = errors.New("that room is full")
 	ErrTooMany  = errors.New("too many rooms are open, try again in a minute")
 	ErrNotHost  = errors.New("only the host can start")
-	ErrTooFew   = errors.New("need at least 2 riders to start")
+	ErrTooFew   = errors.New("need at least 2 riders to start: invite someone or add a bot")
+	ErrNoSeat   = errors.New("no free seat for a bot")
+	ErrNoBot    = errors.New("no bot to remove")
 	ErrStarted  = errors.New("already playing")
 	ErrShutdown = errors.New("server is restarting")
 )
@@ -75,7 +79,15 @@ func (h *Hub) Create(s Sender) (*Room, int, error) {
 		}
 		code = string(b)
 	}
-	r := &Room{hub: h, code: code, stop: make(chan struct{})}
+	var seed [16]byte
+	_, _ = rand.Read(seed[:])
+	r := &Room{
+		hub:  h,
+		code: code,
+		stop: make(chan struct{}),
+		// Only for the bots' noise. Seeded from crypto/rand so rooms don't ride alike.
+		rng: mrand.New(mrand.NewPCG(binary.LittleEndian.Uint64(seed[:8]), binary.LittleEndian.Uint64(seed[8:]))), //nolint:gosec // bot jitter, not a secret
+	}
 	r.seats[0] = s
 	h.rooms[code] = r
 	r.mu.Lock()
@@ -84,7 +96,8 @@ func (h *Hub) Create(s Sender) (*Room, int, error) {
 	return r, 0, nil
 }
 
-// Join seats s in the room's first free seat. Mid-round, the new rider joins at the next round.
+// Join seats s in the room's first free seat, or in a bot's seat when the room is full of bots.
+// Mid-round, the new rider joins at the next round.
 func (h *Hub) Join(code string, s Sender) (*Room, int, error) {
 	h.mu.Lock()
 	r := h.rooms[code]
@@ -97,15 +110,30 @@ func (h *Hub) Join(code string, s Sender) (*Room, int, error) {
 	if r.closed {
 		return nil, 0, ErrNoRoom
 	}
-	for seat, taken := range r.seats {
-		if taken == nil {
-			r.seats[seat] = s
-			r.wins[seat] = 0
-			r.broadcastRoomLocked()
-			return r, seat, nil
+	seat := -1
+	for s := range Seats {
+		if !r.takenLocked(s) {
+			seat = s
+			break
 		}
 	}
-	return nil, 0, ErrFull
+	if seat < 0 {
+		// A person beats a bot: take the last bot's seat.
+		for s := Seats - 1; s >= 0; s-- {
+			if r.bots[s] {
+				r.dropBotLocked(s)
+				seat = s
+				break
+			}
+		}
+	}
+	if seat < 0 {
+		return nil, 0, ErrFull
+	}
+	r.seats[seat] = s
+	r.wins[seat] = 0
+	r.broadcastRoomLocked()
+	return r, seat, nil
 }
 
 // Rooms counts open rooms.
@@ -158,6 +186,8 @@ type Room struct {
 
 	mu      sync.Mutex
 	seats   [Seats]Sender
+	bots    [Seats]bool
+	rng     *mrand.Rand
 	wins    [Seats]int
 	host    int
 	phase   phase
@@ -181,7 +211,7 @@ func (r *Room) Start(seat int) error {
 	if r.phase != lobby {
 		return ErrStarted
 	}
-	if r.countLocked() < 2 {
+	if r.ridersLocked() < 2 {
 		return ErrTooFew
 	}
 	for i := range r.wins {
@@ -191,6 +221,49 @@ func (r *Room) Start(seat int) error {
 	r.phase = countdown
 	go r.loop()
 	return nil
+}
+
+// AddBot puts a bot in the first free seat. Host only. Mid-match, it rides from the next round.
+func (r *Room) AddBot(seat int) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if seat != r.host {
+		return ErrNotHost
+	}
+	for s := range Seats {
+		if !r.takenLocked(s) {
+			r.bots[s] = true
+			r.wins[s] = 0
+			r.broadcastRoomLocked()
+			return nil
+		}
+	}
+	return ErrNoSeat
+}
+
+// RemoveBot takes out the last bot. Host only. A bot on the board crashes.
+func (r *Room) RemoveBot(seat int) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	if seat != r.host {
+		return ErrNotHost
+	}
+	for s := Seats - 1; s >= 0; s-- {
+		if r.bots[s] {
+			r.dropBotLocked(s)
+			r.broadcastRoomLocked()
+			return nil
+		}
+	}
+	return ErrNoBot
+}
+
+func (r *Room) dropBotLocked(s int) {
+	r.bots[s] = false
+	r.wins[s] = 0
+	if r.game != nil && r.game.Crash(s) {
+		r.leavers = append(r.leavers, s)
+	}
 }
 
 // Turn steers seat's rider.
@@ -215,6 +288,7 @@ func (r *Room) Leave(seat int) {
 		// Reported with the next tick, so every client hears of it in order.
 		r.leavers = append(r.leavers, seat)
 	}
+	// Bots don't keep a room open.
 	if r.countLocked() == 0 {
 		r.closed = true
 		close(r.stop)
@@ -232,6 +306,20 @@ func (r *Room) Leave(seat int) {
 	r.broadcastRoomLocked()
 }
 
+func (r *Room) takenLocked(s int) bool { return r.seats[s] != nil || r.bots[s] }
+
+// ridersLocked counts people and bots.
+func (r *Room) ridersLocked() int {
+	n := 0
+	for s := range Seats {
+		if r.takenLocked(s) {
+			n++
+		}
+	}
+	return n
+}
+
+// countLocked counts people.
 func (r *Room) countLocked() int {
 	n := 0
 	for _, s := range r.seats {
@@ -263,7 +351,7 @@ func (r *Room) loop() {
 			r.mu.Unlock()
 			return
 		}
-		if r.countLocked() < 2 {
+		if r.ridersLocked() < 2 {
 			r.phase = lobby
 			r.game = nil
 			r.broadcastRoomLocked()
@@ -272,8 +360,8 @@ func (r *Room) loop() {
 		}
 		r.round++
 		var seated [Seats]bool
-		for s, taken := range r.seats {
-			seated[s] = taken != nil
+		for s := range Seats {
+			seated[s] = r.takenLocked(s)
 		}
 		r.game = NewGame(seated)
 		r.leavers = nil
@@ -296,14 +384,33 @@ func (r *Room) loop() {
 				return
 			}
 			r.mu.Lock()
+			var people []int
+			for s, taken := range r.seats {
+				if taken != nil {
+					people = append(people, s)
+				}
+			}
+			for s, bot := range r.bots {
+				if bot {
+					r.game.Steer(s, people, r.rng)
+				}
+			}
 			moves, crashed := r.game.Step()
 			crashed = append(crashed, r.leavers...)
 			r.leavers = nil
 			r.broadcastLocked(tickMessage(moves, crashed, step))
 			alive := r.game.Alive()
-			done := len(alive) <= 1
+			peopleAlive := 0
+			for _, s := range alive {
+				if r.seats[s] != nil {
+					peopleAlive++
+				}
+			}
+			// When every person has crashed, don't make them watch the bots finish. Nobody wins.
+			done := len(alive) <= 1 || peopleAlive == 0
 			if done {
 				winner := -1
+				// A lone survivor wins, bot or not: a bot that outlasts you earned it.
 				if len(alive) == 1 {
 					winner = alive[0]
 					r.wins[winner]++
@@ -332,6 +439,7 @@ type roomMsg struct {
 	You     int         `json:"you"`
 	Host    int         `json:"host"`
 	Seats   [Seats]bool `json:"seats"`
+	Bots    [Seats]bool `json:"bots"`
 	Wins    [Seats]int  `json:"wins"`
 	Playing bool        `json:"playing"`
 }
@@ -403,9 +511,9 @@ func (r *Room) broadcastLocked(msg []byte) {
 
 // broadcastRoomLocked tells each player the room's state, with their own seat filled in.
 func (r *Room) broadcastRoomLocked() {
-	msg := roomMsg{T: "room", Code: r.code, Host: r.host, Wins: r.wins, Playing: r.phase != lobby}
-	for s, taken := range r.seats {
-		msg.Seats[s] = taken != nil
+	msg := roomMsg{T: "room", Code: r.code, Host: r.host, Wins: r.wins, Bots: r.bots, Playing: r.phase != lobby}
+	for s := range Seats {
+		msg.Seats[s] = r.takenLocked(s)
 	}
 	for s, taken := range r.seats {
 		if taken == nil {

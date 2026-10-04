@@ -19,7 +19,7 @@ const origin = "http://localhost:5173"
 func serve(t *testing.T) string {
 	t.Helper()
 	hub := tron.NewHub(tron.Timing{Countdown: 10 * time.Millisecond, RoundPause: time.Second, BaseSpeed: 200})
-	h := tronhandler.New(hub, origin)
+	h := tronhandler.New(hub, origin, false)
 	app := fiber.New(fiber.Config{DisableStartupMessage: true})
 	app.Get("/api/tron/ws", h.Upgrade, h.Socket())
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
@@ -82,6 +82,37 @@ func TestForeignOriginIsRefused(t *testing.T) {
 	}
 	if status != http.StatusForbidden {
 		t.Fatalf("status = %d, want 403", status)
+	}
+}
+
+func TestAnyLocalhostPortInDevelopment(t *testing.T) {
+	t.Parallel()
+	hub := tron.NewHub(tron.Default)
+	t.Cleanup(hub.Shutdown)
+	for _, tc := range []struct {
+		dev    bool
+		origin string
+		want   int
+	}{
+		{dev: true, origin: "http://localhost:5174", want: fiber.StatusSwitchingProtocols},
+		{dev: false, origin: "http://localhost:5174", want: fiber.StatusForbidden},
+		{dev: true, origin: "https://evil.example", want: fiber.StatusForbidden},
+	} {
+		app := fiber.New()
+		h := tronhandler.New(hub, origin, tc.dev)
+		app.Get("/ws", h.Upgrade, func(c *fiber.Ctx) error { return c.SendStatus(fiber.StatusSwitchingProtocols) })
+		req, _ := http.NewRequest(http.MethodGet, "http://api.test/ws", nil)
+		req.Header.Set("Connection", "Upgrade")
+		req.Header.Set("Upgrade", "websocket")
+		req.Header.Set("Origin", tc.origin)
+		res, err := app.Test(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		_ = res.Body.Close()
+		if res.StatusCode != tc.want {
+			t.Errorf("dev=%v origin %s: status %d, want %d", tc.dev, tc.origin, res.StatusCode, tc.want)
+		}
 	}
 }
 
