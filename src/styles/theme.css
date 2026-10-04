@@ -5,6 +5,7 @@
 @import "@fontsource-variable/inter/wght.css";
 @import "@fontsource-variable/manrope/wght.css";
 @import "@fontsource-variable/unbounded/wght.css";
+@import "lenis/dist/lenis.css";
 @import "@fontsource-variable/caveat/wght.css";
 
 @import "./presets/portfolio.css";

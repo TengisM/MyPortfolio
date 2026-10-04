@@ -103,6 +103,8 @@ export function Header({
           </nav>
         </details>
       </Container>
+      {/* Fills left to right as you scroll the page. */}
+      <span aria-hidden="true" className="scroll-progress" />
     </header>
   )
 }

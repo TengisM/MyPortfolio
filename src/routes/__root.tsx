@@ -6,6 +6,7 @@ import {
   useRouterState,
 } from '@tanstack/react-router'
 import { Analytics } from '@vercel/analytics/react'
+import { ScrollEffects } from '@/components/scroll-effects'
 import { site } from '@/config/site.config'
 import { ThemeScript } from '@/theme'
 import '@/styles/theme.css'
@@ -41,6 +42,7 @@ function RootDocument() {
       </head>
       <body>
         <Outlet />
+        <ScrollEffects />
         {/* A no-op outside Vercel, so local and preview builds are unaffected. */}
         <Analytics />
         <Scripts />

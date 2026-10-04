@@ -32,20 +32,18 @@ export function FadeIn({ children, className, delay = 0 }: Props) {
   )
 }
 
-// Same transform-only rule. verify-build fails on any `opacity:0` in the built HTML.
+// CSS-driven, not motion: the element only starts hidden once ScrollEffects puts `js-reveal` on
+// <html>, so the static HTML never carries `opacity:0` and works without JavaScript. The delay
+// maps to a tenth-of-a-second step (see [data-reveal-step] in src/styles/portfolio.css).
 export function Reveal({ children, className, delay = 0 }: Props) {
-  const reduce = useReducedMotionAfterMount()
-  if (reduce) return <div className={className}>{children}</div>
   return (
-    <motion.div
+    <div
       className={className}
-      initial={{ y: 16 }}
-      whileInView={{ y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.5, delay, ease: 'easeOut' }}
+      data-reveal=""
+      data-reveal-step={Math.min(Math.round(delay * 10), 4)}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }
 
