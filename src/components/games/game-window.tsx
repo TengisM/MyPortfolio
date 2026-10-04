@@ -128,7 +128,24 @@ export default function GameWindow({
       </p>
 
       <div className="flex min-h-0 flex-1 flex-col items-stretch gap-4 p-4 md:flex-row md:gap-8 md:px-8">
-        <div ref={stageRef} className="relative min-h-0 flex-1" />
+        <div className="relative min-h-0 flex-1">
+          {/* The canvas gets its own box: Three.js appends to it, React never touches it. */}
+          <div ref={stageRef} className="absolute inset-0" />
+          {hud.banner ? (
+            // Keyed by its text so each new number pops in again.
+            <p
+              key={hud.banner}
+              aria-live="assertive"
+              className={
+                hud.banner.length <= 2
+                  ? 'banner-pop font-display text-primary pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-8xl font-black md:text-9xl'
+                  : 'banner-pop font-display text-foreground pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-4 text-center text-3xl font-black md:text-5xl'
+              }
+            >
+              {hud.banner}
+            </p>
+          ) : null}
+        </div>
         <div className="shrink-0 text-sm md:w-56">
           <p className="text-muted-foreground">{hud.label ?? 'score'}</p>
           <p className="text-primary text-3xl font-bold">{hud.score}</p>

@@ -417,6 +417,18 @@ html:not([data-view="site"]):has(.terminal-app) body::before {
   color: var(--c-muted-foreground);
 }
 
+/* A game's countdown and round result, centred over the board. Each new text pops in. */
+.banner-pop {
+  text-shadow: 0 0 24px rgb(91 140 255 / 0.6);
+  animation: banner-pop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes banner-pop {
+  from {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
 /* A friendly wave for the greeting. */
 .wave {
   display: inline-block;
@@ -445,6 +457,9 @@ html:not([data-view="site"]):has(.terminal-app) body::before {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .banner-pop {
+    animation: none;
+  }
   body::before,
   .term > *,
   .term-live,

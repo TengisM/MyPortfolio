@@ -435,7 +435,10 @@ function runOne(root: DirNode, cwd: string, input: string, history: string[]): R
     case 'whoami':
       return out([
         text('tenggis'),
-        text('Frontend / Fullstack Engineer, Ulaanbaatar → Berlin', 'muted'),
+        text(
+          'Frontend / Fullstack Engineer in Ulaanbaatar, willing to relocate to Berlin',
+          'muted',
+        ),
       ])
     case 'date':
       return out([text(new Date().toString())])

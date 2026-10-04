@@ -217,12 +217,8 @@ export const start: StartGame = (stage, onHud, options) => {
     const hud: GameHud = {
       score: players === 2 ? round : (riders[0]?.wins ?? 0),
       label: players === 2 ? 'round' : 'rounds won',
-      lines: [
-        players === 2 ? 'wins' : `round ${round}`,
-        ...rows,
-        '',
-        message ? { text: message, tone: 'bold' } : '',
-      ],
+      lines: [players === 2 ? 'wins' : `round ${round}`, ...rows],
+      banner: message || undefined,
       over: false,
       paused,
     }

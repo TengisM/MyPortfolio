@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-// The moving background behind the public pages: three blurred colour blobs drifting slowly
+// The moving background behind the public pages: three soft colour blobs drifting slowly
 // (pure CSS, see `.aurora` in src/styles/portfolio.css) and a soft glow that follows the cursor.
 // Fixed behind everything, so it only shows through sections without their own background.
 export function Backdrop() {

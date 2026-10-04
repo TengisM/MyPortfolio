@@ -11,6 +11,8 @@ export type GameHud = {
   label?: string
   /** Extra lines under the score: level, next piece, riders. Monospace. */
   lines: HudLine[]
+  /** Big text over the middle of the board: a countdown, "go", who won the round. */
+  banner?: string
   over: boolean
   paused: boolean
 }
