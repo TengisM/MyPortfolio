@@ -5,13 +5,13 @@ export const pages: PageConfig<BlockId>[] = [
   {
     id: 'home',
     path: '/',
-    // Explicit surfaces: the kit would otherwise alternate default and muted.
+    // All on the plain surface: the rail and the type do the work, not alternating bands.
     blocks: [
       { id: 'hero', surface: 'default' },
       { id: 'about', surface: 'default' },
       { id: 'experience', surface: 'default' },
-      { id: 'projects', surface: 'paper' },
-      { id: 'contact', surface: 'lilac' },
+      { id: 'projects', surface: 'default' },
+      { id: 'contact', surface: 'default' },
     ],
     seo: {
       mn: {

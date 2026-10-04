@@ -1,25 +1,24 @@
 import { Container } from '@/components/layout/container'
 import type { SiteConfig } from '@/lib/types'
 
-const LINK = 'hover:underline underline-offset-4 decoration-2'
+const LINK = 'hover:text-primary underline-offset-4 hover:underline'
 
-// Continues the lilac of the contact section.
 export function Footer({ site }: { site: SiteConfig }) {
   const { organization: org } = site
   return (
-    <footer className="surface-lilac bg-background text-foreground">
-      <Container className="border-border flex flex-wrap items-end justify-between gap-6 border-t py-10 text-sm font-semibold">
-        <p className="font-display text-base font-black uppercase">
+    <footer>
+      <Container className="border-border text-muted-foreground flex flex-wrap items-center justify-between gap-4 border-t py-8 text-sm">
+        <p>
           © {new Date().getFullYear()} {org.legalName ?? site.name}
         </p>
-        <p className="flex flex-wrap gap-5 tracking-wide uppercase">
+        <p className="flex flex-wrap gap-5">
           <a
             className={LINK}
             href="https://github.com/TengisM"
             target="_blank"
             rel="noopener noreferrer"
           >
-            GitHub ↗
+            GitHub
           </a>
           <a
             className={LINK}
@@ -27,13 +26,13 @@ export function Footer({ site }: { site: SiteConfig }) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            LinkedIn ↗
+            LinkedIn
           </a>
           <a className={LINK} href="/files/Tenggis_CV.pdf" download>
             CV
           </a>
           <a className={LINK} href="/files/config.cfg" download>
-            CFG
+            config.cfg
           </a>
         </p>
       </Container>

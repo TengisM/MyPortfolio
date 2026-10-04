@@ -1,41 +1,41 @@
-/* Portfolio preset: plum-grey with film grain, soft white type, one lilac accent. Both families
-   ship cyrillic and cyrillic-ext, so ө and ү render in the face. */
+/* Portfolio preset: snow white, ink navy and one sky blue. The blue is the colour of the
+   Mongolian sky and belongs to the script and to links; everything else is ink on white.
+   Plex Sans ships cyrillic and cyrillic-ext, so ө and ү render in the face. */
 :root {
-  --face-display: "Unbounded Variable", system-ui, sans-serif;
-  --face-body: "Inter Variable", system-ui, sans-serif;
+  --face-display: "IBM Plex Sans Variable", system-ui, sans-serif;
+  --face-body: "IBM Plex Sans Variable", system-ui, sans-serif;
 
-  --radius: 1.25rem;
-  --section-y: clamp(5rem, 12vw, 10rem);
+  --radius: 0.25rem;
+  --section-y: clamp(4rem, 9vw, 7rem);
   --gutter: clamp(1.25rem, 4vw, 3rem);
-  --width-page: 90rem;
-  --width-narrow: 40rem;
+  --width-page: 68rem;
+  --width-narrow: 38rem;
   --elevation-card: 0 0 #0000;
 
-  /* Light palette exists only because every preset must define one. The site pins dark. */
-  --c-background: oklch(96% 0.006 95);
-  --c-foreground: oklch(21% 0.006 270);
-  --c-muted: oklch(92% 0.006 95);
-  --c-muted-foreground: oklch(42% 0.01 270);
-  --c-accent: oklch(89% 0.008 95);
-  --c-border: oklch(85% 0.008 95);
-  --c-primary: oklch(21% 0.006 270);
-  --c-primary-foreground: oklch(96% 0.006 95);
-  --c-ring: oklch(21% 0.006 270);
-  --c-destructive: oklch(52% 0.19 27);
-  --c-success: oklch(48% 0.12 152);
+  --c-background: #fafbfd; /* snow */
+  --c-foreground: #0e1a3a; /* ink navy */
+  --c-muted: #eef1f8;
+  --c-muted-foreground: #5a6585; /* slate, 5.9:1 on snow */
+  --c-accent: #e6ebf8;
+  --c-border: #d9deea; /* rule */
+  --c-primary: #1d3fbf; /* sky blue, 7.9:1 on snow */
+  --c-primary-foreground: #ffffff;
+  --c-ring: #1d3fbf;
+  --c-destructive: #b42318;
+  --c-success: #157f3d;
 }
 
+/* The site pins the light palette. Every preset still defines a dark one. */
 .dark {
-  /* #19171f plum-grey, #f1eef7 soft white, #b9a3ff lilac. Lilac on the background: 8.4:1. */
-  --c-background: oklch(20.6% 0.012 300);
-  --c-foreground: oklch(95.3% 0.012 300);
-  --c-muted: oklch(24.5% 0.014 300);
-  --c-muted-foreground: oklch(74% 0.02 300);
-  --c-accent: oklch(28% 0.018 300);
-  --c-border: oklch(34% 0.02 300);
-  --c-primary: oklch(76.5% 0.13 293);
-  --c-primary-foreground: oklch(20.6% 0.012 300);
-  --c-ring: oklch(76.5% 0.13 293);
-  --c-destructive: oklch(70% 0.16 27);
-  --c-success: oklch(80% 0.14 150);
+  --c-background: #0e1a3a;
+  --c-foreground: #f2f4fa;
+  --c-muted: #16244a;
+  --c-muted-foreground: #a3add0;
+  --c-accent: #1b2b57;
+  --c-border: #2a3a68;
+  --c-primary: #8ea6ff;
+  --c-primary-foreground: #0e1a3a;
+  --c-ring: #8ea6ff;
+  --c-destructive: #f97066;
+  --c-success: #4ade80;
 }

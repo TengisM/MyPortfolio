@@ -28,5 +28,5 @@ export const site: SiteConfig = {
     { target: 'projects' },
     { target: 'contact' },
   ],
-  theme: { mode: 'dark' },
+  theme: { mode: 'light' },
 }

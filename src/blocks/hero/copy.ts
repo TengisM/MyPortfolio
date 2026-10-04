@@ -1,75 +1,56 @@
 export type HeroCopy = {
   navLabel: string
-  eyebrow: string
   heading: string
+  role: string
   lead: string
-  location: string
-  skillsLabel: string
-  skills: string[]
+  /** The two cities, each shown with its live local time. */
+  cities: { label: string; timeZone: string }[]
+  moving: string
   primaryCta: { label: string; target: string }
+  emailLabel: string
   /** A file under public/, downloaded rather than navigated to. */
   cv: { label: string; href: string }
   socials: { label: string; href: string }[]
-  /** `split` variant only — optional, so `centered` is not forced to supply it. */
   image?: { src: string; alt: string; width: number; height: number }
 }
-
-// Shared by both languages: product names are not translated.
-const skills = [
-  'React',
-  'Next.js',
-  'TypeScript',
-  'TanStack Start',
-  'Node.js',
-  'Go',
-  'Elixir / Phoenix',
-  'PostgreSQL',
-  'Tailwind CSS',
-  'Vue.js',
-  'Web3',
-]
 
 const socials = [
   { label: 'GitHub', href: 'https://github.com/TengisM' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/tenggis-munkhbaatar-2a32b025a/' },
 ]
-
 const cvHref = '/files/Tenggis_CV.pdf'
+const image = { src: '/images/tenggis.webp', width: 720, height: 720 }
 
 export const mn: HeroCopy = {
   navLabel: 'Эхлэл',
-  eyebrow: 'Frontend / Fullstack инженер',
-  heading: 'Сайн уу, би Тэнгис',
-  lead: 'Хэрэглэгчдэд ойлгомжтой, найдвартай интерфейс бүтээдэг. 2020 оноос хойш банк, тээвэр, боловсрол, Web3 салбарын back-office болон хэрэглэгчийн бүтээгдэхүүн хөгжүүлж байна.',
-  location: 'Улаанбаатарт амьдардаг, удахгүй Берлин рүү нүүнэ',
-  skillsLabel: 'Ур чадвар',
-  skills,
-  primaryCta: { label: 'Холбоо барих', target: 'contact' },
-  cv: { label: 'CV татах', href: cvHref },
+  heading: 'Тэнгис Мөнхбаатар',
+  role: 'Frontend болон fullstack инженер',
+  lead: 'Тэтгэлэг, такси дуудлага, Web3, банкны систем зэрэг бүтээгдэхүүнүүдийн back-office болон хэрэглэгчийн хэсгийг хөгжүүлдэг. Таван жил болж байгаа ч нарийн төвөгтэй ажлын урсгалыг энгийн дэлгэц болгох нь одоо ч хамгийн дуртай ажил минь.',
+  cities: [
+    { label: 'Улаанбаатар', timeZone: 'Asia/Ulaanbaatar' },
+    { label: 'Берлин', timeZone: 'Europe/Berlin' },
+  ],
+  moving: 'Улаанбаатарт амьдардаг, Берлин рүү нүүж байна.',
+  primaryCta: { label: 'Зурвас илгээх', target: 'contact' },
+  emailLabel: 'И-мэйл',
+  cv: { label: 'CV (PDF)', href: cvHref },
   socials,
-  image: {
-    src: '/images/tenggis.webp',
-    alt: 'Тэнгис Мөнхбаатарын хөрөг зураг',
-    width: 720,
-    height: 720,
-  },
+  image: { ...image, alt: 'Тэнгисийн хөрөг зураг' },
 }
 
 export const en: HeroCopy = {
   navLabel: 'Home',
-  eyebrow: 'Frontend / Fullstack Engineer',
-  heading: "Hi, I'm Tenggis",
-  lead: "I build interfaces people find clear and can rely on. Since 2020 I've shipped back-office tools and user-facing products in banking, ride-hailing, education and Web3.",
-  location: 'Based in Ulaanbaatar, moving to Berlin soon',
-  skillsLabel: 'Skills',
-  skills,
-  primaryCta: { label: 'Get in touch', target: 'contact' },
-  cv: { label: 'Download CV', href: cvHref },
+  heading: 'Tenggis Munkhbaatar',
+  role: 'Frontend and fullstack engineer',
+  lead: "I build back-office tools and the products around them, for scholarship platforms, ride-hailing, Web3 and banking. Five years in, I'm still happiest when a complicated workflow turns into a screen that just works.",
+  cities: [
+    { label: 'Ulaanbaatar', timeZone: 'Asia/Ulaanbaatar' },
+    { label: 'Berlin', timeZone: 'Europe/Berlin' },
+  ],
+  moving: "I live in Ulaanbaatar and I'm moving to Berlin.",
+  primaryCta: { label: 'Send a message', target: 'contact' },
+  emailLabel: 'Email',
+  cv: { label: 'CV (PDF)', href: cvHref },
   socials,
-  image: {
-    src: '/images/tenggis.webp',
-    alt: 'Portrait of Tenggis Munkhbaatar',
-    width: 720,
-    height: 720,
-  },
+  image: { ...image, alt: 'Portrait of Tenggis Munkhbaatar' },
 }

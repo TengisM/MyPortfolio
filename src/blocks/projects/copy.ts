@@ -14,8 +14,6 @@ export type ProjectItem = {
 export type ProjectsCopy = {
   navLabel: string
   heading: string
-  lead: string
-  visitLabel: string
   items: ProjectItem[]
 }
 
@@ -41,16 +39,12 @@ function itemsFor(locale: Locale): ProjectItem[] {
 
 export const mn: ProjectsCopy = {
   navLabel: 'Төслүүд',
-  heading: 'Миний бүтээсэн зүйлс',
-  lead: 'Хөгжүүлэлтэд нь оролцсон бүтээгдэхүүнүүд.',
-  visitLabel: 'Үзэх',
+  heading: 'Төслүүд',
   items: itemsFor('mn'),
 }
 
 export const en: ProjectsCopy = {
   navLabel: 'Projects',
-  heading: "Things I've built",
-  lead: "Products I've helped build.",
-  visitLabel: 'Visit',
+  heading: 'Projects',
   items: itemsFor('en'),
 }
