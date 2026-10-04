@@ -3,6 +3,7 @@ import { about } from './about/block'
 import { contact } from './contact/block'
 import { experience } from './experience/block'
 import { hero } from './hero/block'
+import { marquee } from './marquee/block'
 import { projects } from './projects/block'
 
 // Only proves each entry *is* a manifest; each is already precisely typed at its own
@@ -13,6 +14,7 @@ const manifests = {
   about,
   experience,
   projects,
+  marquee,
   // `schema` is a property, so TS checks its type contravariantly: `unknown` would make every
   // concrete manifest fail this `satisfies` check.
   // biome-ignore lint/suspicious/noExplicitAny: unknown breaks assignability here.
@@ -31,4 +33,5 @@ export const registry: Record<BlockId, BlockManifest<any, any>> = {
   about,
   experience,
   projects,
+  marquee,
 }

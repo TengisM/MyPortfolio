@@ -1,5 +1,7 @@
 export type AboutCopy = {
   navLabel: string
+  /** The poster word above the section. */
+  title: string
   heading: string
   paragraphs: string[]
   highlights: { value: string; label: string }[]
@@ -10,6 +12,7 @@ const image = { src: '/images/smile.webp', width: 720, height: 960 }
 
 export const mn: AboutCopy = {
   navLabel: 'Миний тухай',
+  title: 'Тухай',
   heading: 'Миний тухай',
   paragraphs: [
     'Би 5 гаруй жилийн туршлагатай Frontend / Fullstack инженер. Тэтгэлэг, UbCab, UbEats зэрэг өндөр ачаалалтай платформ, StableLab-ийн DAO аналитик, одоо Танасофт дээр банкны back-office систем хөгжүүлж байна.',
@@ -25,6 +28,7 @@ export const mn: AboutCopy = {
 
 export const en: AboutCopy = {
   navLabel: 'About',
+  title: 'About',
   heading: 'About me',
   paragraphs: [
     "I'm a Frontend / Fullstack engineer with 5+ years of experience. I've worked on high-traffic platforms like Tetgeleg, UbCab and UbEats, on DAO analytics at StableLab, and now on a core banking back office at Tanasoft.",

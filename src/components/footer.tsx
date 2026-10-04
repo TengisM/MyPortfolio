@@ -1,30 +1,25 @@
 import { Container } from '@/components/layout/container'
 import type { SiteConfig } from '@/lib/types'
 
-const LINK = 'hover:text-primary transition-colors'
+const LINK = 'hover:underline underline-offset-4 decoration-2'
 
+// Continues the lime of the contact section, the way Junni closes its page.
 export function Footer({ site }: { site: SiteConfig }) {
   const { organization: org } = site
   return (
-    <footer className="border-border bg-muted border-t">
-      <Container className="text-muted-foreground flex flex-wrap items-center justify-between gap-4 py-10 text-sm">
-        <p className="font-mono">
-          {'<> '}© {new Date().getFullYear()} {org.legalName ?? site.name}
-          {' </>'}
+    <footer className="surface-lime bg-background text-foreground">
+      <Container className="border-border flex flex-wrap items-end justify-between gap-6 border-t py-10 text-sm font-semibold">
+        <p className="font-display text-base font-black uppercase">
+          © {new Date().getFullYear()} {org.legalName ?? site.name}
         </p>
-        <p className="flex flex-wrap gap-4">
-          {org.email ? (
-            <a className={LINK} href={`mailto:${org.email}`}>
-              {org.email}
-            </a>
-          ) : null}
+        <p className="flex flex-wrap gap-5 tracking-wide uppercase">
           <a
             className={LINK}
             href="https://github.com/TengisM"
             target="_blank"
             rel="noopener noreferrer"
           >
-            GitHub
+            GitHub ↗
           </a>
           <a
             className={LINK}
@@ -32,7 +27,10 @@ export function Footer({ site }: { site: SiteConfig }) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            LinkedIn
+            LinkedIn ↗
+          </a>
+          <a className={LINK} href="/files/Tenggis_CV.pdf" download>
+            CV
           </a>
           <a className={LINK} href="/files/config.cfg" download>
             CFG

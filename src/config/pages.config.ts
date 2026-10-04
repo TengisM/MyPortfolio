@@ -5,7 +5,15 @@ export const pages: PageConfig<BlockId>[] = [
   {
     id: 'home',
     path: '/',
-    blocks: ['hero', 'about', 'experience', 'projects', 'contact'],
+    // Explicit surfaces: the kit would otherwise alternate default and muted.
+    blocks: [
+      { id: 'hero', surface: 'default' },
+      { id: 'marquee', surface: 'default' },
+      { id: 'about', surface: 'default' },
+      { id: 'experience', surface: 'default' },
+      { id: 'projects', surface: 'paper' },
+      { id: 'contact', surface: 'lime' },
+    ],
     seo: {
       mn: {
         title: 'Frontend / Fullstack инженер',

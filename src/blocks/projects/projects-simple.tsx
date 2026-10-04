@@ -1,9 +1,12 @@
 import { Container } from '@/components/layout/container'
 import { Section } from '@/components/layout/section'
+import { EchoTitle } from '@/components/type/echo-title'
 import type { BlockProps } from '@/lib/types'
 import { Reveal } from '@/motion'
 import type { ProjectsCopy } from './copy'
 
+// Numbered rows on the light "paper" surface, like Junni's service list. Hovering a row slides
+// the title over and swings the project's logo in.
 export function ProjectsSimple({
   copy,
   surface,
@@ -15,37 +18,46 @@ export function ProjectsSimple({
     <Section id={anchorId} surface={surface}>
       <Container>
         <Reveal>
-          <H className="text-h2 font-semibold text-balance">{copy.heading}</H>
-          <p className="text-muted-foreground text-lead mt-4 text-pretty">{copy.lead}</p>
+          <EchoTitle as="p" text={copy.title} />
+          <H className="text-h3 mt-6 font-bold">{copy.heading}</H>
+          <p className="text-muted-foreground mt-2">{copy.lead}</p>
         </Reveal>
 
-        <ul className="mt-12 grid gap-6 md:grid-cols-2">
+        <ul className="border-border mt-12 border-t">
           {copy.items.map((project, i) => (
-            <li key={project.id}>
-              <Reveal delay={(i % 2) * 0.08} className="h-full">
+            <li key={project.id} className="border-border border-b">
+              <Reveal>
                 <a
                   href={project.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="border-border bg-background hover:border-primary rounded-base group flex h-full flex-col border p-6 transition-colors"
+                  className="group relative grid items-center gap-4 py-8 md:grid-cols-12 md:gap-8"
                 >
-                  <div className="flex h-10 items-center justify-between gap-4">
+                  <span className="font-display text-outline-muted text-5xl font-black md:col-span-2 md:text-7xl">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <div className="transition-transform duration-500 group-hover:translate-x-4 md:col-span-7">
+                    <h3 className="font-display text-4xl font-black tracking-tight md:text-6xl">
+                      {project.title}
+                    </h3>
+                    <p className="text-muted-foreground mt-3 text-pretty">{project.description}</p>
+                  </div>
+                  <div className="flex items-center justify-between gap-4 md:col-span-3 md:justify-end">
                     {project.logo ? (
                       <img
                         src={project.logo}
                         alt=""
                         loading="lazy"
-                        className="h-8 w-auto rounded-sm bg-white p-1"
+                        className="border-border h-12 w-auto rounded-xl border bg-white p-2 transition-transform duration-500 md:scale-0 md:rotate-12 md:group-hover:scale-100 md:group-hover:rotate-3"
                       />
-                    ) : (
-                      <span className="font-display text-lg font-bold">{project.title}</span>
-                    )}
-                    <span className="text-muted-foreground group-hover:text-primary text-sm transition-colors">
-                      {copy.visitLabel} ↗
+                    ) : null}
+                    <span
+                      aria-hidden="true"
+                      className="border-foreground grid size-14 shrink-0 place-items-center rounded-full border text-xl transition-all duration-300 group-hover:rotate-45 group-hover:bg-foreground group-hover:text-background"
+                    >
+                      ↗
                     </span>
                   </div>
-                  <h3 className="text-h3 mt-5 font-semibold">{project.title}</h3>
-                  <p className="text-muted-foreground mt-2 text-pretty">{project.description}</p>
                 </a>
               </Reveal>
             </li>

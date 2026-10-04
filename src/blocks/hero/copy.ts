@@ -1,5 +1,10 @@
 export type HeroCopy = {
   navLabel: string
+  /** `poster` variant: the one word set in poster type. */
+  mega: string
+  /** `poster` variant: the handwritten line under the name. */
+  tagline: string
+  scrollLabel: string
   eyebrow: string
   heading: string
   lead: string
@@ -38,9 +43,12 @@ const cvHref = '/files/Tenggis_CV.pdf'
 
 export const mn: HeroCopy = {
   navLabel: 'Эхлэл',
+  mega: 'Тэнгис',
+  tagline: 'Энгийн, ойлгомжтой, найдвартай.',
+  scrollLabel: 'ДООШ ГҮЙЛГЭ · ДООШ ГҮЙЛГЭ · ',
   eyebrow: 'Frontend / Fullstack инженер',
   heading: 'Тэнгис Мөнхбаатар',
-  lead: 'Хэрэглэгчид ойлгомжтой, найдвартай интерфейс бүтээдэг. 2020 оноос хойш банк, тээвэр, боловсрол, Web3 салбарын back-office болон хэрэглэгчийн бүтээгдэхүүн хөгжүүлж байна.',
+  lead: 'Хэрэглэгчдэд ойлгомжтой, найдвартай интерфейс бүтээдэг. 2020 оноос хойш банк, тээвэр, боловсрол, Web3 салбарын back-office болон хэрэглэгчийн бүтээгдэхүүн хөгжүүлж байна.',
   location: 'Улаанбаатар → удахгүй Берлин',
   skillsLabel: 'Ур чадвар',
   skills,
@@ -57,6 +65,9 @@ export const mn: HeroCopy = {
 
 export const en: HeroCopy = {
   navLabel: 'Home',
+  mega: 'Tenggis',
+  tagline: 'Simple, clear, dependable.',
+  scrollLabel: 'SCROLL DOWN · SCROLL DOWN · ',
   eyebrow: 'Frontend / Fullstack Engineer',
   heading: 'Tenggis Munkhbaatar',
   lead: "I build interfaces people find clear and can rely on. Since 2020 I've shipped back-office tools and user-facing products in banking, ride-hailing, education and Web3.",

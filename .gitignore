@@ -26,3 +26,6 @@ api/tmp/
 
 # Vercel
 .vercel
+
+# Brainstorm mockups
+.superpowers/

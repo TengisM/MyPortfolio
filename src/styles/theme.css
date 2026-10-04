@@ -4,8 +4,11 @@
 
 @import "@fontsource-variable/inter/wght.css";
 @import "@fontsource-variable/manrope/wght.css";
+@import "@fontsource-variable/unbounded/wght.css";
+@import "@fontsource-variable/caveat/wght.css";
 
 @import "./presets/portfolio.css";
+@import "./portfolio.css";
 
 /* Animation utilities for the panel's sheet and dropdown. Import it here, inside Tailwind, so
    only used classes ship. Imported from any other stylesheet, the whole library ships. */
@@ -29,6 +32,15 @@
   --text-h3: clamp(1.25rem, 2vw, 1.5rem);
   --text-h3--line-height: 1.3;
   --text-h3--letter-spacing: -0.015em;
+
+  /* Poster type for the hero name and section titles. Sized by viewport width so one word
+     spans the page. */
+  --text-mega: clamp(3rem, 14.5vw, 15rem);
+  --text-mega--line-height: 0.9;
+  --text-mega--letter-spacing: -0.02em;
+  --text-giant: clamp(2.5rem, 11vw, 11rem);
+  --text-giant--line-height: 0.95;
+  --text-giant--letter-spacing: -0.02em;
 
   --text-lead: clamp(1.125rem, 1.6vw, 1.375rem);
   --text-lead--line-height: 1.55;
@@ -63,6 +75,7 @@
 
   --font-display: var(--face-display);
   --font-body: var(--face-body);
+  --font-hand: "Caveat Variable", cursive;
 
   --radius-base: var(--radius);
   --spacing-section: var(--section-y);

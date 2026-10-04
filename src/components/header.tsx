@@ -37,7 +37,7 @@ export function Header({
     <a
       key={item.target}
       href={resolve(item.target)}
-      className="hover:text-primary flex min-h-11 items-center"
+      className="hover:text-primary flex min-h-11 items-center font-semibold tracking-widest uppercase transition-colors"
     >
       {labelFor(item.target, locale)}
     </a>
@@ -48,7 +48,7 @@ export function Header({
       key={l}
       href={switchLocale(path, locale, l, site)}
       hrefLang={l}
-      className="text-muted-foreground hover:text-primary flex min-h-11 items-center uppercase"
+      className="border-foreground/30 hover:border-primary hover:text-primary flex min-h-9 items-center rounded-full border px-3 font-semibold tracking-widest uppercase transition-colors"
     >
       {l}
     </a>
@@ -57,16 +57,17 @@ export function Header({
   const themeToggle = <ThemeToggle label={locale === 'mn' ? 'Өнгө хувиргах' : 'Toggle theme'} />
 
   return (
-    <header className="border-border bg-background/80 sticky top-0 z-50 border-b backdrop-blur">
+    <header className="bg-background/70 sticky top-0 z-50 backdrop-blur-md">
       <Container className="flex items-center justify-between gap-4 py-3">
         <a
           href={localePath('/', locale, site)}
-          className="font-display flex min-h-11 items-center font-bold"
+          className="font-display flex min-h-11 items-center gap-2 font-black tracking-tight uppercase"
         >
+          <span aria-hidden="true" className="bg-primary size-2.5 rounded-full" />
           {site.name}
         </a>
 
-        <nav aria-label={navLabel} className="hidden items-center gap-6 text-sm md:flex">
+        <nav aria-label={navLabel} className="hidden items-center gap-7 text-xs md:flex">
           {pageLinks}
           {localeLinks}
           {themeToggle}

@@ -16,4 +16,5 @@ export const blockModules: Record<BlockId, () => Promise<unknown>> = {
     import('./experience/variants').then((m) => registerVariants('experience', m.variants)),
   projects: () =>
     import('./projects/variants').then((m) => registerVariants('projects', m.variants)),
+  marquee: () => import('./marquee/variants').then((m) => registerVariants('marquee', m.variants)),
 }
