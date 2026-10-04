@@ -1,4 +1,4 @@
-# API-only image, for Koyeb. Build from this folder: docker build -t portfolio-api api/
+# API-only image, for Render (render.yaml at the repo root). Build from this folder: docker build -t portfolio-api api/
 # The embedded site stays the placeholder (see .dockerignore), so the binary serves /api only.
 
 FROM golang:1.27-alpine AS build

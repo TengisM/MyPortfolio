@@ -238,17 +238,39 @@ export const start: StartGame = (stage, onHud, options) => {
   }
 
   // ---- connection -----------------------------------------------------------------------------
-  // A free server sleeps when idle and takes a few seconds to wake. Say so instead of hanging.
+  // The free server sleeps when idle and takes up to a minute to wake. While it does, a socket can
+  // fail outright, so keep retrying for WAKE_MS and say what's happening instead of giving up.
+  // In development the API is local: if it's down, say so at once.
+  const WAKE_MS = import.meta.env.DEV ? 0 : 90_000
+  const startedAt = performance.now()
+  let retry: ReturnType<typeof setTimeout> | undefined
   const slow = setTimeout(() => {
     if (phase === 'connecting') {
-      note = 'the game server is waking up, give it a few seconds'
+      note = 'the game server is waking up. this can take a minute'
       pushHud()
     }
   }, 3000)
-  try {
-    ws = new WebSocket(socketUrl())
+
+  const giveUp = () => {
+    clearTimeout(slow)
+    phase = 'closed'
+    message = "can't reach the game server"
+    note = import.meta.env.DEV
+      ? 'is the API running? cd api && make run'
+      : 'it may be restarting. try again in a minute'
+    pushHud()
+  }
+
+  const connect = () => {
+    try {
+      ws = new WebSocket(socketUrl())
+    } catch {
+      giveUp()
+      return
+    }
     ws.onopen = () => {
       opened = true
+      clearTimeout(slow)
       send(joining ? { t: 'join', code: joining } : { t: 'create' })
     }
     ws.onmessage = (e) => {
@@ -259,21 +281,17 @@ export const start: StartGame = (stage, onHud, options) => {
       }
     }
     ws.onclose = () => {
-      clearTimeout(slow)
       if (leaving || phase === 'closed') return
-      phase = 'closed'
-      message = opened ? 'disconnected from the game server' : "can't reach the game server"
-      if (!opened) {
-        note = import.meta.env.DEV
-          ? 'is the API running? cd api && make run'
-          : 'it may be restarting. try again in a minute'
-      }
-      pushHud()
+      if (opened) {
+        phase = 'closed'
+        message = 'disconnected from the game server'
+        pushHud()
+      } else if (performance.now() - startedAt < WAKE_MS) {
+        retry = setTimeout(connect, 3000)
+      } else giveUp()
     }
-  } catch {
-    phase = 'closed'
-    message = "can't reach the game server"
   }
+  connect()
   pushHud()
 
   return {
@@ -309,6 +327,7 @@ export const start: StartGame = (stage, onHud, options) => {
     dispose() {
       leaving = true
       clearTimeout(slow)
+      clearTimeout(retry)
       ws?.close()
       arena.dispose()
     },

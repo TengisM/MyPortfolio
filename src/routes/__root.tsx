@@ -8,6 +8,7 @@ import {
 import { Analytics } from '@vercel/analytics/react'
 import { ScrollEffects } from '@/components/scroll-effects'
 import { ViewScript } from '@/components/view-script'
+import { WakeApi } from '@/components/wake-api'
 import { site } from '@/config/site.config'
 import { ThemeScript } from '@/theme'
 import '@/styles/theme.css'
@@ -45,6 +46,7 @@ function RootDocument() {
       <body>
         <Outlet />
         <ScrollEffects />
+        <WakeApi />
         {/* A no-op outside Vercel, so local and preview builds are unaffected. */}
         <Analytics />
         <Scripts />

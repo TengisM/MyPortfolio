@@ -296,10 +296,10 @@ non-root user on distroless and listens on `$PORT` (3000 when unset).
 docker build -t portfolio-api api/
 ```
 
-### Koyeb and Neon
+### Render and Neon
 
-On Koyeb, deploy from the repo with `api/` as the work directory and the Dockerfile builder. Set
-the port to match `PORT` and point the health check at `/api/health`. Set these:
+On Render, `render.yaml` at the repo root describes the service: Docker build from `api/`, health
+check at `/api/health`, and Render sets `PORT`. The deploy steps are in DEPLOY.md. It needs these:
 
 ```
 APP_ENV=production
@@ -318,7 +318,7 @@ Take the Neon values from its connection string. Use the direct host, not the `-
 migrations run at startup and need a session that the pooler doesn't keep. `DB_PORT` must be set,
 because the default is 5436 for the local compose database.
 
-Vercel rewrites `/api/*` to Koyeb, so the browser sees one origin. Behind both proxies the API may
+Vercel rewrites `/api/*` to Render, so the browser sees one origin. Behind both proxies the API may
 see one client address for everyone. Check that on the first deploy before trusting the rate
 limits. See "Behind a proxy or load balancer" above.
 

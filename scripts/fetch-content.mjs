@@ -3,7 +3,8 @@
 //
 // Runs before `vite build` when CONTENT_API_URL is set (the API's own origin, not the site's).
 // It never fails the build: if the API stays unreachable, the committed snapshot is used and a
-// warning is printed. The free API host sleeps when idle, hence the retry window.
+// warning is printed. The free API host (Render) sleeps after 15 idle minutes and takes 30-60 s to
+// wake, hence the long request timeout and retry window.
 
 import { mkdir, readdir, rename, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -11,8 +12,8 @@ import { join } from 'node:path'
 const API = process.env.CONTENT_API_URL?.replace(/\/+$/, '')
 const SNAPSHOT = 'src/content/content.json'
 const LOGO_DIR = 'public/content/logos'
-const RETRY_WINDOW_MS = 20_000
-const REQUEST_TIMEOUT_MS = 8_000
+const RETRY_WINDOW_MS = 120_000
+const REQUEST_TIMEOUT_MS = 75_000
 
 const EXT_BY_TYPE = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }
 

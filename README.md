@@ -6,7 +6,7 @@ the admin backend. English at `/`, Mongolian at `/mn`, admin at `/admin`.
 - Projects and experience are edited in `/admin` and stored in Postgres. The build pulls them into
   `src/content/content.json` (see `scripts/fetch-content.mjs`). That file is committed and is the
   fallback when the API is unreachable.
-- Hosting: Vercel for the site, Koyeb for `api/`, Neon for Postgres. Steps are in
+- Hosting: Vercel for the site, Render for `api/`, Neon for Postgres. Steps are in
   [DEPLOY.md](./DEPLOY.md).
 - Local Postgres runs on host port 5436, because 5433 and 5434 belong to other projects on this
   machine. Go tests need `TESTKIT_POSTGRES_DSN=postgres://postgres:postgres@localhost:5436/postgres?sslmode=disable`.
