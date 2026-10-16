@@ -80,9 +80,10 @@ func requireNonSimpleRequest(c *fiber.Ctx) error {
 	return c.Next()
 }
 
-// tronLimiter caps new game connections per client. A player opens one per match; this stops a
-// script from opening rooms in a loop.
-func tronLimiter() fiber.Handler {
+// gameLimiter caps new connections to one game's socket per client. A player opens one per match;
+// this stops a script from opening rooms in a loop. Each game gets its own instance, so a Tron
+// session doesn't spend the Tetris budget.
+func gameLimiter() fiber.Handler {
 	return limiter.New(limiter.Config{
 		Max:          20,
 		Expiration:   time.Minute,
@@ -104,6 +105,7 @@ func setupPublicRoutes(api fiber.Router, h *handlers.Handlers) {
 	api.Get("/content", h.Content.Public)
 	api.Get("/content/logos/:id", h.Content.Logo)
 
-	// Online Tron. Upgrade checks the Origin before the limiter counts the connection.
-	api.Get("/tron/ws", h.Tron.Upgrade, tronLimiter(), h.Tron.Socket())
+	// Online games. Upgrade checks the Origin before the limiter counts the connection.
+	api.Get("/tron/ws", h.Tron.Upgrade, gameLimiter(), h.Tron.Socket())
+	api.Get("/tetris/ws", h.Tetris.Upgrade, gameLimiter(), h.Tetris.Socket())
 }

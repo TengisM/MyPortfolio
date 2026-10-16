@@ -10,8 +10,8 @@ Three free services. The public site never waits on the other two.
 | Lead emails | Resend | 100 a day, and only to your own address until you verify a domain |
 
 Vercel forwards `/api/*` to Render (see `vercel.json`), so the browser sees one origin. The admin
-login cookie depends on that. Online Tron is the exception: Vercel can't forward a WebSocket, so
-the game connects to Render directly (`VITE_TRON_WS` below).
+login cookie depends on that. Online games are the exception: Vercel can't forward a WebSocket,
+so they connect to Render directly (`VITE_TRON_WS` below).
 
 Koyeb was the first plan for the API, but it closed its free plan to new accounts in February
 2026.
@@ -84,7 +84,8 @@ VITE_CONTACT_ENDPOINT=/api/leads
 VITE_TRON_WS=wss://<your-service>.onrender.com/api/tron/ws
 ```
 
-   The game server only accepts sockets from pages listed in `CORS_ORIGINS` on Render, so the
+   Online Tetris reads the same variable and swaps `/tron/ws` for `/tetris/ws`, so it needs no
+   variable of its own. The game server only accepts sockets from pages listed in `CORS_ORIGINS` on Render, so the
    site's address must be there (it already is for the admin panel).
 
 4. Settings → Git → Deploy Hooks: create one for the production branch. Copy the URL into
@@ -123,10 +124,13 @@ If it's your real IP, you're done. If it's a Vercel or Render address, set `PROX
 `TRUSTED_PROXIES` on Render (see `api/README.md`). If that still isn't enough, the fallback is a
 Vercel middleware that forwards the client IP with a shared secret.
 
-## Online Tron
+## Online games
 
-`tron online` in the terminal opens a room on the API and prints a four-letter code. Friends join
-with `tron join CODE` or the link `/?tron=CODE`. Rooms live in the API's memory, so a redeploy or
+`tron online` or `tetris online` in the terminal opens a room on the API and prints a four-letter
+code. Friends join with `tron join CODE` / `tetris join CODE`, or the link `/?tron=CODE` /
+`/?tetris=CODE`. Tetris rooms hold four players. Each plays their own board in the browser; the
+server hands everyone the same piece seed, raises two garbage rows on every board each minute,
+and declares the last one standing the winner. Rooms live in the API's memory, so a redeploy or
 Render putting the API to sleep ends every match. A match in progress keeps it awake: Render counts
 WebSocket messages as activity. If the API is asleep, the first player waits up to a minute while
 it wakes. The game says so and connects on its own.

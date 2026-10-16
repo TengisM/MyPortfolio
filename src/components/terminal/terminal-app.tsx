@@ -98,15 +98,16 @@ export function TerminalApp({ locale, site }: { locale: Locale; site: SiteConfig
   const t = TEXT[locale]
   const hero = HERO[locale]
 
-  // An invite link, /?tron=KXQP, joins that online Tron room straight away.
+  // An invite link, /?tron=KXQP or /?tetris=KXQP, joins that online room straight away.
   useEffect(() => {
     const url = new URL(location.href)
-    const code = url.searchParams.get('tron') ?? ''
-    if (!/^[a-z]{4}$/i.test(code)) return
-    url.searchParams.delete('tron')
+    const game = ['tron', 'tetris'].find((g) => url.searchParams.has(g))
+    const code = game ? (url.searchParams.get(game) ?? '') : ''
+    if (!game || !/^[a-z]{4}$/i.test(code)) return
+    url.searchParams.delete(game)
     history.replaceState(history.state, '', url)
     openTerminal()
-    runInTerminal(`tron join ${code}`)
+    runInTerminal(`${game} join ${code}`)
   }, [])
   return (
     // A div with role="region", not <section>: the kit reserves <section> for its <Section>

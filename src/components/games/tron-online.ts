@@ -1,3 +1,4 @@
+import { type GameSocket, openGameSocket } from './game-socket'
 import { createArena, type Dir, keyToDir } from './tron-view'
 import type { GameHud, HudLine, HudTone, StartGame } from './types'
 
@@ -24,16 +25,6 @@ type ServerMessage =
   | { t: 'over'; win: number; wins: number[] }
   | { t: 'error'; msg: string }
 
-/**
- * Where the game socket lives. Vercel can't proxy a WebSocket, so production sets VITE_TRON_WS
- * to the API host. In development the Vite proxy forwards /api, sockets included.
- */
-function socketUrl() {
-  const configured = import.meta.env.VITE_TRON_WS as string | undefined
-  if (configured) return configured
-  return `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/api/tron/ws`
-}
-
 export const start: StartGame = (stage, onHud, options) => {
   const joining = options?.room && options.room !== 'new' ? options.room.toUpperCase() : null
 
@@ -56,9 +47,7 @@ export const start: StartGame = (stage, onHud, options) => {
   let note = ''
   // The last turn sent this tick. Held keys repeat; one message per change is enough.
   let lastSent: Dir | null = null
-  let leaving = false
-  let opened = false
-  let ws: WebSocket | null = null
+  let socket: GameSocket | null = null
 
   const name = (seat: number) =>
     seat === you ? 'you' : bots[seat] ? `bot-${seat + 1}` : `p${seat + 1}`
@@ -141,9 +130,7 @@ export const start: StartGame = (stage, onHud, options) => {
     return Math.min(1, (now - lastTick) / stepMs)
   }
 
-  const send = (msg: object) => {
-    if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg))
-  }
+  const send = (msg: object) => socket?.send(msg)
 
   const steer = (dir: Dir) => {
     if (phase !== 'running' || !alive.has(you) || dir === lastSent) return
@@ -238,60 +225,22 @@ export const start: StartGame = (stage, onHud, options) => {
   }
 
   // ---- connection -----------------------------------------------------------------------------
-  // The free server sleeps when idle and takes up to a minute to wake. While it does, a socket can
-  // fail outright, so keep retrying for WAKE_MS and say what's happening instead of giving up.
-  // In development the API is local: if it's down, say so at once.
-  const WAKE_MS = import.meta.env.DEV ? 0 : 90_000
-  const startedAt = performance.now()
-  let retry: ReturnType<typeof setTimeout> | undefined
-  const slow = setTimeout(() => {
-    if (phase === 'connecting') {
-      note = 'the game server is waking up. this can take a minute'
+  socket = openGameSocket('tron', joining ? { t: 'join', code: joining } : { t: 'create' }, {
+    message: (msg) => handle(msg as ServerMessage),
+    slow: (text) => {
+      if (phase !== 'connecting') return
+      note = text
       pushHud()
-    }
-  }, 3000)
-
-  const giveUp = () => {
-    clearTimeout(slow)
-    phase = 'closed'
-    message = "can't reach the game server"
-    note = import.meta.env.DEV
-      ? 'is the API running? cd api && make run'
-      : 'it may be restarting. try again in a minute'
-    pushHud()
-  }
-
-  const connect = () => {
-    try {
-      ws = new WebSocket(socketUrl())
-    } catch {
-      giveUp()
-      return
-    }
-    ws.onopen = () => {
-      opened = true
-      clearTimeout(slow)
-      send(joining ? { t: 'join', code: joining } : { t: 'create' })
-    }
-    ws.onmessage = (e) => {
-      try {
-        handle(JSON.parse(String(e.data)) as ServerMessage)
-      } catch {
-        // A message this client doesn't understand. Ignore it rather than break the game.
-      }
-    }
-    ws.onclose = () => {
-      if (leaving || phase === 'closed') return
-      if (opened) {
-        phase = 'closed'
-        message = 'disconnected from the game server'
-        pushHud()
-      } else if (performance.now() - startedAt < WAKE_MS) {
-        retry = setTimeout(connect, 3000)
-      } else giveUp()
-    }
-  }
-  connect()
+    },
+    down: (text, why) => {
+      // Refused with an error before: that message says more than "disconnected".
+      if (phase === 'closed') return
+      phase = 'closed'
+      message = text
+      note = why ?? ''
+      pushHud()
+    },
+  })
   pushHud()
 
   return {
@@ -325,10 +274,7 @@ export const start: StartGame = (stage, onHud, options) => {
       return `left room ${code}. you won ${wins[you] ?? 0} of ${rounds} rounds.`
     },
     dispose() {
-      leaving = true
-      clearTimeout(slow)
-      clearTimeout(retry)
-      ws?.close()
+      socket?.close()
       arena.dispose()
     },
   }

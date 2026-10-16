@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
+import { type PointerEvent, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { GameId } from '@/components/terminal/shell'
 import type { Game, GameHud, HudLine, StartGame } from './types'
 
 const KEYS = {
-  tetris: '← → move · ↑ rotate · ↓ soft drop · space hard drop · p pause · esc quit',
+  tetris: '← → move · ↑ rotate · ↓ soft drop · space hard drop · shift hold · p pause · esc quit',
+  tetrisOnline:
+    '← → move · ↑ rotate · ↓ soft drop · space hard drop · shift hold · enter starts the round (host) · c copies the invite link · esc leaves the room',
   tron: 'arrows or wasd steer · p pause · r reset the score · esc quit',
   tron2: 'p1 (blue) wasd · p2 (amber) arrows · p pause · r reset the score · esc quit',
   online:
@@ -19,6 +21,17 @@ const PADS = {
     { label: '→', key: 'ArrowRight' },
     { label: '↓', key: 'ArrowDown' },
     { label: 'drop', key: ' ' },
+    { label: 'hold', key: 'Shift' },
+  ],
+  'tetris-online': [
+    { label: '←', key: 'ArrowLeft' },
+    { label: '↻', key: 'ArrowUp' },
+    { label: '→', key: 'ArrowRight' },
+    { label: '↓', key: 'ArrowDown' },
+    { label: 'drop', key: ' ' },
+    { label: 'hold', key: 'Shift' },
+    { label: 'start', key: 'Enter' },
+    { label: 'copy link', key: 'c' },
   ],
   tron: [
     { label: '←', key: 'ArrowLeft' },
@@ -27,7 +40,7 @@ const PADS = {
     { label: '→', key: 'ArrowRight' },
   ],
   // Phones have no Enter key to start with, or a handy way to copy the link.
-  online: [
+  'tron-online': [
     { label: '←', key: 'ArrowLeft' },
     { label: '↑', key: 'ArrowUp' },
     { label: '↓', key: 'ArrowDown' },
@@ -39,11 +52,16 @@ const PADS = {
   ],
 }
 
+// Pressed and released like a key, so holding the button slides or drops the piece. The rest are
+// clicks: a touch only counts as the click the clipboard asks for once the finger lifts.
+const HELD = new Set(['ArrowLeft', 'ArrowRight', 'ArrowDown'])
+
 // Each game loads on its own, so Tetris players never download Tron and the other way round.
-const LOADERS: Record<GameId | 'online', () => Promise<{ start: StartGame }>> = {
+const LOADERS: Record<GameId | `${GameId}-online`, () => Promise<{ start: StartGame }>> = {
   tetris: () => import('./tetris'),
+  'tetris-online': () => import('./tetris-online'),
   tron: () => import('./tron'),
-  online: () => import('./tron-online'),
+  'tron-online': () => import('./tron-online'),
 }
 
 const HUD_LINE = 'mt-1 min-h-5 whitespace-pre'
@@ -77,7 +95,7 @@ export default function GameWindow({
 }: {
   game: GameId
   players?: 1 | 2
-  /** Online Tron: 'new' opens a room, a code joins one. */
+  /** Online play: 'new' opens a room, a code joins one. */
   room?: string
   onExit: (summary: string) => void
 }) {
@@ -97,7 +115,7 @@ export default function GameWindow({
       scoreRef.current = h.score
       setHud(h)
     }
-    LOADERS[room ? 'online' : game]()
+    LOADERS[room ? (`${game}-online` as const) : game]()
       .then((m) => {
         if (disposed) return
         gameRef.current = m.start(stage, onHud, { players, room })
@@ -120,10 +138,15 @@ export default function GameWindow({
         quitRef.current()
         return
       }
-      if (gameRef.current?.key(e.key)) e.preventDefault()
+      if (gameRef.current?.key(e.key, e.repeat)) e.preventDefault()
     }
+    const onKeyUp = (e: KeyboardEvent) => gameRef.current?.keyup?.(e.key)
     addEventListener('keydown', onKey)
-    return () => removeEventListener('keydown', onKey)
+    addEventListener('keyup', onKeyUp)
+    return () => {
+      removeEventListener('keydown', onKey)
+      removeEventListener('keyup', onKeyUp)
+    }
   }, [])
 
   // Portalled to <body> so no transformed ancestor can trap `fixed`. bottom-8 leaves the
@@ -182,7 +205,9 @@ export default function GameWindow({
           {failed ? <p className="text-destructive mt-4">could not load the game.</p> : null}
           <p className="text-muted-foreground mt-6 hidden text-xs leading-relaxed md:block">
             {game === 'tetris'
-              ? KEYS.tetris
+              ? room
+                ? KEYS.tetrisOnline
+                : KEYS.tetris
               : room
                 ? KEYS.online
                 : players === 2
@@ -200,12 +225,22 @@ export default function GameWindow({
       </div>
 
       <div className="flex flex-wrap justify-center gap-2 p-3 md:hidden">
-        {PADS[room ? 'online' : game].map((p) => (
+        {PADS[room ? (`${game}-online` as const) : game].map((p) => (
           <button
             key={p.label}
             type="button"
-            onClick={() => gameRef.current?.key(p.key)}
-            className="border-border active:bg-primary active:text-primary-foreground min-h-12 min-w-12 rounded-lg border px-3 text-lg"
+            {...(HELD.has(p.key)
+              ? {
+                  onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
+                    e.preventDefault()
+                    gameRef.current?.key(p.key)
+                  },
+                  onPointerUp: () => gameRef.current?.keyup?.(p.key),
+                  onPointerLeave: () => gameRef.current?.keyup?.(p.key),
+                  onPointerCancel: () => gameRef.current?.keyup?.(p.key),
+                }
+              : { onClick: () => gameRef.current?.key(p.key) })}
+            className="border-border active:bg-primary active:text-primary-foreground min-h-12 min-w-12 touch-manipulation rounded-lg border px-3 text-lg select-none"
           >
             {p.label}
           </button>

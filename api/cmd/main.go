@@ -163,6 +163,7 @@ func run() error {
 
 	// Open game sockets would otherwise hold the shutdown for its whole timeout.
 	services.Tron.Shutdown()
+	services.Tetris.Shutdown()
 
 	// Safe after a bind failure too: it returns nil because Serve never ran.
 	if err := app.ShutdownWithTimeout(10 * time.Second); err != nil {

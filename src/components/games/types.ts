@@ -17,15 +17,19 @@ export type GameHud = {
   paused: boolean
 }
 
-/** A running game. `key` returns true when it used the key, so the page doesn't scroll. */
+/**
+ * A running game. `key` returns true when it used the key, so the page doesn't scroll. `repeat`
+ * is the browser's own auto-repeat; Tetris ignores it and times held keys itself, with `keyup`.
+ */
 export type Game = {
-  key: (key: string) => boolean
+  key: (key: string, repeat?: boolean) => boolean
+  keyup?: (key: string) => void
   /** The line the shell prints after the game closes. */
   summary?: () => string
   dispose: () => void
 }
 
-/** `room`: 'new' opens an online room, four letters join one. */
+/** `room`: 'new' opens an online room (Tron or Tetris), four letters join one. */
 export type GameOptions = { players?: 1 | 2; room?: string }
 
 export type StartGame = (

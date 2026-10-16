@@ -10,7 +10,7 @@ export type GameId = 'tetris' | 'tron'
 export type Effect =
   | { kind: 'clear' }
   | { kind: 'open'; href: string; download?: boolean }
-  /** `players: 2` is Tron's two-on-one-keyboard mode. `room` is online Tron: 'new' or a code. */
+  /** `players: 2` is Tron's two-on-one-keyboard mode. `room` is online play: 'new' or a code. */
   | { kind: 'game'; game: GameId; players?: 1 | 2; room?: string }
   /** Jump straight to the regular site, optionally at one section. */
   | { kind: 'website'; target?: string }
@@ -130,7 +130,7 @@ export function buildFs(data: ShellData): DirNode {
           text('Start the website:  cd website && pnpm dev'),
           text('Look around:        ls, cd <dir>, cat <file>'),
           text(
-            'Play:               tetris, tron (tron 2p: two players, tron online: with friends)',
+            'Play:               tetris, tron (add `online` to play with friends, tron 2p: one keyboard)',
           ),
           text('Everything else:    help'),
         ],
@@ -310,10 +310,12 @@ const HELP: [string, string][] = [
   ['cat <file>', 'print a file'],
   ['open <name>', 'jump to that section, or open the link'],
   ['tetris', 'play Tetris'],
+  ['tetris online', 'open a room for up to 4: last one standing wins'],
+  ['tetris join <code>', "join a friend's Tetris room"],
   ['tron', 'light cycles against 3 bots'],
   ['tron 2p', 'two players on one keyboard, plus 2 bots'],
   ['tron online', 'open a room: invite friends, add bots'],
-  ['tron join <code>', "join a friend's room"],
+  ['tron join <code>', "join a friend's Tron room"],
   ['pwd', 'show where you are'],
   ['whoami', 'who runs this machine'],
   ['history', 'commands you have typed'],
@@ -401,16 +403,16 @@ function runOne(root: DirNode, cwd: string, input: string, history: string[]): R
   })
   const err = (s: string) => out([text(s, 'err')])
   const launch = (game: GameId) => {
-    if (game === 'tron' && (args[0] === 'online' || args[0] === 'host')) {
+    if (args[0] === 'online' || args[0] === 'host') {
       return out(
         [text('opening a room on the game server…', 'muted')],
         [{ kind: 'game', game, room: 'new' }],
       )
     }
-    if (game === 'tron' && args[0] === 'join') {
+    if (args[0] === 'join') {
       const code = args[1] ?? ''
       if (!/^[a-z]{4}$/i.test(code)) {
-        return err('tron: join needs the four-letter room code, like `tron join KXQP`')
+        return err(`${game}: join needs the four-letter room code, like \`${game} join KXQP\``)
       }
       return out(
         [text(`joining room ${code.toUpperCase()}…`, 'muted')],

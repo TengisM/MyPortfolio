@@ -6,6 +6,7 @@ import (
 	authhandler "landing-api/internal/http/handlers/auth"
 	contenthandler "landing-api/internal/http/handlers/content"
 	leadhandler "landing-api/internal/http/handlers/lead"
+	tetrishandler "landing-api/internal/http/handlers/tetris"
 	tronhandler "landing-api/internal/http/handlers/tron"
 	"landing-api/internal/service"
 )
@@ -16,6 +17,7 @@ type Handlers struct {
 	Auth    *authhandler.Handler
 	Content *contenthandler.Handler
 	Tron    *tronhandler.Handler
+	Tetris  *tetrishandler.Handler
 }
 
 // New builds every handler. cfg decides whether the refresh cookie is Secure.
@@ -25,5 +27,6 @@ func New(services *service.Services, cfg *conf.Config) *Handlers {
 		Auth:    authhandler.New(services.Auth, !cfg.IsDevelopment()),
 		Content: contenthandler.New(services.Content, services.Publisher),
 		Tron:    tronhandler.New(services.Tron, cfg.Server.CORSOrigins, cfg.IsDevelopment()),
+		Tetris:  tetrishandler.New(services.Tetris, cfg.Server.CORSOrigins, cfg.IsDevelopment()),
 	}
 }
