@@ -1,0 +1,151 @@
+{
+  "projects": [
+    {
+      "id": "15ff3610-9e98-4717-83e5-6e2d682a9f21",
+      "title": "Tetgeleg",
+      "url": "https://tetgeleg.mn/",
+      "logo": "/content/logos/15ff3610-9e98-4717-83e5-6e2d682a9f21.png",
+      "description": {
+        "mn": "500 мянга гаруй оюутан, байгууллагын хэрэглэдэг тэтгэлэг, боловсролын дэмжлэгийн платформ. Би back-office системийн хөгжүүлэлтийг удирдаж, нийтийн вэб апп дээр ажилласан. Өргөдөл, контент, арга хэмжээ удирдах хэрэгслүүдийг бүтээснээр оюутнууд мөрөөдлийн сургуульдаа хүрэх боломж, мэдээллээ олдог болсон.",
+        "en": "Scholarship and education support platform used by 500K+ students and organizations. I led the development of the back-office system and contributed to the public web app, building tools for managing applications, content, and events so students can discover opportunities and resources for their dream schools."
+      }
+    },
+    {
+      "id": "97b8d528-8ae3-4962-8348-5c64e9e27f27",
+      "title": "Lann",
+      "url": "https://lann.market/",
+      "logo": "/content/logos/97b8d528-8ae3-4962-8348-5c64e9e27f27.png",
+      "description": {
+        "mn": "Тоглоомын эд зүйл, скин аюулгүй худалдах, худалдан авах, солилцох зах зээл. Би арилжааны frontend урсгал болон back-office удирдлагын хэрэгсэл дээр ажилласан. Үлдэгдэл, санал, арилжааны төлөвийг ойлгомжтой харуулж, гүйлгээг аюулгүй, ил тод байлгахад анхаарсан.",
+        "en": "Gaming item and skin marketplace where users can buy, sell, and trade securely. I worked on the frontend trading flows and back-office management tools, focusing on clear UX around balances, offers, and trade status to keep transactions safe and transparent."
+      }
+    },
+    {
+      "id": "66085200-8068-4bc0-947e-2503d1877f00",
+      "title": "UbCab",
+      "url": "https://ubcab.mn/",
+      "logo": "/content/logos/66085200-8068-4bc0-947e-2503d1877f00.png",
+      "description": {
+        "mn": "Монгол даяар 1 сая гаруй хэрэглэгч, 45 мянга гаруй жолоочтой такси дуудлагын платформ. Өдөр тутмын үйл ажиллагаа, урамшуулал, жолооч болон хэрэглэгчийн удирдлагыг дэмждэг дотоод хэрэгсэл, админ самбар бүтээхэд оролцсон.",
+        "en": "Ride-hailing platform with 1M+ users and 45K+ drivers across Mongolia. I contributed to internal tools and admin dashboards that support daily operations, promotions, and driver/user management, helping the product scale while keeping the experience reliable."
+      }
+    },
+    {
+      "id": "0b482c4b-0aac-4397-a6ec-ff720f3127ce",
+      "title": "UbEats",
+      "url": "https://ubeats.mn/",
+      "logo": "/content/logos/0b482c4b-0aac-4397-a6ec-ff720f3127ce.png",
+      "description": {
+        "mn": "UbCab-ийн логистикийн сүлжээтэй холбогдсон оффисын хоол хүргэлтийн үйлчилгээ. DarkStore/DarkKitchen үйл ажиллагааг хэрэглэгчтэй холбодог захиалга, удирдлагын интерфейсийг бүтээхэд тусалсан. Найдвартай хүргэлтийн урсгал, завгүй оффисын ажилчдад хялбар UI дээр төвлөрсөн.",
+        "en": "Office food delivery service integrated with UbCab's logistics network. I helped build the ordering and management interfaces that connect DarkStore/DarkKitchen operations with end users, focusing on reliable delivery flows and a clean, easy-to-use UI for busy office workers."
+      }
+    },
+    {
+      "id": "3e6dc39c-ef98-41d5-adfa-4fb10c6ae05b",
+      "title": "Bidend",
+      "url": "https://bidend.mn/",
+      "logo": "/content/logos/3e6dc39c-ef98-41d5-adfa-4fb10c6ae05b.png",
+      "description": {
+        "mn": "Худалдаа, хөрөнгийн удирдлагад зориулсан бодит цагийн дуудлага худалдааны платформ. Дуудлага худалдаа үзэх, санал өгөх, удирдах frontend дээр ажиллаж, ачаалал ихтэй үед интерфейс хурдан, найдвартай ажиллахын тулд backend инженерүүдтэй хамтарсан.",
+        "en": "Real-time auction platform for trade and asset management. I worked on the frontend experience for browsing, bidding, and managing auctions, collaborating with backend engineers to handle high-traffic bidding periods and keep the interface responsive and trustworthy."
+      }
+    },
+    {
+      "id": "972e1809-b0f6-40e5-9daf-9d08e5a1b01f",
+      "title": "Forse.io",
+      "url": "https://insights.forse.io/",
+      "logo": "/content/logos/972e1809-b0f6-40e5-9daf-9d08e5a1b01f.png",
+      "description": {
+        "mn": "Next.js, Express.js, tRPC, Prisma, PostgreSQL дээр бүтээгдсэн DAO аналитикийн вэб апп. Headless UI, TailwindCSS, ECharts ашиглан самбарууд хийж, Thirdweb-ээр Web3 боломжуудыг (хэтэвч холбох, on-chain DAO хэмжүүр) нэвтрүүлсэн. Хэтэвчний холболтыг wagmi-аас Thirdweb рүү шилжүүлсэн.",
+        "en": "DAO analytics web app using Next.js, Express.js, tRPC, Prisma, and PostgreSQL. I implemented dashboards with Headless UI, TailwindCSS, and ECharts, and integrated Web3 features (wallet connect and on-chain DAO metrics) via Thirdweb, including migrating from wagmi to simplify and stabilize wallet flows."
+      }
+    },
+    {
+      "id": "1f6f49a9-e27c-468d-9694-5d21e139747c",
+      "title": "Landing Kit",
+      "url": "https://www.npmjs.com/package/@tanasoftllc/landing-kit",
+      "logo": null,
+      "description": {
+        "mn": "Хоёр хэлтэй (монгол, англи), урьдчилан рендерлэсэн landing хуудас үүсгэдэг MIT лицензтэй npm CLI. TanStack Start дээр хэл тус бүрийн SEO-той, сонголтоор Go/GoFiber + PostgreSQL backend болон админ самбар нэмдэг. Энэ портфолио өөрөө түүгээр бүтээгдсэн.",
+        "en": "MIT-licensed npm CLI that scaffolds bilingual (Mongolian and English) prerendered landing pages on TanStack Start, with per-locale SEO and an optional Go/GoFiber + PostgreSQL backend and admin panel. This portfolio is built with it."
+      }
+    }
+  ],
+  "experience": [
+    {
+      "id": "2518896f-973b-495b-be2e-f871c03b92f6",
+      "kind": "work",
+      "organization": { "mn": "Танасофт ХХК", "en": "Tanasoft LLC" },
+      "position": { "mn": "Fullstack инженер", "en": "Fullstack Engineer" },
+      "description": {
+        "mn": "Next.js 16, React 19 дээрх банкны үндсэн back-office платформын (~123 мянган мөр код, зээл олголт, ерөнхий журнал, хадгаламж, эрсдэлийн сан зэрэг 25+ модуль) гол хөгжүүлэгч. 700+ файлыг Ant Design-аас shadcn/ui, Radix, Tailwind CSS рүү шилжүүлэх ажлыг удирдсан. Docker, Kubernetes/HPA, GitHub Actions-аар хүргэлтийг хариуцсан. @tanasoftllc/landing-kit-ийг хөгжүүлсэн.",
+        "en": "Major contributor to a core banking back-office platform on Next.js 16 and React 19 (~123K LOC, 25+ modules covering loan origination, GL, deposits and provisioning). Led the migration of 700+ files from Ant Design to shadcn/ui, Radix and Tailwind CSS. Owned delivery with Docker, Kubernetes/HPA and GitHub Actions. Built @tanasoftllc/landing-kit."
+      },
+      "start_date": "2026-04-01",
+      "end_date": null
+    },
+    {
+      "id": "a56b6bc3-1c58-404c-8f79-95cdae4bde68",
+      "kind": "work",
+      "organization": { "mn": "StableLab", "en": "StableLab" },
+      "position": { "mn": "Fullstack инженер", "en": "Fullstack Engineer" },
+      "description": {
+        "mn": "Next.js, Express.js, tRPC, Prisma, PostgreSQL дээрх DAO аналитикийн insights.forse.io апп дээр ажилласан. Headless UI, TailwindCSS, ECharts-аар самбар хийж, Thirdweb-ээр хэтэвч холбох, on-chain хэмжүүр нэмсэн. Хэтэвчний холболтыг wagmi-аас Thirdweb рүү шилжүүлсэн.",
+        "en": "Worked on insights.forse.io, a DAO analytics app built with Next.js, Express.js, tRPC, Prisma and PostgreSQL. Built dashboards with Headless UI, TailwindCSS and ECharts, added wallet connect and on-chain metrics via Thirdweb, and moved the wallet integration from wagmi to Thirdweb."
+      },
+      "start_date": "2025-05-01",
+      "end_date": "2025-10-01"
+    },
+    {
+      "id": "6d0ab7b6-cb21-47a7-ba3f-5ed9223a5908",
+      "kind": "work",
+      "organization": { "mn": "Фриланс (Герман харилцагч)", "en": "Freelance (German client)" },
+      "position": { "mn": "Fullstack инженер", "en": "Fullstack Engineer" },
+      "description": {
+        "mn": "Next.js, TypeScript, Elixir, Phoenix/Ecto, PostgreSQL ашиглан ресторан, нийлүүлэгчийг холбосон B2B логистикийн платформ хөгжүүлсэн. Эрхийн түвшинтэй хандалт, захиалга, нөөцийн урсгалтай back-office апп бүтээж, шаардлага, UX-ийг харилцагчтай шууд тохиролцож ажилласан.",
+        "en": "Built a B2B restaurant-supplier logistics platform with Next.js, TypeScript, Elixir, Phoenix/Ecto and PostgreSQL. Built a back-office app with role-based access control and order and inventory flows, working directly with the client on specs and UX."
+      },
+      "start_date": "2025-01-01",
+      "end_date": "2025-04-01"
+    },
+    {
+      "id": "c5447395-bb93-414f-b4c0-f7759a87d5b7",
+      "kind": "work",
+      "organization": { "mn": "Мэзорн Технологи ХХК", "en": "Mezorn Technology LLC" },
+      "position": { "mn": "Frontend инженер", "en": "Frontend Engineer" },
+      "description": {
+        "mn": "React, Next.js дээр нийт 2 сая гаруй идэвхтэй хэрэглэгчтэй бүтээгдэхүүнүүдийн back-office системүүдийг бүтээж, хөгжүүлсэн. 500 мянга гаруй хэрэглэгчтэй Тэтгэлэг платформын back-office хөгжүүлэлтийг удирдсан. UbEats, UbCab, Socket.io-тэй бодит цагийн дуудлага худалдаа, тоглоомын зах зээлийн хэрэгслүүдэд оролцсон. Jest, React Testing Library-аар тест нэвтрүүлэхэд тусалсан.",
+        "en": "Built and maintained back-office systems with React and Next.js for products serving 2M+ active users. Led development of the Tetgeleg back office (500K+ users, 1M+ requests). Contributed to UbEats, UbCab, a real-time auction platform on Socket.io and a gaming item marketplace. Helped introduce testing with Jest and React Testing Library."
+      },
+      "start_date": "2021-09-01",
+      "end_date": "2024-05-01"
+    },
+    {
+      "id": "bfb2bb5a-99d5-4951-a38d-7eb403caa478",
+      "kind": "work",
+      "organization": { "mn": "Старсофт ХХК", "en": "Starsoft LLC" },
+      "position": { "mn": "Жуниор программ хангамжийн инженер", "en": "Junior Software Engineer" },
+      "description": {
+        "mn": "Vue, Node.js дээрх EduTech платформд илтгэл үүсгэх, хөрвүүлэх, шууд хичээлийн боломжууд болон back-office удирдлагын хэрэгслүүдийг бүтээсэн.",
+        "en": "Built features for an EduTech platform on Vue and Node.js: creating and converting presentations, live classes, and back-office management tools."
+      },
+      "start_date": "2020-06-01",
+      "end_date": "2021-08-01"
+    },
+    {
+      "id": "08b87dc9-81e9-4163-a821-e4bd35e1f5c6",
+      "kind": "education",
+      "organization": {
+        "mn": "Шинжлэх Ухаан Технологийн Их Сургууль",
+        "en": "Mongolian University of Science and Technology"
+      },
+      "position": {
+        "mn": "Программ хангамжийн инженер, бакалавр",
+        "en": "Bachelor's degree, Software Engineering"
+      },
+      "description": { "mn": "", "en": "" },
+      "start_date": "2017-09-01",
+      "end_date": "2021-06-01"
+    }
+  ]
+}

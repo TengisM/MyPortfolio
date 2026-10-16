@@ -1,0 +1,47 @@
+# The Go API on Render's free plan. In Render: New → Blueprint, pick this repo, and it reads this
+# file. It asks for each `sync: false` value once; the rest is set here. See DEPLOY.md.
+services:
+  - type: web
+    name: tenggis-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: ./api
+    healthCheckPath: /api/health
+    # Site-only commits don't rebuild the API.
+    buildFilter:
+      paths:
+        - api/**
+    envVars:
+      - key: APP_ENV
+        value: production
+      # Render generates a random 256-bit value on the first deploy.
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DB_HOST
+        sync: false
+      # The default is 5436, the local compose database.
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_SSLMODE
+        value: require
+      - key: CORS_ORIGINS
+        value: https://tenggis.vercel.app
+      - key: NOTIFY_DRIVER
+        value: resend
+      - key: RESEND_API_KEY
+        sync: false
+      - key: NOTIFY_TO
+        sync: false
+      - key: NOTIFY_SITE_NAME
+        value: tenggis.vercel.app
+      # From Vercel once the site exists (DEPLOY.md, step 4). Leave it empty until then.
+      - key: VERCEL_DEPLOY_HOOK_URL
+        sync: false

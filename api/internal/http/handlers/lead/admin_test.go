@@ -1,0 +1,141 @@
+package leadhandler_test
+
+import (
+	"context"
+	"net/http"
+	"net/netip"
+	"testing"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/tanasoft1/testkit"
+	"github.com/tanasoft1/testkit/fiberkit"
+
+	"landing-api/internal/db/sqlc"
+	"landing-api/internal/http/models"
+	"landing-api/internal/testsupport"
+)
+
+func seedLead(t *testing.T, db *testsupport.DB, email string) {
+	t.Helper()
+
+	addr := netip.MustParseAddr("203.0.113.7")
+	_, err := db.Queries.CreateLead(context.Background(), sqlc.CreateLeadParams{
+		ID:      uuid.New(),
+		Name:    "Bat",
+		Email:   email,
+		Message: "Sain baina uu, ta bental...",
+		Locale:  "mn",
+		Ip:      &addr,
+	})
+	if err != nil {
+		t.Fatalf("seed lead: %v", err)
+	}
+}
+
+func TestAdminLeadsRequiresAuthorization(t *testing.T) {
+	t.Parallel()
+
+	app, db, _ := newApp(t)
+	seedLead(t, db, "bat@example.mn")
+
+	testkit.NewClient(t, fiberkit.Doer(app)).Get("/api/admin/leads").Status(http.StatusUnauthorized)
+}
+
+func TestAdminLeadsReturnsSeededLeadWithValidToken(t *testing.T) {
+	t.Parallel()
+
+	app, db, tokenService := newApp(t)
+	seedLead(t, db, "bat@example.mn")
+
+	access, err := tokenService.GenerateAccessToken(uuid.New(), "admin@example.mn")
+	if err != nil {
+		t.Fatalf("GenerateAccessToken: %v", err)
+	}
+
+	res := testkit.NewClient(t, fiberkit.Doer(app)).
+		With("Authorization", "Bearer "+access).
+		Get("/api/admin/leads").
+		Status(http.StatusOK)
+
+	var body models.SuccessResponse
+	res.Decode(&body)
+	if !body.Success {
+		t.Fatal("Success = false, want true")
+	}
+
+	page, ok := body.Data.(map[string]any)
+	if !ok {
+		t.Fatalf("Data = %T, want an object", body.Data)
+	}
+	leads, ok := page["items"].([]any)
+	if !ok {
+		t.Fatalf("items = %T, want a list", page["items"])
+	}
+	if len(leads) != 1 {
+		t.Fatalf("got %d leads, want 1", len(leads))
+	}
+	if page["total"] != float64(1) {
+		t.Errorf("total = %v, want 1", page["total"])
+	}
+	row, ok := leads[0].(map[string]any)
+	if !ok {
+		t.Fatalf("lead row = %T, want an object", leads[0])
+	}
+	if row["email"] != "bat@example.mn" {
+		t.Errorf("lead email = %v, want bat@example.mn", row["email"])
+	}
+}
+
+func TestAdminLeadsRejectsRefreshTokenAsAccessToken(t *testing.T) {
+	t.Parallel()
+
+	app, _, tokenService := newApp(t)
+
+	refresh, _, err := tokenService.GenerateRefreshToken(uuid.New(), uuid.New(), time.Now().Add(30*24*time.Hour))
+	if err != nil {
+		t.Fatalf("GenerateRefreshToken: %v", err)
+	}
+
+	testkit.NewClient(t, fiberkit.Doer(app)).
+		With("Authorization", "Bearer "+refresh).
+		Get("/api/admin/leads").
+		Status(http.StatusUnauthorized)
+}
+
+// At most MaxListLimit rows come back, whatever limit is asked for.
+func TestAdminLeadsClampsAnOversizedLimit(t *testing.T) {
+	t.Parallel()
+
+	app, db, tokenService := newApp(t)
+	for range 205 {
+		seedLead(t, db, "bat@example.mn")
+	}
+
+	access, err := tokenService.GenerateAccessToken(uuid.New(), "admin@example.mn")
+	if err != nil {
+		t.Fatalf("GenerateAccessToken: %v", err)
+	}
+
+	res := testkit.NewClient(t, fiberkit.Doer(app)).
+		With("Authorization", "Bearer "+access).
+		Get("/api/admin/leads?limit=10000").
+		Status(http.StatusOK)
+
+	var body models.SuccessResponse
+	res.Decode(&body)
+	page, ok := body.Data.(map[string]any)
+	if !ok {
+		t.Fatalf("Data = %T, want an object", body.Data)
+	}
+	leads, ok := page["items"].([]any)
+	if !ok {
+		t.Fatalf("items = %T, want a list", page["items"])
+	}
+	if len(leads) != 200 {
+		t.Fatalf("got %d leads for limit=10000, want 200 (the clamp)", len(leads))
+	}
+	if page["total"] != float64(205) {
+		t.Errorf("total = %v, want 205", page["total"])
+	}
+}
