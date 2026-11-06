@@ -1,16 +1,19 @@
 import { type PointerEvent, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { GameId } from '@/components/terminal/shell'
-import type { Game, GameHud, HudLine, StartGame } from './types'
+import type { Game, GameHud, HudLine, HudTone, StartGame } from './types'
 
 const KEYS = {
   tetris: '← → move · ↑ rotate · ↓ soft drop · space hard drop · shift hold · p pause · esc quit',
-  tetrisOnline:
+  'tetris-online':
     '← → move · ↑ rotate · ↓ soft drop · space hard drop · shift hold · enter starts the round (host) · c copies the invite link · esc leaves the room',
   tron: 'arrows or wasd steer · p pause · r reset the score · esc quit',
   tron2: 'p1 (blue) wasd · p2 (amber) arrows · p pause · r reset the score · esc quit',
-  online:
+  'tron-online':
     'arrows or wasd steer · enter starts the match · b adds a bot, - removes one (host) · c copies the invite link · esc leaves the room',
+  race: '← → or a d steer · ↑ or w throttle · ↓, s or space brake · shift boost · enter picks in menus · r restarts the run · p pause · m sound · n music · esc quit',
+  'race-online':
+    '← → or a d steer · ↑ or w throttle · ↓, s or space brake · shift boost · enter starts the race (host) · c copies the invite link · m sound · n music · esc leaves the room',
 }
 
 // On-screen buttons for touch screens, mapped to the same keys the keyboard sends.
@@ -50,6 +53,9 @@ const PADS = {
     { label: '- bot', key: '-' },
     { label: 'copy link', key: 'c' },
   ],
+  // The racer needs a keyboard: the shell doesn't start it on a touch screen.
+  race: [],
+  'race-online': [],
 }
 
 // Pressed and released like a key, so holding the button slides or drops the piece. The rest are
@@ -62,25 +68,24 @@ const LOADERS: Record<GameId | `${GameId}-online`, () => Promise<{ start: StartG
   'tetris-online': () => import('./tetris-online'),
   tron: () => import('./tron'),
   'tron-online': () => import('./tron-online'),
+  race: () => import('./race'),
+  'race-online': () => import('./race-online'),
 }
 
 const HUD_LINE = 'mt-1 min-h-5 whitespace-pre'
 
+const TONE_CLASS: Record<HudTone, string> = {
+  primary: 'text-primary',
+  pink: 'tok-kw',
+  green: 'tok-str',
+  amber: 'tok-num',
+  bold: 'text-foreground font-bold',
+  muted: 'text-muted-foreground',
+}
+
 function HudRow({ line }: { line: HudLine }) {
   if (typeof line === 'string') return <p className={`text-muted-foreground ${HUD_LINE}`}>{line}</p>
-  const tone =
-    line.tone === 'primary'
-      ? 'text-primary'
-      : line.tone === 'pink'
-        ? 'tok-kw'
-        : line.tone === 'green'
-          ? 'tok-str'
-          : line.tone === 'amber'
-            ? 'tok-num'
-            : line.tone === 'bold'
-              ? 'text-foreground font-bold'
-              : 'text-muted-foreground'
-  return <p className={`${tone} ${HUD_LINE}`}>{line.text}</p>
+  return <p className={`${TONE_CLASS[line.tone]} ${HUD_LINE}`}>{line.text}</p>
 }
 
 /**
@@ -103,9 +108,12 @@ export default function GameWindow({
   const gameRef = useRef<Game | null>(null)
   const [hud, setHud] = useState<GameHud>({ score: 0, lines: [], over: false, paused: false })
   const [failed, setFailed] = useState(false)
-  const scoreRef = useRef(0)
+  const scoreRef = useRef<number | string>(0)
   const quit = () =>
     onExit(gameRef.current?.summary?.() ?? `${game} exited. score: ${scoreRef.current}`)
+  // Read through a ref so listeners and games never hold a stale onExit.
+  const quitRef = useRef(quit)
+  quitRef.current = quit
 
   useEffect(() => {
     let disposed = false
@@ -118,7 +126,7 @@ export default function GameWindow({
     LOADERS[room ? (`${game}-online` as const) : game]()
       .then((m) => {
         if (disposed) return
-        gameRef.current = m.start(stage, onHud, { players, room })
+        gameRef.current = m.start(stage, onHud, { players, room, onQuit: () => quitRef.current() })
       })
       .catch(() => setFailed(true))
     return () => {
@@ -128,9 +136,6 @@ export default function GameWindow({
     }
   }, [game, players, room])
 
-  // Read through a ref so the listener never holds a stale onExit.
-  const quitRef = useRef(quit)
-  quitRef.current = quit
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -148,6 +153,9 @@ export default function GameWindow({
       removeEventListener('keyup', onKeyUp)
     }
   }, [])
+
+  const mode = room ? (`${game}-online` as const) : game
+  const pads = PADS[mode]
 
   // Portalled to <body> so no transformed ancestor can trap `fixed`. bottom-8 leaves the
   // terminal's status bar showing underneath.
@@ -177,17 +185,18 @@ export default function GameWindow({
             <p
               key={hud.banner}
               aria-live="assertive"
-              className={
+              className={`${hud.bannerTone ? TONE_CLASS[hud.bannerTone] : hud.banner.length <= 2 ? 'text-primary' : 'text-foreground'} ${
                 hud.banner.length <= 2
-                  ? 'banner-pop font-display text-primary pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-8xl font-black md:text-9xl'
-                  : 'banner-pop font-display text-foreground pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-4 text-center text-3xl font-black md:text-5xl'
-              }
+                  ? 'banner-pop font-display pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-8xl font-black md:text-9xl'
+                  : 'banner-pop font-display pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-4 text-center text-3xl font-black md:text-5xl'
+              }`}
             >
               {hud.banner}
             </p>
           ) : null}
         </div>
-        <div className="shrink-0 text-sm md:w-56">
+        {/* The racer's scoreboard rows (place, name, ship, time) need the wider column. */}
+        <div className={game === 'race' ? 'shrink-0 text-sm md:w-80' : 'shrink-0 text-sm md:w-56'}>
           <p className="text-muted-foreground">{hud.label ?? 'score'}</p>
           <p className="text-primary text-3xl font-bold">{hud.score}</p>
           {/* On phones Tron's rider list wraps into rows so the arena keeps the height. Tetris
@@ -204,15 +213,7 @@ export default function GameWindow({
           ) : null}
           {failed ? <p className="text-destructive mt-4">could not load the game.</p> : null}
           <p className="text-muted-foreground mt-6 hidden text-xs leading-relaxed md:block">
-            {game === 'tetris'
-              ? room
-                ? KEYS.tetrisOnline
-                : KEYS.tetris
-              : room
-                ? KEYS.online
-                : players === 2
-                  ? KEYS.tron2
-                  : KEYS.tron}
+            {!room && game === 'tron' && players === 2 ? KEYS.tron2 : KEYS[mode]}
           </p>
           <button
             type="button"
@@ -224,37 +225,39 @@ export default function GameWindow({
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-2 p-3 md:hidden">
-        {PADS[room ? (`${game}-online` as const) : game].map((p) => (
-          <button
-            key={p.label}
-            type="button"
-            {...(HELD.has(p.key)
-              ? {
-                  onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
-                    e.preventDefault()
-                    gameRef.current?.key(p.key)
-                  },
-                  onPointerUp: () => gameRef.current?.keyup?.(p.key),
-                  onPointerLeave: () => gameRef.current?.keyup?.(p.key),
-                  onPointerCancel: () => gameRef.current?.keyup?.(p.key),
-                }
-              : { onClick: () => gameRef.current?.key(p.key) })}
-            className="border-border active:bg-primary active:text-primary-foreground min-h-12 min-w-12 touch-manipulation rounded-lg border px-3 text-lg select-none"
-          >
-            {p.label}
-          </button>
-        ))}
-        {hud.over ? (
-          <button
-            type="button"
-            onClick={() => gameRef.current?.key('r')}
-            className="border-primary text-primary min-h-12 rounded-lg border px-4"
-          >
-            restart
-          </button>
-        ) : null}
-      </div>
+      {pads.length > 0 || hud.over ? (
+        <div className="flex flex-wrap justify-center gap-2 p-3 md:hidden">
+          {pads.map((p) => (
+            <button
+              key={p.label}
+              type="button"
+              {...(HELD.has(p.key)
+                ? {
+                    onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
+                      e.preventDefault()
+                      gameRef.current?.key(p.key)
+                    },
+                    onPointerUp: () => gameRef.current?.keyup?.(p.key),
+                    onPointerLeave: () => gameRef.current?.keyup?.(p.key),
+                    onPointerCancel: () => gameRef.current?.keyup?.(p.key),
+                  }
+                : { onClick: () => gameRef.current?.key(p.key) })}
+              className="border-border active:bg-primary active:text-primary-foreground min-h-12 min-w-12 touch-manipulation rounded-lg border px-3 text-lg select-none"
+            >
+              {p.label}
+            </button>
+          ))}
+          {hud.over ? (
+            <button
+              type="button"
+              onClick={() => gameRef.current?.key('r')}
+              className="border-primary text-primary min-h-12 rounded-lg border px-4"
+            >
+              restart
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </div>,
     document.body,
   )

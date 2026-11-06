@@ -5,7 +5,10 @@ export type Tone = 'dir' | 'exec' | 'link' | 'err' | 'muted' | 'accent'
 export type Segment = { text: string; tone?: Tone; href?: string; download?: boolean }
 export type Line = Segment[]
 
-export type GameId = 'tetris' | 'tron'
+export const GAME_IDS = ['tetris', 'tron', 'race'] as const
+export type GameId = (typeof GAME_IDS)[number]
+export const isGame = (name: string): name is GameId =>
+  (GAME_IDS as readonly string[]).includes(name)
 
 export type Effect =
   | { kind: 'clear' }
@@ -130,7 +133,7 @@ export function buildFs(data: ShellData): DirNode {
           text('Start the website:  cd website && pnpm dev'),
           text('Look around:        ls, cd <dir>, cat <file>'),
           text(
-            'Play:               tetris, tron (add `online` to play with friends, tron 2p: one keyboard)',
+            'Play:               tetris, tron, race (add `online` to play with friends, tron 2p: one keyboard)',
           ),
           text('Everything else:    help'),
         ],
@@ -213,6 +216,7 @@ export function buildFs(data: ShellData): DirNode {
         children: {
           tetris: { type: 'exec', game: 'tetris' },
           tron: { type: 'exec', game: 'tron' },
+          race: { type: 'exec', game: 'race' },
         },
       },
     },
@@ -301,6 +305,7 @@ export const COMMANDS = [
   'yarn',
   'tetris',
   'tron',
+  'race',
 ] as const
 
 const HELP: [string, string][] = [
@@ -316,6 +321,9 @@ const HELP: [string, string][] = [
   ['tron 2p', 'two players on one keyboard, plus 2 bots'],
   ['tron online', 'open a room: invite friends, add bots'],
   ['tron join <code>', "join a friend's Tron room"],
+  ['race', 'race against the clock: weekly scoreboard'],
+  ['race online', 'open a room for up to 4'],
+  ['race join <code>', "join a friend's race"],
   ['pwd', 'show where you are'],
   ['whoami', 'who runs this machine'],
   ['history', 'commands you have typed'],
@@ -383,6 +391,12 @@ function packageManager(tool: PackageManager, args: string[], cwd: string): RunR
   ])
 }
 
+/** A phone or tablet: a coarse pointer and no mouse or trackpad, so most likely no keyboard. */
+const touchOnly = () =>
+  typeof matchMedia === 'function' &&
+  matchMedia('(pointer: coarse)').matches &&
+  !matchMedia('(any-pointer: fine)').matches
+
 function runOne(root: DirNode, cwd: string, input: string, history: string[]): RunResult {
   // `ls` marks programs with a trailing *, and people type it back. Accept it.
   const words = input
@@ -403,6 +417,7 @@ function runOne(root: DirNode, cwd: string, input: string, history: string[]): R
   })
   const err = (s: string) => out([text(s, 'err')])
   const launch = (game: GameId) => {
+    if (game === 'race' && touchOnly()) return err('race: needs a keyboard. try it on a computer')
     if (args[0] === 'online' || args[0] === 'host') {
       return out(
         [text('opening a room on the game server…', 'muted')],
@@ -436,7 +451,7 @@ function runOne(root: DirNode, cwd: string, input: string, history: string[]): R
   // Running a program by path: ./tetris, ./games/tetris, games/tetris.
   const program = cmd.includes('/') ? lookup(root, resolvePath(cwd, cmd)) : undefined
   if (program?.type === 'exec') return launch(program.game)
-  if (cmd === 'tetris' || cmd === 'tron') return launch(cmd)
+  if (isGame(cmd)) return launch(cmd)
   if (cmd === 'website' || cmd === 'exit') {
     return runAll(root, cwd, 'cd ~/tenggis-port/website && pnpm dev', history)
   }

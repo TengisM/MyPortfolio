@@ -1,15 +1,20 @@
-// The connection to an online game room on the Go API. Online Tron and online Tetris both use it.
+import type { GameId } from '@/components/terminal/shell'
+
+// The connection to an online game room on the Go API. Online Tron, Tetris and racing use it.
 
 /**
  * Where the game socket lives. Vercel can't proxy a WebSocket, so production sets VITE_TRON_WS
- * to the API host's Tron socket, and Tetris sits next to it. In development the Vite proxy
- * forwards /api, sockets included.
+ * to the API host's Tron socket, and the other games sit next to it. In development the Vite
+ * proxy forwards /api, sockets included.
  */
-function socketUrl(game: 'tron' | 'tetris') {
+function socketUrl(game: OnlineGame) {
   const configured = import.meta.env.VITE_TRON_WS as string | undefined
   if (configured) return configured.replace(/\/tron\/ws$/, `/${game}/ws`)
   return `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/api/${game}/ws`
 }
+
+/** Every game plays online. */
+export type OnlineGame = GameId
 
 export type GameSocket = { send: (msg: object) => void; close: () => void }
 
@@ -20,7 +25,7 @@ export type GameSocket = { send: (msg: object) => void; close: () => void }
  * it's down, it says so at once.
  */
 export function openGameSocket(
-  game: 'tron' | 'tetris',
+  game: OnlineGame,
   hello: object,
   on: {
     message: (msg: unknown) => void

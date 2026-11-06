@@ -85,7 +85,7 @@ VITE_TRON_WS=wss://<your-service>.onrender.com/api/tron/ws
 ```
 
    Online Tetris reads the same variable and swaps `/tron/ws` for `/tetris/ws`, so it needs no
-   variable of its own. The game server only accepts sockets from pages listed in `CORS_ORIGINS` on Render, so the
+   variable of its own. Online racing does the same with `/race/ws`. The game server only accepts sockets from pages listed in `CORS_ORIGINS` on Render, so the
    site's address must be there (it already is for the admin panel).
 
 4. Settings → Git → Deploy Hooks: create one for the production branch. Copy the URL into
