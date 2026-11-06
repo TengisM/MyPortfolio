@@ -6,13 +6,16 @@ export type HudLine = string | { text: string; tone: HudTone }
 
 /** What the overlay shows next to the board. */
 export type GameHud = {
-  score: number
+  /** The big number. The racer shows its clock here, as text. */
+  score: number | string
   /** What the big number counts. Defaults to "score". */
   label?: string
   /** Extra lines under the score: level, next piece, riders. Monospace. */
   lines: HudLine[]
   /** Big text over the middle of the board: a countdown, "go", who won the round. */
   banner?: string
+  /** The banner's colour. The racer's lap split is green when faster, pink when slower. */
+  bannerTone?: HudTone
   over: boolean
   paused: boolean
 }
@@ -29,8 +32,11 @@ export type Game = {
   dispose: () => void
 }
 
-/** `room`: 'new' opens an online room (Tron or Tetris), four letters join one. */
-export type GameOptions = { players?: 1 | 2; room?: string }
+/**
+ * `room`: 'new' opens an online room, four letters join one. `onQuit` closes the game the way Esc
+ * does, for a game with its own exit button.
+ */
+export type GameOptions = { players?: 1 | 2; room?: string; onQuit?: () => void }
 
 export type StartGame = (
   stage: HTMLElement,

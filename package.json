@@ -2,7 +2,7 @@
   "name": "site",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@12.4.2",
+  "packageManager": "pnpm@12.5.1",
   "engines": {
     "node": "24.x"
   },
@@ -10,10 +10,12 @@
     "dev": "vite dev",
     "build": "node scripts/fetch-content.mjs && vite build",
     "typecheck": "tsc --noEmit",
+    "test": "node --test 'src/**/*.test.ts'",
+    "race:laps": "node scripts/race-laps.ts",
     "lint": "biome ci .",
     "fix": "biome check --write .",
     "conventions": "node scripts/check-conventions.mjs",
-    "verify": "biome ci . && tsc --noEmit && node scripts/check-conventions.mjs && vite build && node scripts/verify-build.mjs && npm run api:sqlc && npm run api:build && npm run api:lint && npm run api:test",
+    "verify": "biome ci . && tsc --noEmit && npm run test && node scripts/check-conventions.mjs && vite build && node scripts/verify-build.mjs && npm run api:sqlc && npm run api:build && npm run api:lint && npm run api:test",
     "api:sqlc": "cd api && sqlc diff",
     "api:build": "cd api && go build ./...",
     "api:lint": "cd api && golangci-lint run",

@@ -91,6 +91,20 @@ func gameLimiter() fiber.Handler {
 	})
 }
 
+// raceLimiter caps a scoreboard route at perMinute requests per client.
+func raceLimiter(perMinute int) fiber.Handler {
+	return limiter.New(limiter.Config{
+		Max:          perMinute,
+		Expiration:   time.Minute,
+		KeyGenerator: clientKeyGenerator,
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).JSON(models.ErrorResponse{
+				Error: "rate limited", Message: "Too many requests. Try again in a minute.",
+			})
+		},
+	})
+}
+
 func setupPublicRoutes(api fiber.Router, h *handlers.Handlers) {
 	api.Post("/leads", leadLimiter(), h.Lead.Create)
 	api.Post("/auth/login", loginLimiter(), h.Auth.Login)
@@ -108,4 +122,9 @@ func setupPublicRoutes(api fiber.Router, h *handlers.Handlers) {
 	// Online games. Upgrade checks the Origin before the limiter counts the connection.
 	api.Get("/tron/ws", h.Tron.Upgrade, gameLimiter(), h.Tron.Socket())
 	api.Get("/tetris/ws", h.Tetris.Upgrade, gameLimiter(), h.Tetris.Socket())
+	api.Get("/race/ws", h.RaceSocket.Upgrade, gameLimiter(), h.RaceSocket.Socket())
+
+	// Weekly racer scoreboard: reads capped at 60 a minute per client, run posts at 10.
+	api.Get("/race/board", raceLimiter(60), h.Race.Board)
+	api.Post("/race/times", raceLimiter(10), h.Race.Post)
 }

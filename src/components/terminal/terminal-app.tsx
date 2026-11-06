@@ -6,7 +6,7 @@ import { VIEW_KEY } from '@/components/view-script'
 import { content } from '@/content'
 import type { Locale, SiteConfig } from '@/lib/types'
 import { InteractiveTerminal } from './interactive-terminal'
-import { MENU, type ShellData } from './shell'
+import { GAME_IDS, MENU, type ShellData } from './shell'
 
 const HERO = { en: heroEn, mn: heroMn }
 const ABOUT = { en: aboutEn, mn: aboutMn }
@@ -98,10 +98,10 @@ export function TerminalApp({ locale, site }: { locale: Locale; site: SiteConfig
   const t = TEXT[locale]
   const hero = HERO[locale]
 
-  // An invite link, /?tron=KXQP or /?tetris=KXQP, joins that online room straight away.
+  // An invite link, /?tron=KXQP, /?tetris=KXQP or /?race=KXQP, joins that online room straight away.
   useEffect(() => {
     const url = new URL(location.href)
-    const game = ['tron', 'tetris'].find((g) => url.searchParams.has(g))
+    const game = GAME_IDS.find((g) => url.searchParams.has(g))
     const code = game ? (url.searchParams.get(game) ?? '') : ''
     if (!game || !/^[a-z]{4}$/i.test(code)) return
     url.searchParams.delete(game)

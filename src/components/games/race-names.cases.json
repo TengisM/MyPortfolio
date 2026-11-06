@@ -1,0 +1,16 @@
+[
+  { "in": "Bat", "out": "Bat" },
+  { "in": "  Бат  Эрдэнэ ", "out": "Бат Эрдэнэ" },
+  { "in": "tenggis_99-x", "out": "tenggis_99-x" },
+  { "in": "абвгдеёжзийклмно", "out": "абвгдеёжзийклмно" },
+  { "in": "абвгдеёжзийклмноп", "out": null },
+  { "in": "   ", "out": null },
+  { "in": "", "out": null },
+  { "in": "bat🏎", "out": null },
+  { "in": "b​at", "out": null },
+  { "in": "<b>", "out": null },
+  { "in": "a\t\n b", "out": "a b" },
+  { "in": " Bat\u00a0\u00a0Erdene\u00a0", "out": "Bat Erdene" },
+  { "in": " Bat\u3000Erdene ", "out": "Bat Erdene" },
+  { "in": "\ufeffBat\ufeff", "out": "Bat" }
+]

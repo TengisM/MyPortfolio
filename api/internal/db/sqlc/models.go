@@ -90,6 +90,17 @@ type ProjectSummary struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 }
 
+type RaceTime struct {
+	ID        uuid.UUID `json:"id"`
+	Track     string    `json:"track"`
+	Name      string    `json:"name"`
+	NameKey   string    `json:"name_key"`
+	Ship      string    `json:"ship"`
+	LapMs     []int32   `json:"lap_ms"`
+	TotalMs   int32     `json:"total_ms"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
 type RefreshToken struct {
 	Jti             uuid.UUID  `json:"jti"`
 	AdminID         uuid.UUID  `json:"admin_id"`
